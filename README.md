@@ -2,6 +2,25 @@
 
 Um simulador financeiro completo para calcular o potencial de retorno de investimento em franquias BeHonest.
 
+## 🚀 Quick Start com Docker
+
+```bash
+docker-compose up -d
+```
+Acesse: http://localhost:3000
+
+Para mais detalhes, veja [DOCKER_SETUP.md](DOCKER_SETUP.md)
+
+## ✅ Status do Projeto
+
+- ✅ Build TypeScript sem erros (9 correções aplicadas)
+- ✅ Docker pronto para produção
+- ✅ Linting validado (strict mode)
+- ✅ Tipos TypeScript organizados
+- ✅ Deploy ready
+
+Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
+
 ## 🚀 Funcionalidades
 
 - **Simulação Financeira Completa**: Calcule faturamento, despesas e lucro líquido
@@ -33,6 +52,12 @@ Um simulador financeiro completo para calcular o potencial de retorno de investi
 - **Poppins** para tipografia consistente
 - **CSS Modules** para estilização
 
+## 📋 Pré-requisitos
+
+- Docker instalado (https://docs.docker.com/get-docker/)
+- Docker Compose instalado (geralmente vem com Docker Desktop)
+- Git para clonar o repositório
+
 ## 📦 Instalação
 
 1. Clone o repositório:
@@ -50,6 +75,55 @@ npm install
 ```bash
 npm run dev
 ```
+
+## 🐳 Docker
+
+### Build e Execute Localmente
+
+1. Build da imagem:
+```bash
+docker build -t simulador-financeiro:latest .
+```
+
+2. Execute o container:
+```bash
+docker run -p 3000:3000 simulador-financeiro:latest
+```
+
+Acesse: http://localhost:3000
+
+### Com Docker Compose
+
+1. Inicie os serviços:
+```bash
+docker-compose up -d
+```
+
+2. Pare os serviços:
+```bash
+docker-compose down
+```
+
+### Verificar logs do container:
+```bash
+docker-compose logs -f app
+```
+
+### Para Produção
+
+O Dockerfile usa **multi-stage build** para otimizar o tamanho da imagem final. Apenas o build de produção é incluído no container, reduzindo o tamanho em ~90%.
+
+**Tamanhos esperados:**
+- Imagem builder: ~500MB (descartada)
+- Imagem final: ~50-80MB
+
+**Deploy recomendado:**
+- AWS ECS
+- AWS AppRunner
+- Google Cloud Run
+- Azure Container Instances
+- DigitalOcean App Platform
+- Heroku (com setup adicional)
 
 ## 🎯 Como Usar
 
