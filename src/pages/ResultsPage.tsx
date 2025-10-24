@@ -1,14 +1,14 @@
-import { SimulationResult } from '../utils/advancedCalculations';
+import { AdvancedSimulationResult } from '../utils/advancedCalculations';
 import AdvancedResultsDisplay from '../components/AdvancedResultsDisplay';
 import InvestmentComparisonChart from '../components/InvestmentComparisonChart';
 import Footer from '../components/Footer';
 
 interface ResultsPageProps {
-  results: SimulationResult;
-  currentResults: SimulationResult;
+  results: AdvancedSimulationResult;
+  currentResults: AdvancedSimulationResult;
   lucroDesejado?: number;
   onNewSimulation: () => void;
-  onResultsUpdate?: (newResults: SimulationResult) => void;
+  onResultsUpdate?: (newResults: AdvancedSimulationResult) => void;
 }
 
 const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucroDesejado, onNewSimulation, onResultsUpdate }) => {
