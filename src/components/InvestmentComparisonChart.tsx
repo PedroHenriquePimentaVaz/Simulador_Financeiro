@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { SimulationResult } from '../utils/advancedCalculations';
+import { AdvancedSimulationResult } from '../utils/advancedCalculations';
 
 interface InvestmentComparisonChartProps {
-  franchiseResults: SimulationResult;
+  franchiseResults: AdvancedSimulationResult;
   initialInvestment: number;
 }
 
