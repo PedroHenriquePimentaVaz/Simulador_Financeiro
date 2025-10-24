@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { SimulationResult, formatCurrency, formatPercentage, canAddStore, addStoreToSimulation, removeStoreFromSimulation } from '../utils/advancedCalculations';
+import { AdvancedSimulationResult, formatCurrency, formatPercentage, canAddStore, addStoreToSimulation } from '../utils/advancedCalculations';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 interface AdvancedResultsDisplayProps {
-  results: SimulationResult;
-  currentResults: SimulationResult;
+  results: AdvancedSimulationResult;
+  currentResults: AdvancedSimulationResult;
   lucroDesejado?: number;
-  onResultsUpdate?: (newResults: SimulationResult) => void;
+  onResultsUpdate?: (newResults: AdvancedSimulationResult) => void;
 }
 
 const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results, currentResults, lucroDesejado, onResultsUpdate }) => {
   const [showMonthlyDetails, setShowMonthlyDetails] = useState(false);
-  const [originalResults, setOriginalResults] = useState<SimulationResult>(results);
+  const [_originalResults, _setOriginalResults] = useState<AdvancedSimulationResult>(results);
   const [selectedMonth, setSelectedMonth] = useState<number>(1);
   const [showAddStoreForm, setShowAddStoreForm] = useState(false);
   const [addedStores, setAddedStores] = useState<Array<{month: number, implementationMonth: number}>>([]);
@@ -59,10 +59,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     return canAddStore(monthlyResults, month, totalInvestment);
   };
 
-  const handleRemoveStore = (implementationMonth: number) => {
+  const handleRemoveStore = (_implementationMonth: number) => {
     // Voltar ao estado original (antes de qualquer adição de loja)
     if (onResultsUpdate) {
-      onResultsUpdate(originalResults);
+      onResultsUpdate(results);
     }
     
     // Limpar lista de lojas adicionadas
@@ -154,8 +154,8 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       
       // Headers para este ano
       const headers = ['Métrica'];
-      yearData.months.forEach((_, index) => {
-        headers.push(`M${yearData.startMonth + index}`);
+      yearData.months.forEach((_, _index) => {
+        headers.push(`M${yearData.startMonth + _index}`);
       });
       
       // Configurações da tabela mais compactas
@@ -240,7 +240,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   }));
 
   const lastMonth = monthlyResults[monthlyResults.length - 1];
-  const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
+  // const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
 
   return (
     <div className="advanced-results">
@@ -437,7 +437,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                   fontSize: '14px'
                 }}
               >
-                {monthlyResults.map((result, index) => (
+                {monthlyResults.map((result, _index) => (
                   <option 
                     key={result.month} 
                     value={result.month}
