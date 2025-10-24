@@ -37,7 +37,7 @@ Um simulador financeiro completo para calcular o potencial de retorno de investi
 
 1. Clone o repositório:
 ```bash
-git clone <url-do-repositorio>
+git clone git@github.com:PedroHenriquePimentaVaz/Simulador_Financeiro.git
 cd simulador-financeiro-behonest
 ```
 
