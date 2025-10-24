@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SimulationData } from './types/simulation';
-import { simulate as advancedSimulate, SimulationResult as AdvancedSimulationResult } from './utils/advancedCalculations';
+import { simulate as advancedSimulate, AdvancedSimulationResult } from './utils/advancedCalculations';
 import SimulationForm from './components/SimulationForm';
 import ResultsPage from './pages/ResultsPage';
 import Footer from './components/Footer';
