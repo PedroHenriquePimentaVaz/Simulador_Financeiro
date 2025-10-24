@@ -42,7 +42,7 @@ export interface MonthlyResult {
   cumulativeCash: number;
 }
 
-export interface SimulationResult {
+export interface AdvancedSimulationResult {
   monthlyResults: MonthlyResult[];
   totalInvestment: number;
   paybackPeriod: number;
@@ -81,11 +81,11 @@ export function validateFormData(lucroDesejado: number, investimentoInicial: num
 }
 
 export function simulate(
-  lucroDesejado: number,
+  _lucroDesejado: number,
   investimentoInicial: number,
   perfilOperacao: string,
   months: number = 60
-): SimulationResult {
+): AdvancedSimulationResult {
   const params = behonestParams as BeHonestParams;
   
   // Calcular número de lojas baseado no investimento
@@ -271,7 +271,7 @@ export interface ViabilityAnalysis {
 export function analyzeInvestmentViability(
   investimentoInicial: number,
   lucroDesejado: number,
-  perfilOperacao: string
+  _perfilOperacao: string
 ): ViabilityAnalysis {
   const recommendations: string[] = [];
   let score = 100;
@@ -372,12 +372,10 @@ export function analyzeInvestmentViabilityWithResults(
   }
 
   // Calcular médias reais dos 60 meses da simulação
-  const totalRevenue = monthlyResults.reduce((sum: number, result: MonthlyResult) => sum + result.totalRevenue, 0);
   const totalNetProfit = monthlyResults.reduce((sum: number, result: MonthlyResult) => sum + result.netProfit, 0);
   const totalStoresMonths = monthlyResults.reduce((sum: number, result: MonthlyResult) => sum + result.stores, 0);
   
   // Calcular médias mensais reais
-  const averageMonthlyRevenuePerStore = totalStoresMonths > 0 ? totalRevenue / totalStoresMonths : 0;
   const averageMonthlyNetProfitPerStore = totalStoresMonths > 0 ? totalNetProfit / totalStoresMonths : 0;
   const averageMonthlyNetProfit = totalNetProfit / monthlyResults.length; // Média geral dos 60 meses
   
@@ -500,9 +498,9 @@ export function canAddStore(
 
 // Função para adicionar uma loja a partir de um mês específico
 export function addStoreToSimulation(
-  simulationResult: SimulationResult, 
+  simulationResult: AdvancedSimulationResult, 
   monthToAdd: number
-): SimulationResult {
+): AdvancedSimulationResult {
   const { monthlyResults, totalInvestment } = simulationResult;
   
   if (!canAddStore(monthlyResults, monthToAdd, totalInvestment)) {
@@ -608,7 +606,7 @@ export function addStoreToSimulation(
   };
 }
 
-export function removeStoreFromSimulation(results: SimulationResult, monthToRemove: number): SimulationResult {
+export function removeStoreFromSimulation(results: AdvancedSimulationResult, monthToRemove: number): AdvancedSimulationResult {
   const params = behonestParams as BeHonestParams;
   
   // Verificar se é possível remover a loja
@@ -617,7 +615,7 @@ export function removeStoreFromSimulation(results: SimulationResult, monthToRemo
   }
   
   // Encontrar o mês onde a loja foi adicionada (mês anterior ao mês de implementação)
-  const storeAddedMonth = monthToRemove - 1;
+  // const storeAddedMonth = monthToRemove - 1;
   
   // Verificar se existe uma loja para remover neste mês
   const monthResult = results.monthlyResults.find(r => r.month === monthToRemove);
