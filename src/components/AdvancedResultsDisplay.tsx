@@ -301,6 +301,33 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         )}
       </div>
 
+      {/* Aviso sobre estimativas */}
+      <div style={{
+        marginTop: '30px',
+        marginBottom: '30px',
+        padding: '20px',
+        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+        border: '2px solid rgba(255, 193, 7, 0.3)',
+        borderRadius: '10px',
+        fontSize: '14px',
+        color: '#856404',
+        lineHeight: '1.7'
+      }}>
+        <strong style={{ fontSize: '16px' }}>⚠️ Importante:</strong>
+        <p style={{ margin: '10px 0 0 0' }}>
+          Os valores apresentados nesta simulação são <strong>estimativas baseadas em médias do mercado</strong>. Os resultados reais podem variar significativamente dependendo de fatores como:
+        </p>
+        <ul style={{ margin: '10px 0 0 20px', paddingLeft: '10px' }}>
+          <li>Localização e perfil dos clientes</li>
+          <li>Gestão operacional e empenho do franqueado</li>
+          <li>Condições econômicas e sazonalidade</li>
+          <li>Expansão e performance das lojas</li>
+        </ul>
+        <p style={{ margin: '10px 0 0 0', fontStyle: 'italic' }}>
+          Estas são projeções e não garantias de desempenho futuro. Consulte sempre um especialista antes de tomar decisões de investimento.
+        </p>
+      </div>
+
       <div className="detailed-breakdown">
         <h4>Último Mês (Mês {lastMonth.month})</h4>
         <div className="breakdown-grid">
