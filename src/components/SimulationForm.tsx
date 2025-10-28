@@ -257,26 +257,25 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
               </ul>
             </div>
           )}
+          
+          {/* Aviso sobre estimativas */}
+          <div style={{
+            marginTop: '15px',
+            padding: '15px 20px',
+            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+            border: '2px solid rgba(255, 193, 7, 0.3)',
+            borderRadius: '8px',
+            fontSize: '12px',
+            color: '#856404',
+            lineHeight: '1.6'
+          }}>
+            <strong style={{ fontSize: '13px' }}>⚠️ Importante:</strong>
+            <p style={{ margin: '6px 0 0 0' }}>
+              Os valores são estimativas baseadas em médias do mercado. Os resultados reais podem variar significativamente.
+            </p>
+          </div>
         </div>
       )}
-
-      {/* Aviso offertidas */}
-      <div style={{
-        marginTop: '20px',
-        marginBottom: '20px',
-        padding: '15px 20px',
-        backgroundColor: 'rgba(255, 193, 7, 0.1)',
-        border: '2px solid rgba(255, 193, 7, 0.3)',
-        borderRadius: '8px',
-        fontSize: '13px',
-        color: '#856404',
-        lineHeight: '1.6'
-      }}>
-        <strong style={{ fontSize: '14px' }}>⚠️ Importante:</strong>
-        <p style={{ margin: '8px 0 0 0' }}>
-          Os valores apresentados são estimativas baseadas em médias do mercado. Os resultados reais podem variar significativamente dependendo de fatores como localização, gestão operacional e condições econômicas.
-        </p>
-      </div>
 
       <button type="submit" className="submit-button">
         Simular Investimento
