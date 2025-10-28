@@ -331,6 +331,25 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
           </p>
         </div>
       </div>
+
+      {/* Aviso sobre estimativas */}
+      <div style={{
+        marginTop: '25px',
+        padding: '20px',
+        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+        border: '2px solid rgba(255, 193, 7, 0.3)',
+        borderRadius: '10px',
+        fontSize: '13px',
+        color: '#856404',
+        lineHeight: '1.6'
+      }}>
+        <strong style={{ fontSize: '14px' }}>⚠️ Importante:</strong>
+        <p style={{ margin: '8px 0 0 0' }}>
+          As comparações apresentadas são baseadas em estimativas projetadas. Os resultados da franquia podem variar 
+          dependendo de fatores como localização, gestão operacional, empenho do franqueado e condições econômicas. 
+          Consulte sempre um especialista antes de tomar decisões de investimento.
+        </p>
+      </div>
     </div>
   );
 };
