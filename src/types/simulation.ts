@@ -7,6 +7,7 @@ export interface SimulationData {
   periodoSimulacao: number;
   lucroDesejado?: number;
   perfilOperacao?: string;
+  cenario?: 'pessimista' | 'medio' | 'otimista';
 }
 
 export interface SimulationResult {

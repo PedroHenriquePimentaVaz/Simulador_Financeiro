@@ -8,7 +8,10 @@ interface SimulationFormProps {
 }
 
 const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate }) => {
-  const [formData, setFormData] = useState<SimulationData>(initialData);
+  const [formData, setFormData] = useState<SimulationData>({
+    ...initialData,
+    cenario: initialData.cenario || 'medio'
+  });
   const [viabilityAnalysis, setViabilityAnalysis] = useState<ViabilityAnalysis | null>(null);
 
   // Analisar viabilidade sempre que os dados mudarem
@@ -82,7 +85,8 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       lucroDesejado: typeof formData.lucroDesejado === 'string' 
         ? formatBrazilianNumber(formData.lucroDesejado) 
         : formData.lucroDesejado,
-      perfilOperacao: formData.perfilOperacao
+      perfilOperacao: formData.perfilOperacao,
+      cenario: formData.cenario || 'medio'
     };
     
     onSimulate(simulatedData);
@@ -91,7 +95,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
   return (
     <form onSubmit={handleSubmit}>
       <div className="form-group">
-        <label className="form-label">Quanto você deseja tirar mensalmente do negócio? *</label>
+        <label className="form-label">Quanto você deseja lucrar mensalmente com o negócio? *</label>
         <div style={{ position: 'relative' }}>
           <span style={{
             position: 'absolute',
@@ -167,16 +171,38 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       </div>
 
       <div className="form-group">
-        <label className="form-label">Qual seu perfil de operação? *</label>
+        <label className="form-label">Quanto tempo você estaria disposto a investir no negócio? *</label>
         <select 
           className="form-select" 
           value={formData.perfilOperacao || 'gestao'}
           onChange={(e) => handleInputChange('perfilOperacao', e.target.value)}
         >
-          <option value="integral">1 - Dedicar integralmente à operação</option>
-          <option value="gestao">2 - Fazer apenas a gestão e terceirizar</option>
-          <option value="terceirizar">3 - Terceirizar tudo e contratar equipe gerencial</option>
+          <option value="integral">0 até 2 horas diárias</option>
+          <option value="gestao">2 a 4 horas diárias</option>
+          <option value="terceirizar">Mais de 4 horas diárias</option>
         </select>
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Escolha o cenário da simulação *</label>
+        <select 
+          className="form-select" 
+          value={formData.cenario || 'medio'}
+          onChange={(e) => handleInputChange('cenario', e.target.value)}
+        >
+          <option value="pessimista">🔻 Pessimista - Resultados 15% abaixo da média</option>
+          <option value="medio">📊 Médio - Resultados na média</option>
+          <option value="otimista">🔺 Otimista - Resultados 15% acima da média</option>
+        </select>
+        <p style={{ 
+          fontSize: '12px', 
+          color: '#666', 
+          marginTop: '5px', 
+          marginBottom: '0',
+          fontStyle: 'italic'
+        }}>
+          Os cenários representam diferentes projeções de desempenho
+        </p>
       </div>
 
       {/* Análise de Viabilidade */}

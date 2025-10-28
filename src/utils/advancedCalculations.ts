@@ -84,9 +84,24 @@ export function simulate(
   _lucroDesejado: number,
   investimentoInicial: number,
   perfilOperacao: string,
-  months: number = 60
+  months: number = 60,
+  cenario: 'pessimista' | 'medio' | 'otimista' = 'medio'
 ): AdvancedSimulationResult {
   const params = behonestParams as BeHonestParams;
+  
+  // Calcular multiplicador do cenário
+  let cenarioMultiplier = 1;
+  switch(cenario) {
+    case 'pessimista':
+      cenarioMultiplier = 0.85; // 15% abaixo da média
+      break;
+    case 'medio':
+      cenarioMultiplier = 1.0; // Média
+      break;
+    case 'otimista':
+      cenarioMultiplier = 1.15; // 15% acima da média
+      break;
+  }
   
   // Calcular número de lojas baseado no investimento
   // Taxa de franquia (30k) + primeira loja (20k) + lojas adicionais (20k cada)
@@ -124,10 +139,13 @@ export function simulate(
       // Primeira loja existe desde o mês 2 (após pagar implementação)
       currentStores = 1;
       
-      // Lojas adicionais: paga e opera no mesmo mês
-      if (stores > 1 && month >= 4) {
-        const additionalMonths = month - 3; // Meses desde que pode adicionar lojas
-        const maxAdditionalStores = Math.min(additionalStores, additionalMonths);
+      // Lojas adicionais: começa a operar a partir do mês 7, depois a cada 3 meses
+      // Lojas são pagas nos meses 6, 9, 12 e começam a operar nos meses 7, 10, 13
+      if (stores > 1 && month >= 7) {
+        const monthsSinceM7 = month - 6; // Meses desde o mês 7
+        // Calcula quantas lojas já estão operando (uma a cada 3 meses)
+        const storesOperating = Math.ceil(monthsSinceM7 / 3);
+        const maxAdditionalStores = Math.min(additionalStores, storesOperating);
         currentStores = 1 + maxAdditionalStores;
       }
     }
@@ -136,10 +154,10 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStore = 0;
     if (month > 2 && currentStores > 0) {
-      // Calcular receita com crescimento mensal (começando do mês 3)
+      // Calcular receita com crescimento mensal (começando do mês 3) e aplicar multiplicador do cenário
       const baseRevenuePerStore = params.rev_per_store_m2;
       const growthFactor = Math.pow(params.rev_growth_factor, month - 3); // Ajustar para começar do mês 3
-      revenuePerStore = baseRevenuePerStore * growthFactor;
+      revenuePerStore = baseRevenuePerStore * growthFactor * cenarioMultiplier;
       totalRevenue = revenuePerStore * currentStores;
     }
     

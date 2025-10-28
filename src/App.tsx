@@ -30,7 +30,8 @@ function App() {
         data.lucroDesejado || 2000,
         data.investimentoInicial,
         data.perfilOperacao || 'gestao',
-        60
+        60,
+        data.cenario || 'medio'
       );
       
       setAdvancedResults(result);
