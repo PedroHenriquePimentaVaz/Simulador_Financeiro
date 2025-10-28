@@ -147,11 +147,11 @@ export function simulate(
     const tax = totalRevenue * params.simples_rate_m2;
     const netRevenue = totalRevenue - tax;
     
-    // CMV (Custo da Mercadoria Vendida)
-    const cmv = totalRevenue * params.cmv_rate;
+    // CMV (Custo da Mercadoria Vendida) - calculado sobre receita líquida
+    const cmv = netRevenue * params.cmv_rate;
     
-    // Perdas
-    const losses = totalRevenue * params.loss_rate;
+    // Perdas - calculado sobre receita líquida
+    const losses = netRevenue * params.loss_rate;
     
     // Lucro Bruto
     const grossProfit = netRevenue - cmv - losses;
@@ -166,10 +166,10 @@ export function simulate(
     const accounting = params.accounting_fixed;
     
     // Custos fixos ajustados pelo perfil
-    const fixedCosts = (params.accounting_fixed + systemFee) * fixedCostsMultiplier;
+    const fixedCosts = (systemFee + accounting) * fixedCostsMultiplier;
     
-    // Lucro Operacional
-    const operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - systemFee - fixedCosts;
+    // Lucro Operacional (não duplicar dedução de systemFee e accounting, pois já estão em fixedCosts)
+    const operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts;
     
     // Lucro Líquido (assumindo sem impostos adicionais)
     const netProfit = operatingProfit;
@@ -182,18 +182,22 @@ export function simulate(
       cashFlow -= params.franchise_fee; // Mês 1: paga taxa de franquia (30k)
     } else if (month === 2) {
       cashFlow -= params.capex_per_store; // Mês 2: paga implementação primeira loja (20k)
-    } else if (month >= 4 && additionalStores > 0) {
-      // Mês 4+: paga cada loja adicional (20k cada)
-      const storeIndexToPay = month - 4; // Índice da loja adicional a pagar
-      if (storeIndexToPay < additionalStores) {
-        cashFlow -= params.capex_per_store; // Paga mais uma loja (20k)
+    } else if (month >= 3 && additionalStores > 0) {
+      // Paga lojas adicionais para que abram a cada 3 meses a partir do mês 4
+      // Mês 6: paga loja 1 (abre mês 7)
+      // Mês 9: paga loja 2 (abre mês 10)
+      // Mês 12: paga loja 3 (abre mês 13)
+      const monthsSinceStart = month - 5; // Meses desde o mês 5
+      if (monthsSinceStart > 0 && monthsSinceStart % 3 === 1) { // Paga nos meses 6, 9, 12, 15, etc.
+        const storeIndexToPay = Math.floor(monthsSinceStart / 3); // Índice da loja (0, 1, 2, ...)
+        if (storeIndexToPay < additionalStores) {
+          cashFlow -= params.capex_per_store; // Paga mais uma loja (20k)
+        }
       }
     }
     
-    // Nos primeiros 2 meses, ainda há custos fixos (contabilidade, sistema)
-    if (month <= 2) {
-      cashFlow -= fixedCosts; // Custos fixos sempre presentes
-    }
+    // Custos fixos já estão incluídos no netProfit (via fixedCosts deduzidos em operatingProfit)
+    // Não precisamos deduzi-los novamente aqui
     
     cumulativeCash += cashFlow;
     
