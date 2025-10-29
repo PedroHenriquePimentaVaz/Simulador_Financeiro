@@ -133,7 +133,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       </div>
 
       <div className="form-group">
-        <label className="form-label">Quanto você tem de disponibilidade de investimento? *</label>
+        <label className="form-label">Qual a sua disponibilidade de investimento? *</label>
         <div style={{ position: 'relative' }}>
           <span style={{
             position: 'absolute',
