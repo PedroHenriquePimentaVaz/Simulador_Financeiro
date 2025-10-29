@@ -57,7 +57,7 @@ const WhatsAppPopUp: React.FC<WhatsAppPopUpProps> = ({ whatsappLink }) => {
           <h3>Entre no Grupo Empreenda!</h3>
           
           <p>
-            Conecte-se com outros empreendedores e descubra oportunidades incríveis!
+            Se você está pensando em tomar a decisão certa, entre no grupo!
           </p>
           
           <button 
