@@ -376,43 +376,43 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           }}>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Imposto Simples:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.tax)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.tax)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>CMV:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.cmv)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.cmv)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Perdas:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.losses)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.losses)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Reposição:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.reposicao)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.reposicao)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Royalties:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.royalties)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.royalties)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Outros Repasses:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.otherRepasses)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.otherRepasses)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Taxa de Cartão:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.cardFee)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.cardFee)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Marketing:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.marketing)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.marketing)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Sistema:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.systemFee)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.systemFee)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Contabilidade:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.accounting)}</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.accounting)}</span>
             </div>
           </div>
         </div>
