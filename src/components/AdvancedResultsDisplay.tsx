@@ -713,7 +713,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         
         {showMonthlyDetails && (
         <div className="table-container">
-          <table>
+          <table style={{ tableLayout: 'fixed', width: '100%' }}>
             <thead>
               <tr>
                 <th>Métrica</th>

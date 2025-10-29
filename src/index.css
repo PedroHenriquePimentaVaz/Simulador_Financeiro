@@ -1743,6 +1743,7 @@ svg text, svg tspan {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  table-layout: fixed;
 }
 
 .monthly-table th,
@@ -1750,6 +1751,9 @@ svg text, svg tspan {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .monthly-table th {
