@@ -9,15 +9,23 @@ const WhatsAppPopUp: React.FC<WhatsAppPopUpProps> = ({ whatsappLink }) => {
   const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
-    // Mostrar pop-up após 10 segundos
-    const timer = setTimeout(() => {
-      setShowPopUp(true);
-    }, 10000);
+    // Verificar se o usuário já dispensou o pop-up
+    const hasDismissedPopup = localStorage.getItem('behonest_popup_dismissed');
+    
+    if (!hasDismissedPopup) {
+      // Mostrar pop-up após 10 segundos
+      const timer = setTimeout(() => {
+        setShowPopUp(true);
+      }, 10000);
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   const handleClose = () => {
+    // Salvar no localStorage que o usuário dispensou o pop-up
+    localStorage.setItem('behonest_popup_dismissed', 'true');
+    
     setIsClosing(true);
     setTimeout(() => {
       setShowPopUp(false);
