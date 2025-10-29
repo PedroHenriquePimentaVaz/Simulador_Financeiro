@@ -24,15 +24,27 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 ## 🚀 Funcionalidades
 
 - **Simulação Financeira Completa**: Calcule faturamento, despesas e lucro líquido
+- **Rentabilidade Mensal**: Cálculo baseado na média de lucro líquido dos últimos 12 meses / investimento total
 - **Análise de Payback**: Determine em quantos meses o investimento se paga
-- **Cálculo de ROI**: Retorno sobre investimento em porcentagem
-- **Projeção Mensal**: Gráficos interativos mostrando evolução mês a mês
-- **Simulação Interativa**: Adicione lojas em meses específicos e veja o impacto
+- **Fluxo de Caixa Acumulado**: Gráfico interativo mostrando evolução do saldo acumulado
+- **Simulação Interativa**: Adicione lojas em meses específicos (a cada 3 meses) e veja o impacto
+- **Cenários de Simulação**: Pessimista (85% da receita), Médio (100%), Otimista (115%)
+- **Primeira Loja no Mês 3**: Sistema implementa período de 2 meses para setup (taxa franquia mês 1, implementação mês 2)
+- **Adição de Lojas Escalonada**: Novas lojas podem ser adicionadas a cada 3 meses após a primeira
+- **Exportação PDF**: Gere relatórios completos em PDF com todas as informações financeiras
 - **Planilha Completa**: Visualize todos os 60 meses de dados em uma tabela integrada
-- **Exportação PDF**: Baixe relatório completo da simulação
 - **Interface Moderna**: Design baseado no tema BeHonest (azul da marca #001c54 e laranja)
 - **Tipografia Poppins**: Fonte moderna e consistente em toda a plataforma
 - **Footer Completo**: Rodapé com logos das redes sociais (locais), menu de navegação e download do app
+
+## 🔧 Resolução de Problemas
+
+### Tela Branca no Navegador
+Se a tela estiver completamente branca, isso geralmente é causado por cache do navegador. Solução:
+1. Abra o DevTools (F12)
+2. Vá em **Application** > **Storage** > **Clear site data**
+3. Ou pressione **Ctrl+Shift+Delete** e limpe os dados do site
+4. Recarregue a página (F5 ou Ctrl+R)
 
 ## 📊 Métricas Calculadas
 
