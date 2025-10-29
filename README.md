@@ -40,11 +40,24 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 ## 🔧 Resolução de Problemas
 
 ### Tela Branca no Navegador
-Se a tela estiver completamente branca, isso geralmente é causado por cache do navegador. Solução:
+Se a tela estiver completamente branca, isso geralmente é causado por service worker antigo. Soluções:
+
+**Solução Rápida (via Console):**
+1. Abra o DevTools (F12) > aba Console
+2. Cole e execute estes comandos:
+```javascript
+navigator.serviceWorker.getRegistrations().then(r => r.forEach(x => x.unregister()))
+caches.keys().then(keys => keys.forEach(key => caches.delete(key)))
+localStorage.clear()
+location.reload(true)
+```
+
+**Solução Manual:**
 1. Abra o DevTools (F12)
-2. Vá em **Application** > **Storage** > **Clear site data**
-3. Ou pressione **Ctrl+Shift+Delete** e limpe os dados do site
-4. Recarregue a página (F5 ou Ctrl+R)
+2. Vá em **Application** > **Service Workers** > clique em **Unregister**
+3. Vá em **Application** > **Cache Storage** > clique com botão direito > **Delete**
+4. Vá em **Application** > **Storage** > **Clear site data**
+5. Recarregue a página (Ctrl+Shift+R para forçar reload)
 
 ## 📊 Métricas Calculadas
 
