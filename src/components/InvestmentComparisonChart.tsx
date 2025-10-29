@@ -17,8 +17,6 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   franchiseResults, 
   initialInvestment 
 }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState<'2years' | '3years' | '5years'>('5years');
-
   const investmentOptions: InvestmentOption[] = [
     {
       name: 'SELIC (Taxa Atual)',
@@ -46,11 +44,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
     }
   ];
 
-  const periods = {
-    '2years': { months: 24, label: '2 Anos' },
-    '3years': { months: 36, label: '3 Anos' },
-    '5years': { months: 60, label: '5 Anos' }
-  };
+  const currentPeriod = { months: 60, label: '5 Anos' };
 
   const calculateCompoundInterest = (principal: number, annualRate: number, months: number): number => {
     const monthlyRate = annualRate / 100 / 12;
@@ -64,7 +58,6 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
     return franchiseResults.monthlyResults[months - 1].cumulativeCash + initialInvestment;
   };
 
-  const currentPeriod = periods[selectedPeriod];
   const franchiseValue = getFranchiseValueAtPeriod(currentPeriod.months);
   
   const comparisonData = investmentOptions.map(option => ({
@@ -86,34 +79,6 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
       borderRadius: '12px',
       marginBottom: '20px'
     }}>
-      {/* Period Selector */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        marginBottom: '30px',
-        gap: '10px'
-      }}>
-        {Object.entries(periods).map(([key, period]) => (
-          <button
-            key={key}
-            onClick={() => setSelectedPeriod(key as any)}
-            style={{
-              padding: '10px 20px',
-              borderRadius: '8px',
-              border: selectedPeriod === key ? '2px solid #3498db' : '2px solid #ddd',
-              backgroundColor: selectedPeriod === key ? '#3498db' : 'white',
-              color: selectedPeriod === key ? 'white' : '#333',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '700',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            {period.label}
-          </button>
-        ))}
-      </div>
-
       {/* Visual Bar Chart */}
       <div>
         <h3 style={{ 
@@ -122,7 +87,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
           color: '#2c3e50',
           fontSize: '18px'
         }}>
-          Comparação Visual de Retorno
+          Comparação Visual de Retorno - 5 Anos
         </h3>
         
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
