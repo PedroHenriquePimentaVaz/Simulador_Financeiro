@@ -237,9 +237,69 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   const lastMonth = monthlyResults[monthlyResults.length - 1];
   // const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
 
+  // Importar parâmetros
+  const behonestParams = require('../../behonest_params.json');
+
   return (
     <div className="advanced-results">
       <h3 className="results-title">Resultados da Simulação Avançada</h3>
+      
+      {/* Composição do Investimento Inicial */}
+      <div style={{
+        backgroundColor: '#fff3cd',
+        padding: '20px',
+        borderRadius: '12px',
+        marginBottom: '30px',
+        border: '2px solid #ffc107'
+      }}>
+        <h4 style={{
+          color: '#856404',
+          marginBottom: '15px',
+          fontSize: '18px',
+          fontWeight: '700',
+          textAlign: 'center'
+        }}>
+          💼 Composição do Investimento Inicial
+        </h4>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '15px'
+        }}>
+          <div style={{
+            backgroundColor: '#ffeaa7',
+            padding: '15px',
+            borderRadius: '8px',
+            border: '2px solid #fdcb6e'
+          }}>
+            <div style={{ fontWeight: '700', color: '#856404', marginBottom: '5px' }}>
+              🏢 Taxa de Franquia
+            </div>
+            <div style={{ fontSize: '20px', fontWeight: '700', color: '#856404' }}>
+              {formatCurrency(behonestParams.franchise_fee)}
+            </div>
+            <div style={{ fontSize: '12px', color: '#856404', marginTop: '5px', fontStyle: 'italic' }}>
+              Pago no Mês 1
+            </div>
+          </div>
+          <div style={{
+            backgroundColor: '#ffeaa7',
+            padding: '15px',
+            borderRadius: '8px',
+            border: '2px solid #fdcb6e'
+          }}>
+            <div style={{ fontWeight: '700', color: '#856404', marginBottom: '5px' }}>
+              🏪 Implementação da Loja
+            </div>
+            <div style={{ fontSize: '20px', fontWeight: '700', color: '#856404' }}>
+              {formatCurrency(behonestParams.capex_per_store)}
+            </div>
+            <div style={{ fontSize: '12px', color: '#856404', marginTop: '5px', fontStyle: 'italic' }}>
+              Pago no Mês 2
+            </div>
+          </div>
+        </div>
+      </div>
       
       <div className="results-summary">
         <div className="summary-card investment-card">
