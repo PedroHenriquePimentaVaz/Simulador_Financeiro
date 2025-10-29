@@ -328,100 +328,77 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
 
       <div className="detailed-breakdown">
         <h4>Último Mês (Mês {lastMonth.month})</h4>
-        
-        {/* Informações Gerais */}
-        <div style={{ marginBottom: '25px' }}>
-          <h5 style={{ color: '#001c54', fontSize: '16px', fontWeight: '700', marginBottom: '15px', paddingBottom: '8px', borderBottom: '2px solid #001c54' }}>
-            📊 Informações Gerais
-          </h5>
-          <div className="breakdown-grid">
-            <div className="breakdown-item">
-              <span>Lojas:</span>
-              <span>{lastMonth.stores}</span>
-            </div>
+        <div className="breakdown-grid">
+          {/* Informações Gerais */}
+          <div className="breakdown-item">
+            <span>Lojas:</span>
+            <span>{lastMonth.stores}</span>
           </div>
-        </div>
-
-        {/* Receitas */}
-        <div style={{ marginBottom: '25px' }}>
-          <h5 style={{ color: '#2e7d32', fontSize: '16px', fontWeight: '700', marginBottom: '15px', paddingBottom: '8px', borderBottom: '2px solid #2e7d32' }}>
-            💰 Receitas
-          </h5>
-          <div className="breakdown-grid">
-            <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '700', color: '#2e7d32' }}>Receita Bruta:</span>
-              <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.totalRevenue)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '700', color: '#2e7d32' }}>Receita Líquida:</span>
-              <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.totalRevenue - lastMonth.tax)}</span>
-            </div>
+          
+          {/* Receitas */}
+          <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '700', color: '#2e7d32' }}>Receita Bruta:</span>
+            <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.totalRevenue)}</span>
           </div>
-        </div>
-
-        {/* Despesas */}
-        <div style={{ marginBottom: '25px' }}>
-          <h5 style={{ color: '#c62828', fontSize: '16px', fontWeight: '700', marginBottom: '15px', paddingBottom: '8px', borderBottom: '2px solid #c62828' }}>
-            💸 Despesas
-          </h5>
-          <div className="breakdown-grid">
-            <div className="breakdown-item" style={{ backgroundColor: '#fff3e0', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#e65100' }}>Imposto Simples:</span>
-              <span style={{ fontWeight: '600', color: '#e65100' }}>-{formatCurrency(lastMonth.tax)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>CMV:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.cmv)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Perdas:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.losses)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Reposição:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.reposicao)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Royalties:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.royalties)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Outros Repasses:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.otherRepasses)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Taxa de Cartão:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.cardFee)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Marketing:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.marketing)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Sistema:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.systemFee)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Contabilidade:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.accounting)}</span>
-            </div>
+          <div className="breakdown-item" style={{ backgroundColor: '#fff3e0', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#e65100' }}>Imposto Simples:</span>
+            <span style={{ fontWeight: '600', color: '#e65100' }}>-{formatCurrency(lastMonth.tax)}</span>
           </div>
-        </div>
-
-        {/* Lucros */}
-        <div style={{ marginBottom: '25px' }}>
-          <h5 style={{ color: '#1565c0', fontSize: '16px', fontWeight: '700', marginBottom: '15px', paddingBottom: '8px', borderBottom: '2px solid #1565c0' }}>
-            🎯 Lucros
-          </h5>
-          <div className="breakdown-grid">
-            <div className="breakdown-item" style={{ backgroundColor: '#e3f2fd', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '700', color: '#1565c0' }}>Lucro Bruto:</span>
-              <span style={{ fontWeight: '700', color: '#1565c0', fontSize: '16px' }}>{formatCurrency(lastMonth.grossProfit)}</span>
-            </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '12px', borderRadius: '6px', border: '2px solid #4caf50' }}>
-              <span style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>Lucro Líquido:</span>
-              <span style={{ fontWeight: '700', color: '#1b5e20', fontSize: '18px' }}>{formatCurrency(lastMonth.netProfit)}</span>
-            </div>
+          <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '700', color: '#2e7d32' }}>Receita Líquida:</span>
+            <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.totalRevenue - lastMonth.tax)}</span>
+          </div>
+          
+          {/* Despesas Operacionais */}
+          <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>CMV:</span>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.cmv)}</span>
+          </div>
+          <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>Perdas:</span>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.losses)}</span>
+          </div>
+          
+          {/* Lucro Bruto */}
+          <div className="breakdown-item" style={{ backgroundColor: '#e3f2fd', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '700', color: '#1565c0' }}>Lucro Bruto:</span>
+            <span style={{ fontWeight: '700', color: '#1565c0', fontSize: '16px' }}>{formatCurrency(lastMonth.grossProfit)}</span>
+          </div>
+          
+          {/* Despesas Adicionais */}
+          <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>Reposição:</span>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.reposicao)}</span>
+          </div>
+          <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>Royalties:</span>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.royalties)}</span>
+          </div>
+          <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>Outros Repasses:</span>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.otherRepasses)}</span>
+          </div>
+          <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>Taxa de Cartão:</span>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.cardFee)}</span>
+          </div>
+          <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>Marketing:</span>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.marketing)}</span>
+          </div>
+          <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>Sistema:</span>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.systemFee)}</span>
+          </div>
+          <div className="breakdown-item" style={{ backgroundColor: '#ffebee', padding: '10px', borderRadius: '6px' }}>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>Contabilidade:</span>
+            <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.accounting)}</span>
+          </div>
+          
+          {/* Lucro Líquido */}
+          <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '12px', borderRadius: '6px', border: '2px solid #4caf50' }}>
+            <span style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>Lucro Líquido:</span>
+            <span style={{ fontWeight: '700', color: '#1b5e20', fontSize: '18px' }}>{formatCurrency(lastMonth.netProfit)}</span>
           </div>
         </div>
       </div>
