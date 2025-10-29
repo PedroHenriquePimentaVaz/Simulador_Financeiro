@@ -79,9 +79,7 @@ function App() {
             <div className="hero-left">
               <div className="hero-headline">
                 <h1 className="main-title">
-                  <span className="highlight-text">ROI de 280%</span> em 5 anos
-                  <br />
-                  <span className="subtitle">Payback em apenas 20 meses</span>
+                  Simule qual seria seu Lucro investimento na franquia de mercados autônomos da <span className="highlight-text">Be Honest</span>
                 </h1>
                 
                 <div className="hero-stats">
