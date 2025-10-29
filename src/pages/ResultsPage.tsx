@@ -1,6 +1,5 @@
 import { AdvancedSimulationResult } from '../utils/advancedCalculations';
 import AdvancedResultsDisplay from '../components/AdvancedResultsDisplay';
-import InvestmentComparisonChart from '../components/InvestmentComparisonChart';
 import Footer from '../components/Footer';
 
 interface ResultsPageProps {
@@ -65,22 +64,6 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
             lucroDesejado={lucroDesejado}
             onResultsUpdate={onResultsUpdate}
           />
-          
-          <div style={{ marginTop: '40px' }}>
-            <h2 style={{
-              fontSize: '24px',
-              fontWeight: '700',
-              marginBottom: '20px',
-              textAlign: 'center',
-              color: 'white'
-            }}>
-              Comparação com Investimentos em Renda Fixa
-            </h2>
-            <InvestmentComparisonChart 
-              franchiseResults={results}
-              initialInvestment={results.totalInvestment}
-            />
-          </div>
         </div>
       </div>
       <Footer />
