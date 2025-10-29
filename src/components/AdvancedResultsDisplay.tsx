@@ -231,75 +231,17 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     mes: result.month,
     fluxoCaixa: result.cumulativeCash,
     fluxoCaixaPositivo: result.cumulativeCash >= 0 ? result.cumulativeCash : null,
-    fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null
+    fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null,
+    isFirstMonth: result.month === 1,
+    isSecondMonth: result.month === 2
   }));
 
   const lastMonth = monthlyResults[monthlyResults.length - 1];
   // const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
 
-  // Importar parâmetros
-  const behonestParams = require('../../behonest_params.json');
-
   return (
     <div className="advanced-results">
       <h3 className="results-title">Resultados da Simulação Avançada</h3>
-      
-      {/* Composição do Investimento Inicial */}
-      <div style={{
-        backgroundColor: '#fff3cd',
-        padding: '20px',
-        borderRadius: '12px',
-        marginBottom: '30px',
-        border: '2px solid #ffc107'
-      }}>
-        <h4 style={{
-          color: '#856404',
-          marginBottom: '15px',
-          fontSize: '18px',
-          fontWeight: '700',
-          textAlign: 'center'
-        }}>
-          💼 Composição do Investimento Inicial
-        </h4>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '15px'
-        }}>
-          <div style={{
-            backgroundColor: '#ffeaa7',
-            padding: '15px',
-            borderRadius: '8px',
-            border: '2px solid #fdcb6e'
-          }}>
-            <div style={{ fontWeight: '700', color: '#856404', marginBottom: '5px' }}>
-              🏢 Taxa de Franquia
-            </div>
-            <div style={{ fontSize: '20px', fontWeight: '700', color: '#856404' }}>
-              {formatCurrency(behonestParams.franchise_fee)}
-            </div>
-            <div style={{ fontSize: '12px', color: '#856404', marginTop: '5px', fontStyle: 'italic' }}>
-              Pago no Mês 1
-            </div>
-          </div>
-          <div style={{
-            backgroundColor: '#ffeaa7',
-            padding: '15px',
-            borderRadius: '8px',
-            border: '2px solid #fdcb6e'
-          }}>
-            <div style={{ fontWeight: '700', color: '#856404', marginBottom: '5px' }}>
-              🏪 Implementação da Loja
-            </div>
-            <div style={{ fontSize: '20px', fontWeight: '700', color: '#856404' }}>
-              {formatCurrency(behonestParams.capex_per_store)}
-            </div>
-            <div style={{ fontSize: '12px', color: '#856404', marginTop: '5px', fontStyle: 'italic' }}>
-              Pago no Mês 2
-            </div>
-          </div>
-        </div>
-      </div>
       
       <div className="results-summary">
         <div className="summary-card investment-card">
@@ -665,9 +607,15 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               <XAxis dataKey="mes" />
               <YAxis />
               <Tooltip 
-                formatter={(value, name) => {
+                formatter={(value, name, props) => {
                   if (name === 'Saldo Acumulado (Positivo)' || name === 'Saldo Acumulado (Negativo)') {
-                    return [formatCurrency(value as number), 'Saldo Acumulado'];
+                    let note = '';
+                    if (props.payload.mes === 1) {
+                      note = ' (Taxa de Franquia: -R$ 30.000)';
+                    } else if (props.payload.mes === 2) {
+                      note = ' (Implementação 1ª Loja: -R$ 20.000)';
+                    }
+                    return [formatCurrency(value as number) + note, 'Saldo Acumulado'];
                   }
                   return [formatCurrency(value as number), name];
                 }}
@@ -892,8 +840,19 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                   <td 
                     key={result.month}
                     className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
+                    style={{ position: 'relative' }}
                   >
-                    {formatCurrency(result.cumulativeCash)}
+                    <div>{formatCurrency(result.cumulativeCash)}</div>
+                    {result.month === 1 && (
+                      <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
+                        ⚠️ Taxa de Franquia: -R$ 30.000
+                      </div>
+                    )}
+                    {result.month === 2 && (
+                      <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
+                        ⚠️ Implementação 1ª Loja: -R$ 20.000
+                      </div>
+                    )}
                   </td>
                 ))}
               </tr>
