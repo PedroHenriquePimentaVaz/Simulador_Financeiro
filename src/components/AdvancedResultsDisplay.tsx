@@ -745,6 +745,22 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               </tr>
               
               {/* Despesas */}
+              <tr style={{ backgroundColor: '#ffebee', fontWeight: '700' }}>
+                <td><strong>- Taxa de Franquia</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '700' }}>
+                    {result.franchiseFee ? `-${formatCurrency(result.franchiseFee)}` : '-R$ 0,00'}
+                  </td>
+                ))}
+              </tr>
+              <tr style={{ backgroundColor: '#ffebee', fontWeight: '700' }}>
+                <td><strong>- Implementação Loja</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '700' }}>
+                    {result.capexPayment ? `-${formatCurrency(result.capexPayment)}` : '-R$ 0,00'}
+                  </td>
+                ))}
+              </tr>
               <tr style={{ backgroundColor: '#ffebee' }}>
                 <td><strong>- Imposto Simples</strong></td>
                 {monthlyResults.map((result) => (

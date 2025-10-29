@@ -40,6 +40,8 @@ export interface MonthlyResult {
   netProfit: number;
   cashFlow: number;
   cumulativeCash: number;
+  franchiseFee?: number;
+  capexPayment?: number;
 }
 
 export interface AdvancedSimulationResult {
@@ -194,14 +196,18 @@ export function simulate(
     
     // Fluxo de caixa com pagamentos escalonados
     let cashFlow = netProfit;
+    let franchiseFee = 0;
+    let capexPayment = 0;
     
     // Pagamentos escalonados do investimento inicial
     if (month === 1) {
       // Mês 1: paga TAXA DE FRANQUIA de R$ 30.000 (INVESTIMENTO INICIAL OBRIGATÓRIO)
-      cashFlow -= params.franchise_fee; 
+      franchiseFee = params.franchise_fee;
+      cashFlow -= franchiseFee; 
     } else if (month === 2) {
       // Mês 2: paga IMPLEMENTAÇÃO DA PRIMEIRA LOJA de R$ 20.000
-      cashFlow -= params.capex_per_store; 
+      capexPayment = params.capex_per_store;
+      cashFlow -= capexPayment; 
     } else if (month >= 3 && additionalStores > 0) {
       // Paga lojas adicionais para que abram a cada 3 meses a partir do mês 4
       // Mês 6: paga loja 1 (abre mês 7)
@@ -211,7 +217,8 @@ export function simulate(
       if (monthsSinceStart > 0 && monthsSinceStart % 3 === 1) { // Paga nos meses 6, 9, 12, 15, etc.
         const storeIndexToPay = Math.floor(monthsSinceStart / 3); // Índice da loja (0, 1, 2, ...)
         if (storeIndexToPay < additionalStores) {
-          cashFlow -= params.capex_per_store; // Paga mais uma loja (20k)
+          capexPayment = params.capex_per_store; // Paga mais uma loja (20k)
+          cashFlow -= capexPayment;
         }
       }
     }
@@ -242,7 +249,9 @@ export function simulate(
       operatingProfit,
       netProfit,
       cashFlow,
-      cumulativeCash
+      cumulativeCash,
+      franchiseFee,
+      capexPayment
     });
   }
   
