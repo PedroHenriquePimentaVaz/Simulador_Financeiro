@@ -130,13 +130,13 @@ export function simulate(
   
   for (let month = 1; month <= months; month++) {
     // Calcular quantas lojas estão operando no mês atual
-    // Mês 1: 0 lojas (paga taxa de franquia)
-    // Mês 2: 1 loja (paga implementação) - período implementação  
+    // Mês 1: 0 lojas (paga taxa de franquia de 30k) - EXPLÍCITO
+    // Mês 2: 0 lojas (paga implementação primeira loja de 20k) - período implementação  
     // Mês 3+: 1 loja operando com receita
-    // Se tem investimento para mais lojas, elas começam no mesmo mês do pagamento
+    // Lojas adicionais: começa a operar a partir do mês 7, depois a cada 3 meses
     let currentStores = 0;
-    if (month >= 2) {
-      // Primeira loja existe desde o mês 2 (após pagar implementação)
+    if (month >= 3) {
+      // Primeira loja existe desde o mês 3 (após pagar taxa + implementação)
       currentStores = 1;
       
       // Lojas adicionais: começa a operar a partir do mês 7, depois a cada 3 meses
@@ -150,13 +150,13 @@ export function simulate(
       }
     }
     
-    // Período de implementação: primeiros 2 meses sem receita
+    // Período de implementação: primeiros 2 meses sem receita (só paga custos)
     let totalRevenue = 0;
     let revenuePerStore = 0;
-    if (month > 2 && currentStores > 0) {
+    if (month >= 3 && currentStores > 0) {
       // Calcular receita com crescimento mensal (começando do mês 3) e aplicar multiplicador do cenário
       const baseRevenuePerStore = params.rev_per_store_m2;
-      const growthFactor = Math.pow(params.rev_growth_factor, month - 3); // Ajustar para começar do mês 3
+      const growthFactor = Math.pow(params.rev_growth_factor, month - 3); // Começa do mês 3
       revenuePerStore = baseRevenuePerStore * growthFactor * cenarioMultiplier;
       totalRevenue = revenuePerStore * currentStores;
     }
@@ -197,9 +197,11 @@ export function simulate(
     
     // Pagamentos escalonados do investimento inicial
     if (month === 1) {
-      cashFlow -= params.franchise_fee; // Mês 1: paga taxa de franquia (30k)
+      // Mês 1: paga TAXA DE FRANQUIA de R$ 30.000 (INVESTIMENTO INICIAL OBRIGATÓRIO)
+      cashFlow -= params.franchise_fee; 
     } else if (month === 2) {
-      cashFlow -= params.capex_per_store; // Mês 2: paga implementação primeira loja (20k)
+      // Mês 2: paga IMPLEMENTAÇÃO DA PRIMEIRA LOJA de R$ 20.000
+      cashFlow -= params.capex_per_store; 
     } else if (month >= 3 && additionalStores > 0) {
       // Paga lojas adicionais para que abram a cada 3 meses a partir do mês 4
       // Mês 6: paga loja 1 (abre mês 7)
