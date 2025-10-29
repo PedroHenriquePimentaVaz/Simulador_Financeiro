@@ -18,6 +18,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   const [showAddStoreForm, setShowAddStoreForm] = useState(false);
   const [addedStores, setAddedStores] = useState<Array<{month: number, implementationMonth: number}>>([]);
   
+  // Verificar se currentResults existe antes de processar
+  if (!currentResults || !currentResults.monthlyResults || currentResults.monthlyResults.length === 0) {
+    return <div style={{ padding: '20px', textAlign: 'center' }}>Carregando dados da simulação...</div>;
+  }
+
   const { monthlyResults, totalInvestment, paybackPeriod, roi, finalCash } = currentResults;
 
   // Calcular tempo para alcançar a renda desejada
@@ -245,10 +250,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     fluxoCaixaPositivo: result.cumulativeCash >= 0 ? result.cumulativeCash : null,
     fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null
   }));
-
-  if (!monthlyResults || monthlyResults.length === 0) {
-    return <div>Carregando dados...</div>;
-  }
 
   const lastMonth = monthlyResults[monthlyResults.length - 1];
   // const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
