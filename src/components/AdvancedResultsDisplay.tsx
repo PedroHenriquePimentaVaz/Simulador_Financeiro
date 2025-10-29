@@ -732,109 +732,106 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               </tr>
               
               {/* Receitas e Lucros */}
-              <tr style={{ backgroundColor: '#e8f5e9' }}>
+              <tr>
                 <td><strong>Receita Bruta</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ fontWeight: '600', color: '#2e7d32' }}>{formatCurrency(result.totalRevenue)}</td>
+                  <td>{formatCurrency(result.totalRevenue)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#e8f5e9' }}>
+              <tr>
                 <td><strong>Receita Líquida</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ fontWeight: '700', color: '#2e7d32' }}>{formatCurrency(result.netRevenue)}</td>
+                  <td>{formatCurrency(result.netRevenue)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#e8f5e9' }}>
+              <tr>
                 <td><strong>Lucro Bruto</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ fontWeight: '700', color: '#2e7d32' }}>{formatCurrency(result.grossProfit)}</td>
+                  <td>{formatCurrency(result.grossProfit)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#e8f5e9', border: '2px solid #4caf50' }}>
+              <tr>
                 <td><strong>Lucro Líquido</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(result.netProfit)}</td>
+                  <td>{formatCurrency(result.netProfit)}</td>
                 ))}
               </tr>
               
               {/* Todas as Despesas Agrupadas */}
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Imposto Simples</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.tax)}</td>
+                  <td>-{formatCurrency(result.tax)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>CMV</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.cmv)}</td>
+                  <td>-{formatCurrency(result.cmv)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Perdas</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.losses)}</td>
+                  <td>-{formatCurrency(result.losses)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Reposição</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.reposicao)}</td>
+                  <td>-{formatCurrency(result.reposicao)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Royalties</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.royalties)}</td>
+                  <td>-{formatCurrency(result.royalties)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Outros Repasses</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.otherRepasses)}</td>
+                  <td>-{formatCurrency(result.otherRepasses)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Taxa de Cartão</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.cardFee)}</td>
+                  <td>-{formatCurrency(result.cardFee)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Marketing</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.marketing)}</td>
+                  <td>-{formatCurrency(result.marketing)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Sistema</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.systemFee)}</td>
+                  <td>-{formatCurrency(result.systemFee)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Contabilidade</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.accounting)}</td>
+                  <td>-{formatCurrency(result.accounting)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
+              <tr>
                 <td><strong>Custos Fixos</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.fixedCosts)}</td>
+                  <td>-{formatCurrency(result.fixedCosts)}</td>
                 ))}
               </tr>
               
               {/* Saldo Acumulado */}
-              <tr style={{ backgroundColor: '#fff3e0' }}>
+              <tr>
                 <td><strong>Saldo Acumulado</strong></td>
                 {monthlyResults.map((result) => (
                   <td 
                     key={result.month}
-                    style={{ 
-                      fontWeight: '700',
-                      color: result.cumulativeCash >= 0 ? '#2e7d32' : '#c62828'
-                    }}
+                    className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
                   >
                     {formatCurrency(result.cumulativeCash)}
                   </td>
