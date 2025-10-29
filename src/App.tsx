@@ -84,16 +84,16 @@ function App() {
                 
                 <div className="hero-stats">
                   <div className="stat-card">
-                    <div className="stat-number">R$ 2.000</div>
-                    <div className="stat-label">Lucro Mensal</div>
+                    <div className="stat-number">⚡</div>
+                    <div className="stat-label">100% Automatizado</div>
                   </div>
                   <div className="stat-card">
-                    <div className="stat-number">20</div>
-                    <div className="stat-label">Meses Payback</div>
+                    <div className="stat-number">📈</div>
+                    <div className="stat-label">Alto Potencial de Crescimento</div>
                   </div>
                   <div className="stat-card">
-                    <div className="stat-number">15%</div>
-                    <div className="stat-label">Margem Líquida</div>
+                    <div className="stat-number">🤝</div>
+                    <div className="stat-label">Suporte Completo</div>
                   </div>
                 </div>
               </div>
