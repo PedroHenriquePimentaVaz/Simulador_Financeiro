@@ -253,15 +253,19 @@ export function simulate(
     }
   }
   
-  // Calcular ROI
+  // Calcular Rentabilidade Mensal Média
   const finalCash = monthlyResults[monthlyResults.length - 1].cumulativeCash;
-  const roi = ((finalCash + totalInvestment) / totalInvestment - 1) * 100;
+  
+  // Calcular lucro líquido médio dos últimos 12 meses (ou todos se menos de 12)
+  const lastMonths = monthlyResults.slice(-12);
+  const avgMonthlyProfit = lastMonths.reduce((sum, month) => sum + month.netProfit, 0) / lastMonths.length;
+  const monthlyRentability = (avgMonthlyProfit / totalInvestment) * 100;
   
   return {
     monthlyResults,
     totalInvestment,
     paybackPeriod,
-    roi,
+    roi: monthlyRentability, // Mantém nome 'roi' para compatibilidade, mas agora é rentabilidade mensal
     finalCash
   };
 }
@@ -617,13 +621,17 @@ export function addStoreToSimulation(
   }
   
   const finalCash = newMonthlyResults[newMonthlyResults.length - 1].cumulativeCash;
-  const roi = ((finalCash + newTotalInvestment) / newTotalInvestment - 1) * 100;
+  
+  // Calcular Rentabilidade Mensal Média
+  const lastMonths = newMonthlyResults.slice(-12);
+  const avgMonthlyProfit = lastMonths.reduce((sum, month) => sum + month.netProfit, 0) / lastMonths.length;
+  const monthlyRentability = (avgMonthlyProfit / newTotalInvestment) * 100;
   
   return {
     monthlyResults: newMonthlyResults,
     totalInvestment: newTotalInvestment,
     paybackPeriod,
-    roi,
+    roi: monthlyRentability,
     finalCash
   };
 }
@@ -719,13 +727,17 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
   }
   
   const finalCash = newMonthlyResults[newMonthlyResults.length - 1].cumulativeCash;
-  const roi = ((finalCash + newTotalInvestment) / newTotalInvestment - 1) * 100;
+  
+  // Calcular Rentabilidade Mensal Média
+  const lastMonths = newMonthlyResults.slice(-12);
+  const avgMonthlyProfit = lastMonths.reduce((sum, month) => sum + month.netProfit, 0) / lastMonths.length;
+  const monthlyRentability = (avgMonthlyProfit / newTotalInvestment) * 100;
   
   return {
     monthlyResults: newMonthlyResults,
     totalInvestment: newTotalInvestment,
     paybackPeriod,
-    roi,
+    roi: monthlyRentability,
     finalCash
   };
 }

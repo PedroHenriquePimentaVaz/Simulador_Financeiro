@@ -96,7 +96,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     doc.setFontSize(9); // Reduzido de 10 para 9
     doc.text(`• Investimento Total: ${formatCurrency(totalInvestment)}`, margin, 36); // Reduzido de 48 para 36
     doc.text(`• Saldo Final: ${formatCurrency(finalCash)}`, margin, 42); // Reduzido de 54 para 42
-    doc.text(`• ROI: ${formatPercentage(roi)}`, margin, 48); // Reduzido de 60 para 48
+    doc.text(`• Rentabilidade Mensal: ${formatPercentage(roi)}`, margin, 48); // Reduzido de 60 para 48
     doc.text(`• Payback: ${paybackPeriod > 0 ? paybackPeriod + ' meses' : 'Não alcançado'}`, margin, 54); // Reduzido de 66 para 54
     
     // Métricas para a tabela
@@ -268,9 +268,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         <div className="summary-card roi-card">
           <div className="card-icon">🎯</div>
           <div className="card-content">
-            <h4>ROI</h4>
+            <h4>Rentabilidade Mensal</h4>
             <p className="summary-value positive">{formatPercentage(roi)}</p>
-            <span className="card-period">5 Anos</span>
+            <span className="card-period">Média</span>
           </div>
         </div>
         
