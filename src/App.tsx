@@ -80,6 +80,8 @@ function App() {
               <div className="hero-headline">
                 <h1 className="main-title">
                   Simule qual seria seu Lucro investimento na franquia de mercados autônomos da <span className="highlight-text">Be Honest</span>
+                  <br />
+                  <span className="subtitle">Payback de 18 a 22 meses</span>
                 </h1>
                 
                 <div className="hero-stats">
