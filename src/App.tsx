@@ -84,8 +84,8 @@ function App() {
                 
                 <div className="hero-stats">
                   <div className="stat-card">
-                    <div className="stat-number">280%</div>
-                    <div className="stat-label">ROI Médio</div>
+                    <div className="stat-number">R$ 2.000</div>
+                    <div className="stat-label">Lucro Mensal</div>
                   </div>
                   <div className="stat-card">
                     <div className="stat-number">20</div>
