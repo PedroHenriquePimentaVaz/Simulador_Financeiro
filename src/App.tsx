@@ -70,7 +70,7 @@ function App() {
           {/* Logo e Brand */}
           <div className="hero-logo-container" style={{ cursor: 'pointer' }} onClick={() => window.location.reload()}>
             <img src="/behonest-logo.png" alt="BeHonest Logo" className="hero-logo" />
-            <div className="hero-brand-name">BeHonest</div>
+            <div className="hero-brand-name">Be <span>Honest</span></div>
           </div>
 
           {/* Main Content Grid */}

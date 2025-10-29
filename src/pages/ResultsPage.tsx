@@ -21,7 +21,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
           <div className="results-header">
             <div className="results-logo-container" style={{ cursor: 'pointer' }} onClick={onNewSimulation}>
               <img src="/behonest-logo.png" alt="BeHonest Logo" className="results-logo" />
-              <div className="results-brand-name">BeHonest</div>
+              <div className="results-brand-name">Be <span>Honest</span></div>
             </div>
             
             <div className="results-actions">
