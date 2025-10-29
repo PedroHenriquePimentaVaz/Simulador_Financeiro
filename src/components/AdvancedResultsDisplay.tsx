@@ -246,6 +246,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null
   }));
 
+  if (!monthlyResults || monthlyResults.length === 0) {
+    return <div>Carregando dados...</div>;
+  }
+
   const lastMonth = monthlyResults[monthlyResults.length - 1];
   // const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
 
@@ -387,18 +391,24 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             border: '2px solid #ef5350'
           }}>
             {/* Mostrar Taxa de Franquia apenas se foi paga */}
-            {monthlyResults.some(r => r.franchiseFee) && monthlyResults.find(r => r.franchiseFee) && (
-              <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px', border: '2px solid #d32f2f' }}>
-                <span style={{ fontWeight: '700', color: '#d32f2f', fontSize: '14px' }}>(-) Taxa de Franquia (Mês 1):</span>
-                <span style={{ fontWeight: '700', color: '#d32f2f', fontSize: '14px' }}>-{formatCurrency(monthlyResults.find(r => r.franchiseFee)!.franchiseFee!)}</span>
-              </div>
-            )}
-            {monthlyResults.some(r => r.capexStore) && monthlyResults.find(r => r.capexStore && r.month <= lastMonth.month) && (
-              <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-                <span style={{ fontWeight: '600', color: '#c62828' }}>(-) CAPEX Implementação de Loja:</span>
-                <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(monthlyResults.filter(r => r.capexStore).reduce((sum, r) => sum + (r.capexStore || 0), 0))}</span>
-              </div>
-            )}
+            {(() => {
+              const franchiseFeeMonth = monthlyResults.find(r => r.franchiseFee);
+              return franchiseFeeMonth && franchiseFeeMonth.franchiseFee ? (
+                <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px', border: '2px solid #d32f2f' }}>
+                  <span style={{ fontWeight: '700', color: '#d32f2f', fontSize: '14px' }}>(-) Taxa de Franquia (Mês 1):</span>
+                  <span style={{ fontWeight: '700', color: '#d32f2f', fontSize: '14px' }}>-{formatCurrency(franchiseFeeMonth.franchiseFee)}</span>
+                </div>
+              ) : null;
+            })()}
+            {(() => {
+              const capexTotal = monthlyResults.filter(r => r.capexStore).reduce((sum, r) => sum + (r.capexStore || 0), 0);
+              return capexTotal > 0 ? (
+                <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
+                  <span style={{ fontWeight: '600', color: '#c62828' }}>(-) CAPEX Implementação de Loja:</span>
+                  <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(capexTotal)}</span>
+                </div>
+              ) : null;
+            })()}
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Imposto Simples:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.tax)}</span>
