@@ -40,8 +40,8 @@ export interface MonthlyResult {
   netProfit: number;
   cashFlow: number;
   cumulativeCash: number;
-  franchiseFee?: number; // Taxa de franquia paga no mês 1
-  capexStore?: number; // CAPEX da loja pago (implementação)
+  franchiseFee?: number;
+  capexStore?: number;
 }
 
 export interface AdvancedSimulationResult {
@@ -138,7 +138,7 @@ export function simulate(
     // Se tem investimento para mais lojas, elas começam no mesmo mês do pagamento
     let currentStores = 0;
     if (month >= 3) {
-      // Primeira loja começa a operar apenas no mês 3
+      // Primeira loja começa a operar no mês 3
       currentStores = 1;
       
       // Lojas adicionais: começa a operar a partir do mês 7, depois a cada 3 meses
@@ -248,7 +248,7 @@ export function simulate(
       netProfit,
       cashFlow,
       cumulativeCash,
-      franchiseFee: franchiseFee > 0 ? franchiseFee : undefined,
+      franchiseFee: month === 1 ? franchiseFee : undefined,
       capexStore: capexStore > 0 ? capexStore : undefined
     });
   }
@@ -587,12 +587,10 @@ export function addStoreToSimulation(
     
     // Calcular fluxo de caixa
     let cashFlow = netProfit;
-    let capexStore = 0;
     
     // Se for o mês em que a loja é adicionada, subtrair R$ 20.000 do fluxo de caixa
     if (i === monthToAdd - 1) {
-      capexStore = 20000;
-      cashFlow -= capexStore;
+      cashFlow -= 20000;
     }
     
     const cumulativeCash = previousResult ? previousResult.cumulativeCash + cashFlow : cashFlow;
@@ -618,8 +616,7 @@ export function addStoreToSimulation(
       operatingProfit,
       netProfit,
       cashFlow,
-      cumulativeCash,
-      capexStore: capexStore > 0 ? capexStore : undefined
+      cumulativeCash
     };
   }
   

@@ -18,11 +18,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   const [showAddStoreForm, setShowAddStoreForm] = useState(false);
   const [addedStores, setAddedStores] = useState<Array<{month: number, implementationMonth: number}>>([]);
   
-  // Verificar se currentResults existe antes de processar
+  // Verificação de segurança para evitar tela branca
   if (!currentResults || !currentResults.monthlyResults || currentResults.monthlyResults.length === 0) {
-    return <div style={{ padding: '20px', textAlign: 'center' }}>Carregando dados da simulação...</div>;
+    return <div style={{ padding: '20px', textAlign: 'center', color: '#001c54' }}>Carregando dados da simulação...</div>;
   }
-
+  
   const { monthlyResults, totalInvestment, paybackPeriod, roi, finalCash } = currentResults;
 
   // Calcular tempo para alcançar a renda desejada
@@ -109,6 +109,8 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       { key: 'stores', label: 'Lojas', formatter: (v: number) => v.toString() },
       { key: 'totalRevenue', label: 'Receita Bruta', formatter: formatCurrency },
       { key: 'totalRevenue-tax', label: 'Receita Líquida', formatter: (r: MonthlyResult) => formatCurrency(r.totalRevenue - r.tax), isCalculated: true },
+      { key: 'franchiseFee', label: '🏷️ (-) Taxa de Franquia (Mês 1)', formatter: (v: number | undefined) => v ? '-' + formatCurrency(v) : '', isOptional: true },
+      { key: 'capexStore', label: '(-) CAPEX Implementação de Loja', formatter: (v: number | undefined) => v ? '-' + formatCurrency(v) : '', isOptional: true },
       { key: 'tax', label: '(-) Imposto Simples', formatter: (v: number) => '-' + formatCurrency(v) },
       { key: 'cmv', label: '(-) CMV', formatter: (v: number) => '-' + formatCurrency(v) },
       { key: 'losses', label: '(-) Perdas', formatter: (v: number) => '-' + formatCurrency(v) },
@@ -160,6 +162,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           if ((metric as any).isCalculated && metric.key === 'totalRevenue-tax') {
             // Receita Líquida calculada
             row.push(metric.formatter ? (metric.formatter as (r: MonthlyResult) => string)(result) : '');
+          } else if ((metric as any).isOptional) {
+            // Métricas opcionais (franchiseFee, capexStore)
+            const value = (result as any)[metric.key];
+            row.push(metric.formatter ? metric.formatter(value) : '');
           } else {
             const value = (result as any)[metric.key];
             row.push(metric.formatter ? metric.formatter(value) : value.toString());
@@ -391,25 +397,28 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             borderRadius: '10px',
             border: '2px solid #ef5350'
           }}>
-            {/* Mostrar Taxa de Franquia apenas se foi paga */}
+            {/* Taxa de Franquia - destacada no topo */}
             {(() => {
               const franchiseFeeMonth = monthlyResults.find(r => r.franchiseFee);
               return franchiseFeeMonth && franchiseFeeMonth.franchiseFee ? (
-                <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px', border: '2px solid #d32f2f' }}>
-                  <span style={{ fontWeight: '700', color: '#d32f2f', fontSize: '14px' }}>(-) Taxa de Franquia (Mês 1):</span>
-                  <span style={{ fontWeight: '700', color: '#d32f2f', fontSize: '14px' }}>-{formatCurrency(franchiseFeeMonth.franchiseFee)}</span>
+                <div className="breakdown-item" style={{ 
+                  padding: '12px', 
+                  borderRadius: '8px', 
+                  backgroundColor: '#d32f2f',
+                  border: '3px solid #b71c1c',
+                  marginBottom: '10px',
+                  boxShadow: '0 2px 8px rgba(211, 47, 47, 0.3)'
+                }}>
+                  <span style={{ fontWeight: '700', color: '#ffffff', fontSize: '16px' }}>
+                    🏷️ Taxa de Franquia (Mês 1):
+                  </span>
+                  <span style={{ fontWeight: '700', color: '#ffffff', fontSize: '18px' }}>
+                    -{formatCurrency(franchiseFeeMonth.franchiseFee)}
+                  </span>
                 </div>
               ) : null;
             })()}
-            {(() => {
-              const capexTotal = monthlyResults.filter(r => r.capexStore).reduce((sum, r) => sum + (r.capexStore || 0), 0);
-              return capexTotal > 0 ? (
-                <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-                  <span style={{ fontWeight: '600', color: '#c62828' }}>(-) CAPEX Implementação de Loja:</span>
-                  <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(capexTotal)}</span>
-                </div>
-              ) : null;
-            })()}
+            
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Imposto Simples:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.tax)}</span>
@@ -783,10 +792,12 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               
               {/* Investimentos Iniciais */}
               {monthlyResults.some(r => r.franchiseFee) && (
-                <tr>
-                  <td><strong>(-) Taxa de Franquia (Mês 1)</strong></td>
+                <tr style={{ backgroundColor: '#ffcdd2' }}>
+                  <td><strong style={{ color: '#b71c1c', fontSize: '16px' }}>🏷️ (-) Taxa de Franquia (Mês 1)</strong></td>
                   {monthlyResults.map((result) => (
-                    <td key={result.month}>{result.franchiseFee ? '-' + formatCurrency(result.franchiseFee) : ''}</td>
+                    <td key={result.month} style={{ fontWeight: '700', color: '#b71c1c' }}>
+                      {result.franchiseFee ? '-' + formatCurrency(result.franchiseFee) : ''}
+                    </td>
                   ))}
                 </tr>
               )}
@@ -794,7 +805,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 <tr>
                   <td><strong>(-) CAPEX Implementação de Loja</strong></td>
                   {monthlyResults.map((result) => (
-                    <td key={result.month}>{result.capexStore ? '-' + formatCurrency(result.capexStore) : ''}</td>
+                    <td key={result.month}>
+                      {result.capexStore ? '-' + formatCurrency(result.capexStore) : ''}
+                    </td>
                   ))}
                 </tr>
               )}
