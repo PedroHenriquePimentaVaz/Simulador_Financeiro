@@ -905,8 +905,7 @@ svg text, svg tspan {
   color: #001c54;
   font-size: 14px;
   text-align: right;
-  word-break: break-word;
-  overflow-wrap: break-word;
+  white-space: nowrap;
 }
 
 .breakdown-item .highlight {
@@ -1700,6 +1699,7 @@ svg text, svg tspan {
 .breakdown-item span:last-child {
   font-weight: 600;
   color: #001c54;
+  white-space: nowrap;
 }
 
 .breakdown-item .highlight {
@@ -1760,6 +1760,7 @@ svg text, svg tspan {
 
 .monthly-table td {
   color: #333;
+  white-space: nowrap;
 }
 
 .monthly-table .positive {
