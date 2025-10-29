@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { AdvancedSimulationResult, formatCurrency, formatPercentage, canAddStore, addStoreToSimulation } from '../utils/advancedCalculations';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -229,12 +229,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
 
   const chartData = monthlyResults.map(result => ({
     mes: result.month,
-    receita: result.totalRevenue,
-    lucroLiquido: result.netProfit,
     fluxoCaixa: result.cumulativeCash,
     fluxoCaixaPositivo: result.cumulativeCash >= 0 ? result.cumulativeCash : null,
-    fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null,
-    lojas: result.stores
+    fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null
   }));
 
   const lastMonth = monthlyResults[monthlyResults.length - 1];
@@ -601,51 +598,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
 
       <div className="charts-section">
         <div className="chart-container">
-          <h4>Evolução Mensal</h4>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="mes" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip 
-                formatter={(value, name) => {
-                  if (name === 'Número de Lojas') {
-                    return [value, name];
-                  }
-                  return [formatCurrency(value as number), name];
-                }}
-                labelFormatter={(label) => `Mês ${label}`}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="receita" 
-                stroke="#ff9800" 
-                strokeWidth={2}
-                name="Receita"
-                yAxisId="left"
-              />
-              <Line 
-                type="monotone" 
-                dataKey="lucroLiquido" 
-                stroke="#4caf50" 
-                strokeWidth={2}
-                name="Lucro Líquido"
-                yAxisId="left"
-              />
-              <Line 
-                type="monotone" 
-                dataKey="lojas" 
-                stroke="#2196f3" 
-                strokeWidth={2}
-                name="Número de Lojas"
-                yAxisId="right"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="chart-container">
           <h4>Fluxo de Caixa Acumulado</h4>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
@@ -680,22 +632,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 connectNulls={false}
               />
             </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="chart-container">
-          <h4>Número de Lojas</h4>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="mes" />
-              <YAxis />
-              <Tooltip 
-                formatter={(value, name) => [value, name]}
-                labelFormatter={(label) => `Mês ${label}`}
-              />
-              <Bar dataKey="lojas" fill="#ff9800" name="Lojas" />
-            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
