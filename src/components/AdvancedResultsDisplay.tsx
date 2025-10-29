@@ -386,6 +386,19 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             borderRadius: '10px',
             border: '2px solid #ef5350'
           }}>
+            {/* Mostrar Taxa de Franquia apenas se foi paga */}
+            {monthlyResults.some(r => r.franchiseFee) && monthlyResults.find(r => r.franchiseFee) && (
+              <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px', border: '2px solid #d32f2f' }}>
+                <span style={{ fontWeight: '700', color: '#d32f2f', fontSize: '14px' }}>(-) Taxa de Franquia (Mês 1):</span>
+                <span style={{ fontWeight: '700', color: '#d32f2f', fontSize: '14px' }}>-{formatCurrency(monthlyResults.find(r => r.franchiseFee)!.franchiseFee!)}</span>
+              </div>
+            )}
+            {monthlyResults.some(r => r.capexStore) && monthlyResults.find(r => r.capexStore && r.month <= lastMonth.month) && (
+              <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
+                <span style={{ fontWeight: '600', color: '#c62828' }}>(-) CAPEX Implementação de Loja:</span>
+                <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(monthlyResults.filter(r => r.capexStore).reduce((sum, r) => sum + (r.capexStore || 0), 0))}</span>
+              </div>
+            )}
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Imposto Simples:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>-{formatCurrency(lastMonth.tax)}</span>
@@ -756,6 +769,24 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                   <td key={result.month}>{formatCurrency(result.totalRevenue - result.tax)}</td>
                 ))}
               </tr>
+              
+              {/* Investimentos Iniciais */}
+              {monthlyResults.some(r => r.franchiseFee) && (
+                <tr>
+                  <td><strong>(-) Taxa de Franquia (Mês 1)</strong></td>
+                  {monthlyResults.map((result) => (
+                    <td key={result.month}>{result.franchiseFee ? '-' + formatCurrency(result.franchiseFee) : ''}</td>
+                  ))}
+                </tr>
+              )}
+              {monthlyResults.some(r => r.capexStore) && (
+                <tr>
+                  <td><strong>(-) CAPEX Implementação de Loja</strong></td>
+                  {monthlyResults.map((result) => (
+                    <td key={result.month}>{result.capexStore ? '-' + formatCurrency(result.capexStore) : ''}</td>
+                  ))}
+                </tr>
+              )}
               
               {/* Despesas */}
               <tr>
