@@ -744,92 +744,92 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               </tr>
               
               {/* Receitas */}
-              <tr style={{ backgroundColor: '#e8f5e9' }}>
-                <td><strong style={{ color: '#2e7d32' }}>Receita Bruta</strong></td>
+              <tr>
+                <td><strong>Receita Bruta</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#2e7d32', fontWeight: '600' }}>{formatCurrency(result.totalRevenue)}</td>
+                  <td key={result.month}>{formatCurrency(result.totalRevenue)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#e8f5e9' }}>
-                <td><strong style={{ color: '#2e7d32' }}>Receita Líquida</strong></td>
+              <tr>
+                <td><strong>Receita Líquida</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#2e7d32', fontWeight: '600' }}>{formatCurrency(result.totalRevenue - result.tax)}</td>
+                  <td key={result.month}>{formatCurrency(result.totalRevenue - result.tax)}</td>
                 ))}
               </tr>
               
               {/* Despesas */}
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) Imposto Simples</strong></td>
+              <tr>
+                <td><strong>(-) Imposto Simples</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.tax)}</td>
+                  <td key={result.month}>-{formatCurrency(result.tax)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) CMV</strong></td>
+              <tr>
+                <td><strong>(-) CMV</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.cmv)}</td>
+                  <td key={result.month}>-{formatCurrency(result.cmv)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) Perdas</strong></td>
+              <tr>
+                <td><strong>(-) Perdas</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.losses)}</td>
+                  <td key={result.month}>-{formatCurrency(result.losses)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) Reposição</strong></td>
+              <tr>
+                <td><strong>(-) Reposição</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.reposicao)}</td>
+                  <td key={result.month}>-{formatCurrency(result.reposicao)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) Royalties</strong></td>
+              <tr>
+                <td><strong>(-) Royalties</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.royalties)}</td>
+                  <td key={result.month}>-{formatCurrency(result.royalties)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) Outros Repasses</strong></td>
+              <tr>
+                <td><strong>(-) Outros Repasses</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.otherRepasses)}</td>
+                  <td key={result.month}>-{formatCurrency(result.otherRepasses)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) Taxa de Cartão</strong></td>
+              <tr>
+                <td><strong>(-) Taxa de Cartão</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.cardFee)}</td>
+                  <td key={result.month}>-{formatCurrency(result.cardFee)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) Marketing</strong></td>
+              <tr>
+                <td><strong>(-) Marketing</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.marketing)}</td>
+                  <td key={result.month}>-{formatCurrency(result.marketing)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) Sistema</strong></td>
+              <tr>
+                <td><strong>(-) Sistema</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.systemFee)}</td>
+                  <td key={result.month}>-{formatCurrency(result.systemFee)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#ffebee' }}>
-                <td><strong style={{ color: '#c62828' }}>(-) Contabilidade</strong></td>
+              <tr>
+                <td><strong>(-) Contabilidade</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.accounting)}</td>
+                  <td key={result.month}>-{formatCurrency(result.accounting)}</td>
                 ))}
               </tr>
               
               {/* Lucros */}
-              <tr style={{ backgroundColor: '#e3f2fd' }}>
-                <td><strong style={{ color: '#1565c0' }}>= Lucro Bruto</strong></td>
+              <tr>
+                <td><strong>= Lucro Bruto</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#1565c0', fontWeight: '700' }}>{formatCurrency(result.grossProfit)}</td>
+                  <td key={result.month}>{formatCurrency(result.grossProfit)}</td>
                 ))}
               </tr>
-              <tr style={{ backgroundColor: '#e8f5e9', borderTop: '2px solid #4caf50' }}>
-                <td><strong style={{ color: '#1b5e20', fontSize: '16px' }}>= Lucro Líquido</strong></td>
+              <tr>
+                <td><strong>= Lucro Líquido</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month} style={{ color: '#1b5e20', fontWeight: '700', fontSize: '16px' }}>{formatCurrency(result.netProfit)}</td>
+                  <td key={result.month}>{formatCurrency(result.netProfit)}</td>
                 ))}
               </tr>
               
