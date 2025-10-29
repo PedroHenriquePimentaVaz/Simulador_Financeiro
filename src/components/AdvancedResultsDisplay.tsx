@@ -761,67 +761,67 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               <tr>
                 <td><strong>Imposto Simples</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.tax)}</td>
+                  <td>{formatCurrency(-result.tax)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>CMV</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.cmv)}</td>
+                  <td>{formatCurrency(-result.cmv)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>Perdas</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.losses)}</td>
+                  <td>{formatCurrency(-result.losses)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>Reposição</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.reposicao)}</td>
+                  <td>{formatCurrency(-result.reposicao)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>Royalties</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.royalties)}</td>
+                  <td>{formatCurrency(-result.royalties)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>Outros Repasses</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.otherRepasses)}</td>
+                  <td>{formatCurrency(-result.otherRepasses)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>Taxa de Cartão</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.cardFee)}</td>
+                  <td>{formatCurrency(-result.cardFee)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>Marketing</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.marketing)}</td>
+                  <td>{formatCurrency(-result.marketing)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>Sistema</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.systemFee)}</td>
+                  <td>{formatCurrency(-result.systemFee)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>Contabilidade</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.accounting)}</td>
+                  <td>{formatCurrency(-result.accounting)}</td>
                 ))}
               </tr>
               <tr>
                 <td><strong>Custos Fixos</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>-{formatCurrency(result.fixedCosts)}</td>
+                  <td>{formatCurrency(-result.fixedCosts)}</td>
                 ))}
               </tr>
               
