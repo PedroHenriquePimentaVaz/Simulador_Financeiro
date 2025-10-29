@@ -739,19 +739,27 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 ))}
               </tr>
               <tr style={{ backgroundColor: '#e8f5e9' }}>
-                <td><strong>Imposto Simples</strong></td>
-                {monthlyResults.map((result) => (
-                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.tax)}</td>
-                ))}
-              </tr>
-              <tr style={{ backgroundColor: '#e8f5e9' }}>
                 <td><strong>Receita Líquida</strong></td>
                 {monthlyResults.map((result) => (
                   <td style={{ fontWeight: '700', color: '#2e7d32' }}>{formatCurrency(result.netRevenue)}</td>
                 ))}
               </tr>
               
-              {/* Despesas Operacionais */}
+              {/* Lucro Bruto */}
+              <tr style={{ backgroundColor: '#e3f2fd' }}>
+                <td><strong>Lucro Bruto</strong></td>
+                {monthlyResults.map((result) => (
+                  <td style={{ fontWeight: '700', color: '#1565c0' }}>{formatCurrency(result.grossProfit)}</td>
+                ))}
+              </tr>
+              
+              {/* Todas as Despesas Agrupadas */}
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong>Imposto Simples</strong></td>
+                {monthlyResults.map((result) => (
+                  <td style={{ color: '#c62828' }}>-{formatCurrency(result.tax)}</td>
+                ))}
+              </tr>
               <tr style={{ backgroundColor: '#ffebee' }}>
                 <td><strong>CMV</strong></td>
                 {monthlyResults.map((result) => (
@@ -764,16 +772,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                   <td style={{ color: '#c62828' }}>-{formatCurrency(result.losses)}</td>
                 ))}
               </tr>
-              
-              {/* Lucro Bruto */}
-              <tr style={{ backgroundColor: '#e3f2fd' }}>
-                <td><strong>Lucro Bruto</strong></td>
-                {monthlyResults.map((result) => (
-                  <td style={{ fontWeight: '700', color: '#1565c0' }}>{formatCurrency(result.grossProfit)}</td>
-                ))}
-              </tr>
-              
-              {/* Despesas Operacionais Detalhadas */}
               <tr style={{ backgroundColor: '#ffebee' }}>
                 <td><strong>Reposição</strong></td>
                 {monthlyResults.map((result) => (
