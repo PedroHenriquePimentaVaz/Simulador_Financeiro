@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { AdvancedSimulationResult, formatCurrency, formatPercentage, canAddStore, addStoreToSimulation } from '../utils/advancedCalculations';
+import { AdvancedSimulationResult, MonthlyResult, formatCurrency, formatPercentage, canAddStore, addStoreToSimulation } from '../utils/advancedCalculations';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -99,16 +99,23 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     doc.text(`• Rentabilidade Mensal: ${formatPercentage(roi)}`, margin, 48); // Reduzido de 60 para 48
     doc.text(`• Payback: ${paybackPeriod > 0 ? paybackPeriod + ' meses' : 'Não alcançado'}`, margin, 54); // Reduzido de 66 para 54
     
-    // Métricas para a tabela
+    // Métricas para a tabela seguindo a lógica da DRE
     const metrics = [
-      { key: 'stores', label: 'Lojas' },
-      { key: 'totalRevenue', label: 'Receita Total', formatter: formatCurrency },
-      { key: 'grossProfit', label: 'Lucro Bruto', formatter: formatCurrency },
-      { key: 'netProfit', label: 'Lucro Líquido', formatter: formatCurrency },
-      { key: 'tax', label: 'Impostos', formatter: formatCurrency },
-      { key: 'cmv', label: 'CMV', formatter: formatCurrency },
-      { key: 'royalties', label: 'Royalties', formatter: formatCurrency },
-      { key: 'marketing', label: 'Marketing', formatter: formatCurrency },
+      { key: 'stores', label: 'Lojas', formatter: (v: number) => v.toString() },
+      { key: 'totalRevenue', label: 'Receita Bruta', formatter: formatCurrency },
+      { key: 'totalRevenue-tax', label: 'Receita Líquida', formatter: (r: MonthlyResult) => formatCurrency(r.totalRevenue - r.tax), isCalculated: true },
+      { key: 'tax', label: '(-) Imposto Simples', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'cmv', label: '(-) CMV', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'losses', label: '(-) Perdas', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'reposicao', label: '(-) Reposição', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'royalties', label: '(-) Royalties', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'otherRepasses', label: '(-) Outros Repasses', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'cardFee', label: '(-) Taxa de Cartão', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'marketing', label: '(-) Marketing', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'systemFee', label: '(-) Sistema', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'accounting', label: '(-) Contabilidade', formatter: (v: number) => '-' + formatCurrency(v) },
+      { key: 'grossProfit', label: '= Lucro Bruto', formatter: formatCurrency },
+      { key: 'netProfit', label: '= Lucro Líquido', formatter: formatCurrency },
       { key: 'cumulativeCash', label: 'Saldo Acumulado', formatter: formatCurrency }
     ];
     
@@ -145,8 +152,13 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       metrics.forEach(metric => {
         const row = [metric.label];
         yearData.months.forEach(result => {
-          const value = (result as any)[metric.key];
-          row.push(metric.formatter ? metric.formatter(value) : value.toString());
+          if ((metric as any).isCalculated && metric.key === 'totalRevenue-tax') {
+            // Receita Líquida calculada
+            row.push(metric.formatter ? (metric.formatter as (r: MonthlyResult) => string)(result) : '');
+          } else {
+            const value = (result as any)[metric.key];
+            row.push(metric.formatter ? metric.formatter(value) : value.toString());
+          }
         });
         tableData.push(row);
       });
@@ -723,60 +735,112 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               </tr>
             </thead>
             <tbody>
+              {/* Informações Gerais */}
               <tr>
                 <td><strong>Lojas</strong></td>
                 {monthlyResults.map((result) => (
                   <td key={result.month}>{result.stores}</td>
                 ))}
               </tr>
-              <tr>
-                <td><strong>Receita</strong></td>
+              
+              {/* Receitas */}
+              <tr style={{ backgroundColor: '#e8f5e9' }}>
+                <td><strong style={{ color: '#2e7d32' }}>Receita Bruta</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month}>{formatCurrency(result.totalRevenue)}</td>
+                  <td key={result.month} style={{ color: '#2e7d32', fontWeight: '600' }}>{formatCurrency(result.totalRevenue)}</td>
                 ))}
               </tr>
-              <tr>
-                <td><strong>Lucro Bruto</strong></td>
+              <tr style={{ backgroundColor: '#e8f5e9' }}>
+                <td><strong style={{ color: '#2e7d32' }}>Receita Líquida</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month}>{formatCurrency(result.grossProfit)}</td>
+                  <td key={result.month} style={{ color: '#2e7d32', fontWeight: '600' }}>{formatCurrency(result.totalRevenue - result.tax)}</td>
                 ))}
               </tr>
-              <tr>
-                <td><strong>Lucro Líquido</strong></td>
+              
+              {/* Despesas */}
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) Imposto Simples</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month}>{formatCurrency(result.netProfit)}</td>
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.tax)}</td>
                 ))}
               </tr>
-              <tr>
-                <td><strong>Impostos</strong></td>
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) CMV</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month}>{formatCurrency(result.tax)}</td>
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.cmv)}</td>
                 ))}
               </tr>
-              <tr>
-                <td><strong>CMV</strong></td>
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) Perdas</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month}>{formatCurrency(result.cmv)}</td>
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.losses)}</td>
                 ))}
               </tr>
-              <tr>
-                <td><strong>Royalties</strong></td>
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) Reposição</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month}>{formatCurrency(result.royalties)}</td>
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.reposicao)}</td>
                 ))}
               </tr>
-              <tr>
-                <td><strong>Marketing</strong></td>
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) Royalties</strong></td>
                 {monthlyResults.map((result) => (
-                  <td key={result.month}>{formatCurrency(result.marketing)}</td>
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.royalties)}</td>
                 ))}
               </tr>
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) Outros Repasses</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.otherRepasses)}</td>
+                ))}
+              </tr>
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) Taxa de Cartão</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.cardFee)}</td>
+                ))}
+              </tr>
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) Marketing</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.marketing)}</td>
+                ))}
+              </tr>
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) Sistema</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.systemFee)}</td>
+                ))}
+              </tr>
+              <tr style={{ backgroundColor: '#ffebee' }}>
+                <td><strong style={{ color: '#c62828' }}>(-) Contabilidade</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month} style={{ color: '#c62828', fontWeight: '600' }}>-{formatCurrency(result.accounting)}</td>
+                ))}
+              </tr>
+              
+              {/* Lucros */}
+              <tr style={{ backgroundColor: '#e3f2fd' }}>
+                <td><strong style={{ color: '#1565c0' }}>= Lucro Bruto</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month} style={{ color: '#1565c0', fontWeight: '700' }}>{formatCurrency(result.grossProfit)}</td>
+                ))}
+              </tr>
+              <tr style={{ backgroundColor: '#e8f5e9', borderTop: '2px solid #4caf50' }}>
+                <td><strong style={{ color: '#1b5e20', fontSize: '16px' }}>= Lucro Líquido</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month} style={{ color: '#1b5e20', fontWeight: '700', fontSize: '16px' }}>{formatCurrency(result.netProfit)}</td>
+                ))}
+              </tr>
+              
+              {/* Saldo Acumulado */}
               <tr>
                 <td><strong>Saldo Acumulado</strong></td>
                 {monthlyResults.map((result) => (
                   <td 
                     key={result.month} 
                     className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
+                    style={{ fontWeight: '600' }}
                   >
                     {formatCurrency(result.cumulativeCash)}
                   </td>
