@@ -731,7 +731,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 ))}
               </tr>
               
-              {/* Receitas */}
+              {/* Receitas e Lucros */}
               <tr style={{ backgroundColor: '#e8f5e9' }}>
                 <td><strong>Receita Bruta</strong></td>
                 {monthlyResults.map((result) => (
@@ -744,12 +744,16 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                   <td style={{ fontWeight: '700', color: '#2e7d32' }}>{formatCurrency(result.netRevenue)}</td>
                 ))}
               </tr>
-              
-              {/* Lucro Bruto */}
-              <tr style={{ backgroundColor: '#e3f2fd' }}>
+              <tr style={{ backgroundColor: '#e8f5e9' }}>
                 <td><strong>Lucro Bruto</strong></td>
                 {monthlyResults.map((result) => (
-                  <td style={{ fontWeight: '700', color: '#1565c0' }}>{formatCurrency(result.grossProfit)}</td>
+                  <td style={{ fontWeight: '700', color: '#2e7d32' }}>{formatCurrency(result.grossProfit)}</td>
+                ))}
+              </tr>
+              <tr style={{ backgroundColor: '#e8f5e9', border: '2px solid #4caf50' }}>
+                <td><strong>Lucro Líquido</strong></td>
+                {monthlyResults.map((result) => (
+                  <td style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(result.netProfit)}</td>
                 ))}
               </tr>
               
@@ -818,14 +822,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 <td><strong>Custos Fixos</strong></td>
                 {monthlyResults.map((result) => (
                   <td style={{ color: '#c62828' }}>-{formatCurrency(result.fixedCosts)}</td>
-                ))}
-              </tr>
-              
-              {/* Lucro Líquido */}
-              <tr style={{ backgroundColor: '#e8f5e9', border: '2px solid #4caf50' }}>
-                <td><strong>Lucro Líquido</strong></td>
-                {monthlyResults.map((result) => (
-                  <td style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(result.netProfit)}</td>
                 ))}
               </tr>
               
