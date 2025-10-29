@@ -817,17 +817,20 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               {/* Saldo Acumulado */}
               <tr style={{ backgroundColor: '#fff3e0', fontWeight: '700' }}>
                 <td><strong>Saldo Acumulado</strong></td>
-                {monthlyResults.map((result) => (
-                  <td 
-                    key={result.month} 
-                    style={{ 
-                      fontWeight: '700',
-                      color: result.cumulativeCash >= 0 ? '#2e7d32' : '#c62828'
-                    }}
-                  >
-                    {formatCurrency(result.cumulativeCash)}
-                  </td>
-                ))}
+                {monthlyResults.map((result) => {
+                  const formattedValue = formatCurrency(Math.abs(result.cumulativeCash));
+                  return (
+                    <td 
+                      key={result.month} 
+                      style={{ 
+                        fontWeight: '700',
+                        color: result.cumulativeCash >= 0 ? '#2e7d32' : '#c62828'
+                      }}
+                    >
+                      {result.cumulativeCash < 0 ? '-' : ''}{formattedValue}
+                    </td>
+                  );
+                })}
               </tr>
             </tbody>
           </table>
