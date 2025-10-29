@@ -1,6 +1,7 @@
 import { AdvancedSimulationResult } from '../utils/advancedCalculations';
 import AdvancedResultsDisplay from '../components/AdvancedResultsDisplay';
 import Footer from '../components/Footer';
+import WhatsAppPopUp from '../components/WhatsAppPopUp';
 
 interface ResultsPageProps {
   results: AdvancedSimulationResult;
@@ -67,6 +68,9 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
         </div>
       </div>
       <Footer />
+      
+      {/* WhatsApp PopUp */}
+      <WhatsAppPopUp whatsappLink="https://chat.whatsapp.com/KOKk46ZMmjMEZjvScFOf2f" />
     </div>
   );
 };
