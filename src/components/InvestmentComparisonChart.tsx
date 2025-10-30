@@ -108,7 +108,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
               </span>
               <div style={{ 
                 flex: 1, 
-                height: '25px', 
+                height: '35px', 
                 backgroundColor: '#ecf0f1', 
                 borderRadius: '5px',
                 position: 'relative'
@@ -123,8 +123,9 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
                   justifyContent: 'flex-end',
                   paddingRight: '10px',
                   color: 'white',
-                  fontSize: '12px',
-                  fontWeight: '700'
+                  fontSize: '14px',
+                  fontWeight: '700',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
                 }}>
                   R$ {franchiseValue.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
                 </div>
@@ -150,7 +151,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
                 </span>
                 <div style={{ 
                   flex: 1, 
-                  height: '20px', 
+                  height: '30px', 
                   backgroundColor: '#ecf0f1', 
                   borderRadius: '5px',
                   position: 'relative'
@@ -165,8 +166,9 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
                     justifyContent: 'flex-end',
                     paddingRight: '10px',
                     color: 'white',
-                    fontSize: '11px',
-                    fontWeight: '700'
+                    fontSize: '13px',
+                    fontWeight: '700',
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
                   }}>
                     R$ {investment.value.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
                   </div>
