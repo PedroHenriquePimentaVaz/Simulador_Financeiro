@@ -190,13 +190,19 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       // Header do ano
       let yPos = 25;
       
+      // Definir posições uniformes para todas as barras e linhas
+      const tableStartX = margin + 10;
+      const tableEndX = pageWidth - margin - 10;
+      const barStartX = tableStartX - 10;
+      const barWidth = tableEndX - barStartX;
+      
       // Barra decorativa acima do título - amarelo da marca com efeito moderno
       // Sombra sutil (subida ~3mm)
       doc.setFillColor(200, 120, 0);
-      doc.roundedRect(margin + 2, yPos - 4, pageWidth - (margin * 2) - 20, 3, 1, 1, 'F');
+      doc.roundedRect(barStartX, yPos - 4, barWidth, 3, 1, 1, 'F');
       // Barra principal (subida ~3mm)
       doc.setFillColor(255, 193, 7);
-      doc.roundedRect(margin + 2, yPos - 5, pageWidth - (margin * 2) - 20, 3, 1, 1, 'F');
+      doc.roundedRect(barStartX, yPos - 5, barWidth, 3, 1, 1, 'F');
       
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
@@ -271,22 +277,22 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       yPos += 20;
       
       // Tabela mensal do ano - design moderno com linhas
-      let xPos = margin + 10; // Mais à direita para ocupar espaço
+      let xPos = tableStartX;
       
       // Título da tabela (subido 3mm)
       doc.setFontSize(11);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
-      doc.text('Detalhamento Mensal', xPos - 10, yPos - 3);
+      doc.text('Detalhamento Mensal', barStartX, yPos - 3);
       yPos += 6;
       
       // Barra amarela contínua em cima de todos os cabeçalhos - amarelo da marca com efeito moderno
       // Sombra sutil (subida 3mm)
       doc.setFillColor(200, 120, 0);
-      doc.roundedRect(xPos - 10, yPos - 6, pageWidth - (margin * 2) - 20, 7, 1, 1, 'F');
+      doc.roundedRect(barStartX, yPos - 6, barWidth, 7, 1, 1, 'F');
       // Barra principal (subida 3mm)
       doc.setFillColor(255, 193, 7);
-      doc.roundedRect(xPos - 10, yPos - 7, pageWidth - (margin * 2) - 20, 7, 1, 1, 'F');
+      doc.roundedRect(barStartX, yPos - 7, barWidth, 7, 1, 1, 'F');
       
       // Cabeçalhos individuais em branco sobre a barra amarela (subidos 3mm)
       doc.setFontSize(8);
@@ -312,8 +318,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       doc.setFontSize(8);
       
       // Dados mensais com linhas de grade
-      const tableStartX = margin + 10;
-      const tableEndX = pageWidth - margin - 10;
       
       months.forEach((month, index) => {
         if (yPos > pageHeight - 10) {
@@ -324,17 +328,16 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           doc.setFontSize(11);
           doc.setFont('helvetica', 'bold');
           doc.setTextColor(255, 255, 255);
-          doc.text('Detalhamento Mensal', tableStartX - 10, yPos - 3);
+          doc.text('Detalhamento Mensal', barStartX, yPos - 3);
           yPos += 6;
           
           // Recriar barra amarela contínua - amarelo da marca com efeito moderno
-          xPos = tableStartX - 10;
           // Sombra sutil (subida 3mm)
           doc.setFillColor(200, 120, 0);
-          doc.roundedRect(xPos, yPos - 6, tableEndX - xPos, 7, 1, 1, 'F');
+          doc.roundedRect(barStartX, yPos - 6, barWidth, 7, 1, 1, 'F');
           // Barra principal (subida 3mm)
           doc.setFillColor(255, 193, 7);
-          doc.roundedRect(xPos, yPos - 7, tableEndX - xPos, 7, 1, 1, 'F');
+          doc.roundedRect(barStartX, yPos - 7, barWidth, 7, 1, 1, 'F');
           
           // Recriar headers (subidos 3mm)
           xPos = tableStartX;
@@ -359,7 +362,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         // Linha horizontal para separar dados - totalmente alinhada
         doc.setDrawColor(220, 220, 220);
         doc.setLineWidth(0.2);
-        doc.line(tableStartX - 10, yPos + 2, tableEndX, yPos + 2);
+        doc.line(barStartX, yPos + 2, tableEndX, yPos + 2);
         
         // Dados - todos em branco para visibilidade
         xPos = tableStartX;
