@@ -158,11 +158,11 @@ svg text, svg tspan {
 /* Landing Page Otimizada */
 .hero-section {
   background: linear-gradient(135deg, #001c54 0%, #001a4a 100%);
-  padding: 60px 20px;
+  padding: 40px 20px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
   overflow: hidden;
 }
@@ -190,7 +190,7 @@ svg text, svg tspan {
   grid-template-columns: 1fr 1fr;
   gap: 60px;
   align-items: center;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .hero-left {

@@ -123,10 +123,6 @@ function App() {
                     <span className="proof-icon">⭐</span>
                     <span>Operação <strong>100% automatizada</strong> sem funcionários</span>
                   </div>
-                  <div className="proof-text">
-                    <span className="proof-icon">🏆</span>
-                    <span><strong>Franquia #1</strong> em crescimento no Brasil</span>
-                  </div>
               </div>
             </div>
 
