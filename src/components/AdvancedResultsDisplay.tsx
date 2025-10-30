@@ -193,10 +193,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       // Barra decorativa acima do título - amarelo da marca com efeito moderno
       // Sombra sutil (subida ~3mm)
       doc.setFillColor(200, 120, 0);
-      doc.roundedRect(margin + 2, yPos - 4, pageWidth - (margin * 2) - 4, 3, 1, 1, 'F');
+      doc.roundedRect(margin + 2, yPos - 4, pageWidth - (margin * 2) - 20, 3, 1, 1, 'F');
       // Barra principal (subida ~3mm)
       doc.setFillColor(255, 193, 7);
-      doc.roundedRect(margin + 2, yPos - 5, pageWidth - (margin * 2) - 4, 3, 1, 1, 'F');
+      doc.roundedRect(margin + 2, yPos - 5, pageWidth - (margin * 2) - 20, 3, 1, 1, 'F');
       
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
