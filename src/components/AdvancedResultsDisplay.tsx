@@ -386,7 +386,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         // Linha horizontal para separar dados - totalmente alinhada
         doc.setDrawColor(220, 220, 220);
         doc.setLineWidth(0.2);
-        doc.line(barStartX, yPos + 4, tableEndX, yPos + 4);
+        doc.line(barStartX, yPos + 3, tableEndX, yPos + 3);
         
         // Dados - todos em cor escura
         xPos = tableStartX;
