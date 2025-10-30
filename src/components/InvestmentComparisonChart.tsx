@@ -157,7 +157,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
                   position: 'relative'
                 }}>
                   <div style={{
-                    width: `${(investment.value / maxValue) * 100}%`,
+                    width: `${Math.max((investment.value / maxValue) * 100, 15)}%`,
                     height: '100%',
                     backgroundColor: investment.color,
                     borderRadius: '5px',
@@ -166,7 +166,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
                     justifyContent: 'flex-end',
                     paddingRight: '8px',
                     color: 'white',
-                    fontSize: '12px',
+                    fontSize: '11px',
                     fontWeight: '700',
                     textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
                   }}>
