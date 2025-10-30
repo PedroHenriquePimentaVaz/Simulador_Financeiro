@@ -88,9 +88,14 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     const pageHeight = 210;
     const margin = 10;
     
-    // Fundo azul da marca
-    doc.setFillColor(0, 28, 84);
+    // Fundo branco
+    doc.setFillColor(255, 255, 255);
     doc.rect(0, 0, pageWidth, pageHeight, 'F');
+    
+    // Cabeçalho azul com logo
+    const headerHeight = 35;
+    doc.setFillColor(0, 28, 84);
+    doc.roundedRect(0, 0, pageWidth, headerHeight, 0, 0, 'F');
     
     // Adicionar logo da Be Honest da pasta public com proporção correta
     try {
@@ -114,23 +119,23 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`, 55, 29);
     
     // Resumo Executivo com box estilizado
-    const boxY = 40;
+    const boxY = 45;
     const boxWidth = pageWidth - (margin * 2);
     const boxHeight = 40;
     
-    // Box de fundo - azul da marca
-    doc.setFillColor(0, 28, 84);
+    // Box de fundo - branco com borda azul
+    doc.setFillColor(255, 255, 255);
     doc.roundedRect(margin, boxY, boxWidth, boxHeight, 3, 3, 'F');
     
-    // Borda amarela
-    doc.setDrawColor(255, 152, 0);
+    // Borda azul
+    doc.setDrawColor(0, 28, 84);
     doc.setLineWidth(1);
     doc.roundedRect(margin, boxY, boxWidth, boxHeight, 3, 3);
     
-    // Título do resumo - branco
+    // Título do resumo - azul
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(0, 28, 84);
     doc.text('RESUMO EXECUTIVO', margin + 5, boxY + 7);
     
     // Linha separadora amarela
@@ -141,16 +146,16 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     // Campos do resumo organizados em duas colunas
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(240, 240, 240);
+    doc.setTextColor(100, 100, 100);
     
     // Coluna esquerda
     doc.text('Investimento Total:', margin + 5, boxY + 17);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(0, 28, 84);
     doc.text(formatCurrency(totalInvestment), margin + 5, boxY + 23);
     
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(240, 240, 240);
+    doc.setTextColor(100, 100, 100);
     doc.text('Saldo Final:', margin + 5, boxY + 29);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 152, 0);
@@ -158,17 +163,17 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     
     // Coluna direita
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(240, 240, 240);
+    doc.setTextColor(100, 100, 100);
     doc.text('Rentabilidade Mensal:', margin + 120, boxY + 17);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(0, 28, 84);
     doc.text(formatPercentage(roi), margin + 120, boxY + 23);
     
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(240, 240, 240);
+    doc.setTextColor(100, 100, 100);
     doc.text('Payback:', margin + 120, boxY + 29);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(0, 28, 84);
     doc.text(paybackPeriod > 0 ? `${paybackPeriod} meses` : 'Não alcançado', margin + 120, boxY + 35);
     
     // Separador
@@ -207,9 +212,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       const barWidth = tableEndX - barStartX;
       
       // Fundo azul para o cabeçalho
-      const headerHeight = 20;
+      const headerHeight = 25;
       doc.setFillColor(0, 28, 84);
-      doc.roundedRect(0, yPos - 15, pageWidth, headerHeight, 0, 0, 'F');
+      doc.roundedRect(0, yPos - 18, pageWidth, headerHeight, 0, 0, 'F');
       
       // Barra decorativa acima do título - amarelo da marca com efeito moderno
       // Sombra sutil (subida ~3mm)
