@@ -167,14 +167,15 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
                       height: '100%',
                       backgroundColor: investment.color,
                       borderRadius: '5px',
-                      display: showValueOutside ? 'none' : 'flex',
+                      display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'flex-end',
-                      paddingRight: '8px',
+                      justifyContent: showValueOutside ? 'center' : 'flex-end',
+                      paddingRight: showValueOutside ? '0' : '8px',
                       color: 'white',
                       fontSize: '12px',
                       fontWeight: '700',
-                      textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
+                      opacity: showValueOutside ? '0' : '1'
                     }}>
                       R$ {investment.value.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
                     </div>
