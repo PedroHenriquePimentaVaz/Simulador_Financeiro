@@ -273,11 +273,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       // Tabela mensal do ano - design moderno com linhas
       let xPos = margin + 10; // Mais à direita para ocupar espaço
       
-      // Título da tabela
+      // Título da tabela (subido 3mm)
       doc.setFontSize(11);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
-      doc.text('Detalhamento Mensal', xPos - 10, yPos);
+      doc.text('Detalhamento Mensal', xPos - 10, yPos - 3);
       yPos += 6;
       
       // Barra amarela contínua em cima de todos os cabeçalhos - amarelo da marca com efeito moderno
@@ -288,24 +288,24 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       doc.setFillColor(255, 193, 7);
       doc.roundedRect(xPos - 10, yPos - 7, pageWidth - (margin * 2) - 20, 7, 1, 1, 'F');
       
-      // Cabeçalhos individuais em branco sobre a barra azul
+      // Cabeçalhos individuais em branco sobre a barra amarela (subidos 3mm)
       doc.setFontSize(8);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
       
-      doc.text('Mês', xPos, yPos);
+      doc.text('Mês', xPos, yPos - 3);
       
       xPos += 25;
-      doc.text('Rec. Bruta', xPos, yPos);
+      doc.text('Rec. Bruta', xPos, yPos - 3);
       
       xPos += 55;
-      doc.text('Rec. Líq.', xPos, yPos);
+      doc.text('Rec. Líq.', xPos, yPos - 3);
       
       xPos += 55;
-      doc.text('Lucro Líq.', xPos, yPos);
+      doc.text('Lucro Líq.', xPos, yPos - 3);
       
       xPos += 55;
-      doc.text('Saldo Final', xPos, yPos);
+      doc.text('Saldo Final', xPos, yPos - 3);
       
       yPos += 6;
       doc.setFont('helvetica', 'normal');
@@ -320,11 +320,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           doc.addPage();
           yPos = 25;
           
-          // Recriar título
+          // Recriar título (subido 3mm)
           doc.setFontSize(11);
           doc.setFont('helvetica', 'bold');
           doc.setTextColor(255, 255, 255);
-          doc.text('Detalhamento Mensal', tableStartX - 10, yPos);
+          doc.text('Detalhamento Mensal', tableStartX - 10, yPos - 3);
           yPos += 6;
           
           // Recriar barra amarela contínua - amarelo da marca com efeito moderno
@@ -336,21 +336,21 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           doc.setFillColor(255, 193, 7);
           doc.roundedRect(xPos, yPos - 7, tableEndX - xPos, 7, 1, 1, 'F');
           
-          // Recriar headers
+          // Recriar headers (subidos 3mm)
           xPos = tableStartX;
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(8);
           doc.setTextColor(255, 255, 255);
           
-          doc.text('Mês', xPos, yPos);
+          doc.text('Mês', xPos, yPos - 3);
           xPos += 25;
-          doc.text('Rec. Bruta', xPos, yPos);
+          doc.text('Rec. Bruta', xPos, yPos - 3);
           xPos += 55;
-          doc.text('Rec. Líq.', xPos, yPos);
+          doc.text('Rec. Líq.', xPos, yPos - 3);
           xPos += 55;
-          doc.text('Lucro Líq.', xPos, yPos);
+          doc.text('Lucro Líq.', xPos, yPos - 3);
           xPos += 55;
-          doc.text('Saldo Final', xPos, yPos);
+          doc.text('Saldo Final', xPos, yPos - 3);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(8);
