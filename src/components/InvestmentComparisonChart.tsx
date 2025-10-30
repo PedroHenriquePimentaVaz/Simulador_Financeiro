@@ -136,7 +136,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
           {/* Investment Bars */}
           {comparisonData.map((investment, index) => {
             const barWidthPercent = (investment.value / maxValue) * 100;
-            const showValueOutside = barWidthPercent < 30;
+            const showValueOutside = barWidthPercent < 15;
             
             return (
               <div key={index} style={{ marginBottom: '10px' }}>
