@@ -134,69 +134,48 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
           </div>
 
           {/* Investment Bars */}
-          {comparisonData.map((investment, index) => {
-            const barWidthPercent = (investment.value / maxValue) * 100;
-            const showValueOutside = barWidthPercent < 15;
-            
-            return (
-              <div key={index} style={{ marginBottom: '10px' }}>
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  marginBottom: '5px' 
+          {comparisonData.map((investment, index) => (
+            <div key={index} style={{ marginBottom: '10px' }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                marginBottom: '5px' 
+              }}>
+                <span style={{ 
+                  width: '120px', 
+                  fontSize: '14px', 
+                  fontWeight: '700',
+                  color: investment.color
                 }}>
-                  <span style={{ 
-                    width: '120px', 
-                    fontSize: '14px', 
-                    fontWeight: '700',
-                    color: investment.color
-                  }}>
-                    {investment.name}
-                  </span>
-                  <div style={{ 
-                    flex: 1, 
-                    height: '30px', 
-                    backgroundColor: '#ecf0f1', 
+                  {investment.name}
+                </span>
+                <div style={{ 
+                  flex: 1, 
+                  height: '30px', 
+                  backgroundColor: '#ecf0f1', 
+                  borderRadius: '5px',
+                  position: 'relative'
+                }}>
+                  <div style={{
+                    width: `${(investment.value / maxValue) * 100}%`,
+                    height: '100%',
+                    backgroundColor: investment.color,
                     borderRadius: '5px',
-                    position: 'relative',
                     display: 'flex',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    paddingRight: '8px',
+                    color: 'white',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
                   }}>
-                    <div style={{
-                      width: `${barWidthPercent}%`,
-                      height: '100%',
-                      backgroundColor: investment.color,
-                      borderRadius: '5px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: showValueOutside ? 'center' : 'flex-end',
-                      paddingRight: showValueOutside ? '0' : '8px',
-                      color: 'white',
-                      fontSize: '12px',
-                      fontWeight: '700',
-                      textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
-                      opacity: showValueOutside ? '0' : '1'
-                    }}>
-                      R$ {investment.value.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
-                    </div>
-                    {showValueOutside && (
-                      <span style={{
-                        position: 'absolute',
-                        left: `${barWidthPercent + 1}%`,
-                        color: investment.color,
-                        fontSize: '12px',
-                        fontWeight: '700',
-                        whiteSpace: 'nowrap',
-                        paddingLeft: '8px'
-                      }}>
-                        R$ {investment.value.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
-                      </span>
-                    )}
+                    R$ {investment.value.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
                   </div>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
 
