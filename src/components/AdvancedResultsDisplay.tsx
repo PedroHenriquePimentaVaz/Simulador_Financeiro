@@ -386,7 +386,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         // Linha horizontal para separar dados - totalmente alinhada
         doc.setDrawColor(220, 220, 220);
         doc.setLineWidth(0.2);
-        doc.line(barStartX, yPos + 2, tableEndX, yPos + 2);
+        doc.line(barStartX, yPos + 4, tableEndX, yPos + 4);
         
         // Dados - todos em cor escura
         xPos = tableStartX;
@@ -409,7 +409,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         doc.setTextColor(50, 50, 50);
         doc.text(formatCurrency(month.cumulativeCash), xPos, yPos);
         
-        yPos += 5;
+        yPos += 6;
       });
     });
     
