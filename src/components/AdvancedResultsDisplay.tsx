@@ -74,155 +74,316 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
 
   const exportToPDF = () => {
     const doc = new jsPDF('landscape', 'mm', 'a4');
+    const pageWidth = 297;
+    const pageHeight = 210;
+    const margin = 10;
     
-    // Configurações gerais
-    const pageWidth = 297; // A4 landscape width
-    const margin = 10; // Reduzido de 15 para 10
-    const contentWidth = pageWidth - (margin * 2);
+    // Fundo azul da marca
+    doc.setFillColor(0, 28, 84);
+    doc.rect(0, 0, pageWidth, pageHeight, 'F');
     
-    // Header mais compacto
-    doc.setFontSize(18); // Reduzido de 20 para 18
-    doc.setTextColor(0, 28, 84);
-    doc.text('BeHonest - Simulação Financeira Completa (5 Anos)', margin, 15); // Reduzido de 20 para 15
-    
-    doc.setFontSize(9); // Reduzido de 10 para 9
-    doc.setTextColor(100, 100, 100);
-    doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, margin, 22); // Reduzido de 28 para 22
-    
-    // Resumo executivo mais compacto
-    doc.setFontSize(11); // Reduzido de 12 para 11
-    doc.setTextColor(0, 0, 0);
-    doc.text('RESUMO EXECUTIVO', margin, 30); // Reduzido de 40 para 30
-    
-    doc.setFontSize(9); // Reduzido de 10 para 9
-    doc.text(`• Investimento Total: ${formatCurrency(totalInvestment)}`, margin, 36); // Reduzido de 48 para 36
-    doc.text(`• Saldo Final: ${formatCurrency(finalCash)}`, margin, 42); // Reduzido de 54 para 42
-    doc.text(`• Rentabilidade Mensal: ${formatPercentage(roi)}`, margin, 48); // Reduzido de 60 para 48
-    doc.text(`• Payback: ${paybackPeriod > 0 ? paybackPeriod + ' meses' : 'Não alcançado'}`, margin, 54); // Reduzido de 66 para 54
-    
-    // Métricas para a tabela
-    const metrics = [
-      { key: 'stores', label: 'Lojas' },
-      { key: 'totalRevenue', label: 'Receita Total', formatter: formatCurrency },
-      { key: 'grossProfit', label: 'Lucro Bruto', formatter: formatCurrency },
-      { key: 'netProfit', label: 'Lucro Líquido', formatter: formatCurrency },
-      { key: 'tax', label: 'Impostos', formatter: formatCurrency },
-      { key: 'cmv', label: 'CMV', formatter: formatCurrency },
-      { key: 'royalties', label: 'Royalties', formatter: formatCurrency },
-      { key: 'marketing', label: 'Marketing', formatter: formatCurrency },
-      { key: 'cumulativeCash', label: 'Saldo Acumulado', formatter: formatCurrency }
-    ];
-    
-    // Dividir em anos (12 meses por ano)
-    const years = [];
-    for (let year = 0; year < 5; year++) {
-      const startMonth = year * 12;
-      const endMonth = Math.min(startMonth + 12, monthlyResults.length);
-      years.push({
-        year: year + 1,
-        months: monthlyResults.slice(startMonth, endMonth),
-        startMonth: startMonth + 1,
-        endMonth: endMonth
-      });
+    // Adicionar logo da Be Honest da pasta public com proporção correta
+    try {
+      const logoPath = '/behonest-logo.png';
+      // Tamanho da logo: 30mm de largura x 25mm de altura
+      doc.addImage(logoPath, 'PNG', margin + 5, margin + 5, 30, 25);
+    } catch (error) {
+      console.log('Logo não carregada, continuando sem logo');
     }
     
-    let currentY = 60; // Reduzido de 80 para 60
+    // Título - branco
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Simulação Financeira Completa (5 Anos)', 60, 23);
     
-    // Gerar tabela para cada ano
-    years.forEach((yearData, yearIndex) => {
-      if (yearIndex > 0) {
-        doc.addPage();
-        currentY = 15; // Reduzido de 20 para 15
+    // Data - branco claro
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(240, 240, 240);
+    doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`, 55, 29);
+    
+    // Resumo Executivo com box estilizado
+    const boxY = 40;
+    const boxWidth = pageWidth - (margin * 2);
+    const boxHeight = 40;
+    
+    // Box de fundo - azul da marca
+    doc.setFillColor(0, 28, 84);
+    doc.roundedRect(margin, boxY, boxWidth, boxHeight, 3, 3, 'F');
+    
+    // Borda amarela
+    doc.setDrawColor(255, 152, 0);
+    doc.setLineWidth(1);
+    doc.roundedRect(margin, boxY, boxWidth, boxHeight, 3, 3);
+    
+    // Título do resumo - branco
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text('RESUMO EXECUTIVO', margin + 5, boxY + 7);
+    
+    // Linha separadora amarela
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(255, 152, 0);
+    doc.line(margin + 5, boxY + 11, margin + boxWidth - 5, boxY + 11);
+    
+    // Campos do resumo organizados em duas colunas
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(240, 240, 240);
+    
+    // Coluna esquerda
+    doc.text('Investimento Total:', margin + 5, boxY + 17);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text(formatCurrency(totalInvestment), margin + 5, boxY + 23);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(240, 240, 240);
+    doc.text('Saldo Final:', margin + 5, boxY + 29);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 152, 0);
+    doc.text(formatCurrency(finalCash), margin + 5, boxY + 35);
+    
+    // Coluna direita
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(240, 240, 240);
+    doc.text('Rentabilidade Mensal:', margin + 120, boxY + 17);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text(formatPercentage(roi), margin + 120, boxY + 23);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(240, 240, 240);
+    doc.text('Payback:', margin + 120, boxY + 29);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text(paybackPeriod > 0 ? `${paybackPeriod} meses` : 'Não alcançado', margin + 120, boxY + 35);
+    
+    // Separador
+    doc.setLineWidth(0.3);
+    doc.setDrawColor(200, 200, 200);
+    doc.line(margin, 87, pageWidth - margin, 87);
+    
+    // Agrupar dados por ano (5 anos)
+    const dataByYear: { [key: number]: typeof monthlyResults } = {};
+    monthlyResults.forEach(result => {
+      const year = Math.floor((result.month - 1) / 12) + 1;
+      if (!dataByYear[year]) {
+        dataByYear[year] = [];
       }
+      dataByYear[year].push(result);
+    });
+    
+    // Para cada ano
+    Object.entries(dataByYear).forEach(([yearNum, months]) => {
+      const year = parseInt(yearNum);
       
-      // Título do ano mais compacto
-      doc.setFontSize(12); // Reduzido de 14 para 12
-      doc.setTextColor(0, 28, 84);
-      doc.text(`ANO ${yearData.year} (Meses ${yearData.startMonth} a ${yearData.endMonth})`, margin, currentY);
-      currentY += 6; // Reduzido de 10 para 6
+      // Adicionar nova página para cada ano (incluindo o primeiro)
+      doc.addPage();
       
-      // Criar dados da tabela para este ano
-      const tableData: any[] = [];
-      metrics.forEach(metric => {
-        const row = [metric.label];
-        yearData.months.forEach(result => {
-          const value = (result as any)[metric.key];
-          row.push(metric.formatter ? metric.formatter(value) : value.toString());
-        });
-        tableData.push(row);
-      });
+      // Fundo azul da marca
+      doc.setFillColor(0, 28, 84);
+      doc.rect(0, 0, pageWidth, pageHeight, 'F');
       
-      // Headers para este ano
-      const headers = ['Métrica'];
-      yearData.months.forEach((_, _index) => {
-        headers.push(`M${yearData.startMonth + _index}`);
-      });
+      // Header do ano
+      let yPos = 25;
       
-      // Configurações da tabela mais compactas
-      const columnWidth = (contentWidth - 45) / (headers.length - 1); // Reduzido de 50 para 45
+      // Barra decorativa acima do título - amarelo da marca com efeito moderno
+      // Sombra sutil (subida ~3mm)
+      doc.setFillColor(200, 120, 0);
+      doc.roundedRect(margin + 2, yPos - 4, pageWidth - (margin * 2) - 4, 3, 1, 1, 'F');
+      // Barra principal (subida ~3mm)
+      doc.setFillColor(255, 193, 7);
+      doc.roundedRect(margin + 2, yPos - 5, pageWidth - (margin * 2) - 4, 3, 1, 1, 'F');
       
-      autoTable(doc, {
-        head: [headers],
-        body: tableData,
-        startY: currentY,
-        theme: 'grid',
-        styles: {
-          fontSize: 8, // Reduzido de 9 para 8
-          cellPadding: 2, // Reduzido de 3 para 2
-          overflow: 'linebreak',
-          halign: 'center',
-          lineWidth: 0.1 // Linhas mais finas
-        },
-        headStyles: {
-          fillColor: [0, 28, 84],
-          textColor: [255, 255, 255],
-          fontStyle: 'bold',
-          halign: 'center',
-          fontSize: 8, // Reduzido de 9 para 8
-          cellPadding: 2 // Reduzido de 3 para 2
-        },
-        columnStyles: {
-          0: { 
-            fontStyle: 'bold', 
-            fillColor: [248, 249, 250], 
-            halign: 'left', 
-            cellWidth: 45, // Reduzido de 50 para 45
-            fontSize: 7 // Reduzido de 8 para 7
-          }
-        },
-        didParseCell: function(data) {
-          // Aplicar cores para Saldo Acumulado
-          if (data.row.index === metrics.length - 1 && data.column.index > 0) {
-            const cellValue = data.cell.text[0];
-            if (cellValue && cellValue.startsWith('-')) {
-              data.cell.styles.textColor = [220, 53, 69];
-            } else if (cellValue && cellValue.startsWith('R$') && !cellValue.includes('-')) {
-              data.cell.styles.textColor = [40, 167, 69];
-            }
-          }
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(`Ano ${year}`, margin + 5, yPos + 6);
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(240, 240, 240);
+      doc.text(`(Meses ${(year-1)*12 + 1} a ${year*12})`, margin + 30, yPos + 6);
+      
+      yPos += 15;
+      
+      // Totais do ano
+      const yearTotals = {
+        totalRevenue: months.reduce((sum, m) => sum + m.totalRevenue, 0),
+        totalNetRevenue: months.reduce((sum, m) => sum + m.netRevenue, 0),
+        totalNetProfit: months.reduce((sum, m) => sum + m.netProfit, 0),
+        endCash: months[months.length - 1].cumulativeCash,
+        endStores: months[months.length - 1].stores
+      };
+      
+      // Box de resumo do ano com design mais moderno
+      const boxWidth = pageWidth - (margin * 2);
+      const boxHeight = 19;
+      
+      // Box principal - fundo azul
+      doc.setFillColor(0, 28, 84);
+      doc.roundedRect(margin, yPos, boxWidth, boxHeight, 3, 3, 'F');
+      
+      // Borda amarela
+      doc.setDrawColor(255, 152, 0);
+      doc.setLineWidth(1);
+      doc.roundedRect(margin, yPos, boxWidth, boxHeight, 3, 3);
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(240, 240, 240);
+      
+      // Primeira linha - Receita Bruta Total
+      doc.text(`Receita Bruta Total:`, margin + 8, yPos + 6);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(formatCurrency(yearTotals.totalRevenue), margin + 65, yPos + 6);
+      
+      // Primeira linha - Lucro Líquido Total
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(240, 240, 240);
+      doc.text(`Lucro Líquido Total:`, margin + 135, yPos + 6);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 152, 0);
+      doc.text(formatCurrency(yearTotals.totalNetProfit), margin + 215, yPos + 6);
+      
+      // Segunda linha do box - Lojas
+      yPos += 7;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(240, 240, 240);
+      doc.text(`Lojas ao final do ano:`, margin + 8, yPos + 6);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(yearTotals.endStores.toString(), margin + 65, yPos + 6);
+      
+      // Segunda linha - Saldo Acumulado
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(240, 240, 240);
+      doc.text(`Saldo Acumulado:`, margin + 135, yPos + 6);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(yearTotals.endCash >= 0 ? 255 : 220, yearTotals.endCash >= 0 ? 152 : 0, 0);
+      doc.text(formatCurrency(yearTotals.endCash), margin + 215, yPos + 6);
+      
+      yPos += 20;
+      
+      // Tabela mensal do ano - design moderno com linhas
+      let xPos = margin + 10; // Mais à direita para ocupar espaço
+      
+      // Título da tabela
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text('Detalhamento Mensal', xPos - 10, yPos);
+      yPos += 6;
+      
+      // Barra amarela contínua em cima de todos os cabeçalhos - amarelo da marca com efeito moderno
+      // Sombra sutil
+      doc.setFillColor(200, 120, 0);
+      doc.roundedRect(xPos - 10, yPos - 3, pageWidth - (margin * 2) - 20, 7, 1, 1, 'F');
+      // Barra principal
+      doc.setFillColor(255, 193, 7);
+      doc.roundedRect(xPos - 10, yPos - 4, pageWidth - (margin * 2) - 20, 7, 1, 1, 'F');
+      
+      // Cabeçalhos individuais em branco sobre a barra azul
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      
+      doc.text('Mês', xPos, yPos);
+      
+      xPos += 25;
+      doc.text('Rec. Bruta', xPos, yPos);
+      
+      xPos += 55;
+      doc.text('Rec. Líq.', xPos, yPos);
+      
+      xPos += 55;
+      doc.text('Lucro Líq.', xPos, yPos);
+      
+      xPos += 55;
+      doc.text('Saldo Final', xPos, yPos);
+      
+      yPos += 6;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      
+      // Dados mensais com linhas de grade
+      const tableStartX = margin + 10;
+      const tableEndX = pageWidth - margin - 10;
+      
+      months.forEach((month, index) => {
+        if (yPos > pageHeight - 10) {
+          doc.addPage();
+          yPos = 25;
           
-          // Definir largura das colunas de meses
-          if (data.column.index > 0) {
-            data.cell.styles.cellWidth = columnWidth;
-          }
-        },
-        margin: { left: margin, right: margin },
-        pageBreak: 'avoid',
-        tableLineWidth: 0.1, // Linhas da tabela mais finas
-        tableLineColor: [200, 200, 200] // Cor mais suave
+          // Recriar título
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(255, 255, 255);
+          doc.text('Detalhamento Mensal', tableStartX - 10, yPos);
+          yPos += 6;
+          
+          // Recriar barra amarela contínua - amarelo da marca com efeito moderno
+          xPos = tableStartX - 10;
+          // Sombra sutil
+          doc.setFillColor(200, 120, 0);
+          doc.roundedRect(xPos, yPos - 3, tableEndX - xPos, 7, 1, 1, 'F');
+          // Barra principal
+          doc.setFillColor(255, 193, 7);
+          doc.roundedRect(xPos, yPos - 4, tableEndX - xPos, 7, 1, 1, 'F');
+          
+          // Recriar headers
+          xPos = tableStartX;
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.setTextColor(255, 255, 255);
+          
+          doc.text('Mês', xPos, yPos);
+          xPos += 25;
+          doc.text('Rec. Bruta', xPos, yPos);
+          xPos += 55;
+          doc.text('Rec. Líq.', xPos, yPos);
+          xPos += 55;
+          doc.text('Lucro Líq.', xPos, yPos);
+          xPos += 55;
+          doc.text('Saldo Final', xPos, yPos);
+          yPos += 6;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
+        }
+        
+        // Linha horizontal para separar dados - totalmente alinhada
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineWidth(0.2);
+        doc.line(tableStartX - 10, yPos + 2, tableEndX, yPos + 2);
+        
+        // Dados - todos em branco para visibilidade
+        xPos = tableStartX;
+        doc.setTextColor(255, 255, 255);
+        doc.text(month.month.toString(), xPos, yPos);
+        
+        xPos += 25;
+        doc.setTextColor(255, 255, 255);
+        doc.text(formatCurrency(month.totalRevenue), xPos, yPos);
+        
+        xPos += 55;
+        doc.setTextColor(255, 255, 255);
+        doc.text(formatCurrency(month.netRevenue), xPos, yPos);
+        
+        xPos += 55;
+        doc.setTextColor(255, 255, 255);
+        doc.text(formatCurrency(month.netProfit), xPos, yPos);
+        
+        xPos += 55;
+        doc.setTextColor(255, 255, 255);
+        doc.text(formatCurrency(month.cumulativeCash), xPos, yPos);
+        
+        yPos += 5;
       });
-      
-      // Adicionar resumo do ano mais compacto
-      const yearEndResult = yearData.months[yearData.months.length - 1];
-      
-      const finalY = (doc as any).lastAutoTable.finalY || currentY + 80; // Reduzido de 100 para 80
-      
-      doc.setFontSize(9); // Reduzido de 10 para 9
-      doc.setTextColor(0, 0, 0);
-      doc.text(`Resumo Ano ${yearData.year}:`, margin, finalY + 5); // Reduzido de 10 para 5
-      doc.text(`• Saldo Final: ${formatCurrency(yearEndResult.cumulativeCash)}`, margin, finalY + 11); // Reduzido de 18 para 11
-      doc.text(`• Lojas Finais: ${yearEndResult.stores}`, margin, finalY + 17); // Reduzido de 26 para 17
-      doc.text(`• Receita Total: ${formatCurrency(yearData.months.reduce((sum, m) => sum + m.totalRevenue, 0))}`, margin, finalY + 23); // Reduzido de 34 para 23
     });
     
     doc.save(`BeHonest_Simulacao_Completa_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -371,7 +532,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             </div>
             <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '700', color: '#2e7d32' }}>Receita Líquida:</span>
-              <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.totalRevenue - lastMonth.tax)}</span>
+              <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.netRevenue)}</span>
             </div>
             
             {/* Lucro Bruto */}
@@ -395,27 +556,27 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             border: '2px solid #ef5350'
           }}>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Imposto Simples:</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>Imposto:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.tax)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>CMV:</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>Custo 1:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.cmv)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Perdas:</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>Custo 2:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.losses)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Reposição:</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>Despesa 1:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.reposicao)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Royalties:</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>Despesa 2:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.royalties)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Outros Repasses:</span>
+              <span style={{ fontWeight: '600', color: '#c62828' }}>Despesa 3:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.otherRepasses)}</span>
             </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
@@ -785,37 +946,37 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               
               {/* Todas as Despesas Agrupadas */}
               <tr>
-                <td><strong>Imposto Simples</strong></td>
+                <td><strong>Imposto</strong></td>
                 {monthlyResults.map((result) => (
                   <td>{formatCurrency(-result.tax)}</td>
                 ))}
               </tr>
               <tr>
-                <td><strong>CMV</strong></td>
+                <td><strong>Custo 1</strong></td>
                 {monthlyResults.map((result) => (
                   <td>{formatCurrency(-result.cmv)}</td>
                 ))}
               </tr>
               <tr>
-                <td><strong>Perdas</strong></td>
+                <td><strong>Custo 2</strong></td>
                 {monthlyResults.map((result) => (
                   <td>{formatCurrency(-result.losses)}</td>
                 ))}
               </tr>
               <tr>
-                <td><strong>Reposição</strong></td>
+                <td><strong>Despesa 1</strong></td>
                 {monthlyResults.map((result) => (
                   <td>{formatCurrency(-result.reposicao)}</td>
                 ))}
               </tr>
               <tr>
-                <td><strong>Royalties</strong></td>
+                <td><strong>Despesa 2</strong></td>
                 {monthlyResults.map((result) => (
                   <td>{formatCurrency(-result.royalties)}</td>
                 ))}
               </tr>
               <tr>
-                <td><strong>Outros Repasses</strong></td>
+                <td><strong>Despesa 3</strong></td>
                 {monthlyResults.map((result) => (
                   <td>{formatCurrency(-result.otherRepasses)}</td>
                 ))}
@@ -891,7 +1052,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               <p>Fale com nossos especialistas para tirar suas dúvidas</p>
               <button 
                 className="step-btn primary"
-                onClick={() => window.open('https://chat.whatsapp.com/KOKk46ZMmjMEZjvScFOf2f', '_blank')}
+                onClick={() => window.open('https://wa.me/5531983550409', '_blank')}
               >
                 Falar com Especialista
               </button>
