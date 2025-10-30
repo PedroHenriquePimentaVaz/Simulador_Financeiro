@@ -212,9 +212,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       const barWidth = tableEndX - barStartX;
       
       // Fundo azul para o cabeçalho
-      const headerHeight = 25;
+      const headerHeight = 27;
       doc.setFillColor(0, 28, 84);
-      doc.roundedRect(0, yPos - 18, pageWidth, headerHeight, 0, 0, 'F');
+      doc.roundedRect(0, yPos - 20, pageWidth, headerHeight, 0, 0, 'F');
       
       // Barra decorativa acima do título - amarelo da marca com efeito moderno
       // Sombra sutil (subida ~3mm)
