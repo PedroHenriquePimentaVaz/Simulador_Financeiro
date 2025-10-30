@@ -226,53 +226,52 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       };
       
       // Box de resumo do ano com design mais moderno
-      const boxWidth = pageWidth - (margin * 2);
       const boxHeight = 19;
       
       // Box principal - fundo azul
       doc.setFillColor(0, 28, 84);
-      doc.roundedRect(margin, yPos, boxWidth, boxHeight, 3, 3, 'F');
+      doc.roundedRect(barStartX, yPos, barWidth, boxHeight, 3, 3, 'F');
       
       // Borda amarela
       doc.setDrawColor(255, 152, 0);
       doc.setLineWidth(1);
-      doc.roundedRect(margin, yPos, boxWidth, boxHeight, 3, 3);
+      doc.roundedRect(barStartX, yPos, barWidth, boxHeight, 3, 3);
       
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(240, 240, 240);
       
       // Primeira linha - Receita Bruta Total
-      doc.text(`Receita Bruta Total:`, margin + 8, yPos + 6);
+      doc.text(`Receita Bruta Total:`, barStartX + 8, yPos + 6);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
-      doc.text(formatCurrency(yearTotals.totalRevenue), margin + 65, yPos + 6);
+      doc.text(formatCurrency(yearTotals.totalRevenue), barStartX + 65, yPos + 6);
       
       // Primeira linha - Lucro Líquido Total
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(240, 240, 240);
-      doc.text(`Lucro Líquido Total:`, margin + 135, yPos + 6);
+      doc.text(`Lucro Líquido Total:`, barStartX + 135, yPos + 6);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 152, 0);
-      doc.text(formatCurrency(yearTotals.totalNetProfit), margin + 215, yPos + 6);
+      doc.text(formatCurrency(yearTotals.totalNetProfit), barStartX + 215, yPos + 6);
       
       // Segunda linha do box - Lojas
       yPos += 7;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(240, 240, 240);
-      doc.text(`Lojas ao final do ano:`, margin + 8, yPos + 6);
+      doc.text(`Lojas ao final do ano:`, barStartX + 8, yPos + 6);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
-      doc.text(yearTotals.endStores.toString(), margin + 65, yPos + 6);
+      doc.text(yearTotals.endStores.toString(), barStartX + 65, yPos + 6);
       
       // Segunda linha - Saldo Acumulado
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(240, 240, 240);
-      doc.text(`Saldo Acumulado:`, margin + 135, yPos + 6);
+      doc.text(`Saldo Acumulado:`, barStartX + 135, yPos + 6);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(yearTotals.endCash >= 0 ? 255 : 220, yearTotals.endCash >= 0 ? 152 : 0, 0);
-      doc.text(formatCurrency(yearTotals.endCash), margin + 215, yPos + 6);
+      doc.text(formatCurrency(yearTotals.endCash), barStartX + 215, yPos + 6);
       
       yPos += 20;
       
