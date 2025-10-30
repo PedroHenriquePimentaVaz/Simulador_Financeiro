@@ -680,6 +680,13 @@ svg text, svg tspan {
   margin-bottom: 40px;
 }
 
+@media (max-width: 768px) {
+  .results-summary {
+    grid-template-columns: 1fr !important;
+    gap: 15px;
+  }
+}
+
 .summary-card {
   background: white;
   border-radius: 20px;
@@ -1006,11 +1013,6 @@ svg text, svg tspan {
   
   .success-subtitle {
     font-size: 18px;
-  }
-  
-  .results-summary {
-    grid-template-columns: 1fr;
-    gap: 15px;
   }
   
   .summary-card {
