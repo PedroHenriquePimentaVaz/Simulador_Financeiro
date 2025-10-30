@@ -168,7 +168,9 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
                     color: 'white',
                     fontSize: '11px',
                     fontWeight: '700',
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap'
                   }}>
                     R$ {investment.value.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
                   </div>
