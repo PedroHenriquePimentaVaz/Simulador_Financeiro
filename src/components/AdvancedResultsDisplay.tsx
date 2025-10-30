@@ -508,12 +508,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
 
       <div className="detailed-breakdown">
         <h4>Último Mês (Mês {lastMonth.month})</h4>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '1fr 1fr', 
-          gap: '20px',
-          alignItems: 'start'
-        }}>
+        <div className="detailed-breakdown-grid" style={{ alignItems: 'start' }}>
           {/* Coluna Esquerda - Receitas e Lucros */}
           <div className="breakdown-grid" style={{ 
             backgroundColor: '#f1f8e9', 

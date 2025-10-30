@@ -1095,6 +1095,111 @@ svg text, svg tspan {
   }
 }
 
+/* Responsividade específica para resultados */
+.detailed-breakdown-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .advanced-results {
+    padding: 20px 15px;
+  }
+  
+  .detailed-breakdown-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  .breakdown-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .advanced-results h3 {
+    font-size: 20px;
+  }
+  
+  .advanced-results h4 {
+    font-size: 18px;
+  }
+  
+  .advanced-results strong {
+    font-size: 14px !important;
+  }
+  
+  .advanced-results span[style*="fontSize: 16px"] {
+    font-size: 14px !important;
+  }
+  
+  .advanced-results span[style*="fontSize: 18px"] {
+    font-size: 16px !important;
+  }
+  
+  /* Ajustar seções com padding */
+  .advanced-results div[style*="padding: 25px"] {
+    padding: 20px 15px !important;
+  }
+  
+  .advanced-results div[style*="padding: 20px"] {
+    padding: 15px 10px !important;
+  }
+  
+  /* Ajustar botões */
+  .advanced-results button {
+    font-size: 14px !important;
+    padding: 10px 20px !important;
+  }
+  
+  /* Aviso de estimativas */
+  .advanced-results div[style*="marginTop: '30px'"] {
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    padding: 15px !important;
+    font-size: 13px !important;
+  }
+  
+  /* Comparação de investimentos */
+  .advanced-results h2 {
+    font-size: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .advanced-results {
+    padding: 15px 10px;
+  }
+  
+  .advanced-results h3 {
+    font-size: 18px;
+  }
+  
+  .advanced-results h4 {
+    font-size: 16px;
+  }
+  
+  .advanced-results div[style*="padding: 25px"] {
+    padding: 15px 10px !important;
+  }
+  
+  .advanced-results div[style*="padding: 20px"] {
+    padding: 12px 8px !important;
+  }
+  
+  .advanced-results span[style*="fontSize: 16px"] {
+    font-size: 13px !important;
+  }
+  
+  .advanced-results span[style*="fontSize: 18px"] {
+    font-size: 15px !important;
+  }
+  
+  .advanced-results button {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+  }
+}
+
 .main-container {
   display: flex;
   flex: 1;
