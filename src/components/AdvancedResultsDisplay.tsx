@@ -93,7 +93,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     doc.rect(0, 0, pageWidth, pageHeight, 'F');
     
     // Cabeçalho azul com logo
-    const headerHeight = 35;
+    const headerHeight = 32;
     doc.setFillColor(0, 28, 84);
     doc.roundedRect(0, 0, pageWidth, headerHeight, 0, 0, 'F');
     
@@ -119,7 +119,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`, 55, 29);
     
     // Resumo Executivo com box estilizado
-    const boxY = 45;
+    const boxY = 42;
     const boxWidth = pageWidth - (margin * 2);
     const boxHeight = 40;
     
