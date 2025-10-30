@@ -314,27 +314,27 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       doc.roundedRect(barStartX, yPos - 7, barWidth, 7, 1, 1, 'F');
       
       // Cabeçalhos individuais em branco sobre a barra amarela (subidos 3mm)
-      doc.setFontSize(8);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
       
       doc.text('Mês', xPos, yPos - 3);
       
-      xPos += 25;
+      xPos += 28;
       doc.text('Rec. Bruta', xPos, yPos - 3);
       
-      xPos += 55;
+      xPos += 58;
       doc.text('Rec. Líq.', xPos, yPos - 3);
       
-      xPos += 55;
+      xPos += 58;
       doc.text('Lucro Líq.', xPos, yPos - 3);
       
-      xPos += 55;
+      xPos += 58;
       doc.text('Saldo Final', xPos, yPos - 3);
       
       yPos += 6;
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
+      doc.setFontSize(10);
       
       // Dados mensais com linhas de grade
       
@@ -366,21 +366,21 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           // Recriar headers (subidos 3mm)
           xPos = tableStartX;
           doc.setFont('helvetica', 'bold');
-          doc.setFontSize(8);
+          doc.setFontSize(10);
           doc.setTextColor(255, 255, 255);
           
           doc.text('Mês', xPos, yPos - 3);
-          xPos += 25;
+          xPos += 28;
           doc.text('Rec. Bruta', xPos, yPos - 3);
-          xPos += 55;
+          xPos += 58;
           doc.text('Rec. Líq.', xPos, yPos - 3);
-          xPos += 55;
+          xPos += 58;
           doc.text('Lucro Líq.', xPos, yPos - 3);
-          xPos += 55;
+          xPos += 58;
           doc.text('Saldo Final', xPos, yPos - 3);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          doc.setFontSize(8);
+          doc.setFontSize(10);
         }
         
         // Linha horizontal para separar dados - totalmente alinhada
@@ -393,19 +393,19 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         doc.setTextColor(50, 50, 50);
         doc.text(month.month.toString(), xPos, yPos);
         
-        xPos += 25;
+        xPos += 28;
         doc.setTextColor(50, 50, 50);
         doc.text(formatCurrency(month.totalRevenue), xPos, yPos);
         
-        xPos += 55;
+        xPos += 58;
         doc.setTextColor(50, 50, 50);
         doc.text(formatCurrency(month.netRevenue), xPos, yPos);
         
-        xPos += 55;
+        xPos += 58;
         doc.setTextColor(50, 50, 50);
         doc.text(formatCurrency(month.netProfit), xPos, yPos);
         
-        xPos += 55;
+        xPos += 58;
         doc.setTextColor(50, 50, 50);
         doc.text(formatCurrency(month.cumulativeCash), xPos, yPos);
         
