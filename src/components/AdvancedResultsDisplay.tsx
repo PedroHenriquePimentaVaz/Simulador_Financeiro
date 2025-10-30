@@ -193,11 +193,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       // Adicionar nova página para cada ano (incluindo o primeiro)
       doc.addPage();
       
-      // Fundo azul da marca
-      doc.setFillColor(0, 28, 84);
+      // Fundo branco
+      doc.setFillColor(255, 255, 255);
       doc.rect(0, 0, pageWidth, pageHeight, 'F');
       
-      // Header do ano
+      // Header do ano com fundo azul
       let yPos = 25;
       
       // Definir posições uniformes para todas as barras e linhas
@@ -205,6 +205,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       const tableEndX = pageWidth - margin - 10;
       const barStartX = tableStartX - 10;
       const barWidth = tableEndX - barStartX;
+      
+      // Fundo azul para o cabeçalho
+      const headerHeight = 20;
+      doc.setFillColor(0, 28, 84);
+      doc.roundedRect(0, yPos - 15, pageWidth, headerHeight, 0, 0, 'F');
       
       // Barra decorativa acima do título - amarelo da marca com efeito moderno
       // Sombra sutil (subida ~3mm)
@@ -238,28 +243,28 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       // Box de resumo do ano com design mais moderno
       const boxHeight = 19;
       
-      // Box principal - fundo azul
-      doc.setFillColor(0, 28, 84);
+      // Box principal - fundo branco com borda azul
+      doc.setFillColor(255, 255, 255);
       doc.roundedRect(barStartX, yPos, barWidth, boxHeight, 3, 3, 'F');
       
-      // Borda amarela
-      doc.setDrawColor(255, 152, 0);
+      // Borda azul
+      doc.setDrawColor(0, 28, 84);
       doc.setLineWidth(1);
       doc.roundedRect(barStartX, yPos, barWidth, boxHeight, 3, 3);
       
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(240, 240, 240);
+      doc.setTextColor(100, 100, 100);
       
       // Primeira linha - Receita Bruta Total
       doc.text(`Receita Bruta Total:`, barStartX + 8, yPos + 6);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 255, 255);
+      doc.setTextColor(0, 28, 84);
       doc.text(formatCurrency(yearTotals.totalRevenue), barStartX + 65, yPos + 6);
       
       // Primeira linha - Lucro Líquido Total
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(240, 240, 240);
+      doc.setTextColor(100, 100, 100);
       doc.text(`Lucro Líquido Total:`, barStartX + 135, yPos + 6);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 152, 0);
@@ -269,18 +274,18 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       yPos += 7;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
-      doc.setTextColor(240, 240, 240);
+      doc.setTextColor(100, 100, 100);
       doc.text(`Lojas ao final do ano:`, barStartX + 8, yPos + 6);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 255, 255);
+      doc.setTextColor(0, 28, 84);
       doc.text(yearTotals.endStores.toString(), barStartX + 65, yPos + 6);
       
       // Segunda linha - Saldo Acumulado
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(240, 240, 240);
+      doc.setTextColor(100, 100, 100);
       doc.text(`Saldo Acumulado:`, barStartX + 135, yPos + 6);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(yearTotals.endCash >= 0 ? 255 : 220, yearTotals.endCash >= 0 ? 152 : 0, 0);
+      doc.setTextColor(yearTotals.endCash >= 0 ? 28 : 220, yearTotals.endCash >= 0 ? 153 : 0, yearTotals.endCash >= 0 ? 84 : 0);
       doc.text(formatCurrency(yearTotals.endCash), barStartX + 215, yPos + 6);
       
       yPos += 20;
@@ -291,7 +296,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       // Título da tabela (subido 3mm)
       doc.setFontSize(11);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 255, 255);
+      doc.setTextColor(0, 28, 84);
       doc.text('Detalhamento Mensal', barStartX, yPos - 3);
       yPos += 6;
       
@@ -331,12 +336,17 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       months.forEach((month, index) => {
         if (yPos > pageHeight - 10) {
           doc.addPage();
+          
+          // Fundo branco
+          doc.setFillColor(255, 255, 255);
+          doc.rect(0, 0, pageWidth, pageHeight, 'F');
+          
           yPos = 25;
           
           // Recriar título (subido 3mm)
           doc.setFontSize(11);
           doc.setFont('helvetica', 'bold');
-          doc.setTextColor(255, 255, 255);
+          doc.setTextColor(0, 28, 84);
           doc.text('Detalhamento Mensal', barStartX, yPos - 3);
           yPos += 6;
           
@@ -373,25 +383,25 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         doc.setLineWidth(0.2);
         doc.line(barStartX, yPos + 2, tableEndX, yPos + 2);
         
-        // Dados - todos em branco para visibilidade
+        // Dados - todos em cor escura
         xPos = tableStartX;
-        doc.setTextColor(255, 255, 255);
+        doc.setTextColor(50, 50, 50);
         doc.text(month.month.toString(), xPos, yPos);
         
         xPos += 25;
-        doc.setTextColor(255, 255, 255);
+        doc.setTextColor(50, 50, 50);
         doc.text(formatCurrency(month.totalRevenue), xPos, yPos);
         
         xPos += 55;
-        doc.setTextColor(255, 255, 255);
+        doc.setTextColor(50, 50, 50);
         doc.text(formatCurrency(month.netRevenue), xPos, yPos);
         
         xPos += 55;
-        doc.setTextColor(255, 255, 255);
+        doc.setTextColor(50, 50, 50);
         doc.text(formatCurrency(month.netProfit), xPos, yPos);
         
         xPos += 55;
-        doc.setTextColor(255, 255, 255);
+        doc.setTextColor(50, 50, 50);
         doc.text(formatCurrency(month.cumulativeCash), xPos, yPos);
         
         yPos += 5;
