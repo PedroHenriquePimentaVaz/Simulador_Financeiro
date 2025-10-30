@@ -33,7 +33,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
               </button>
               <button 
                 className="results-action-btn primary"
-                onClick={() => window.open('https://chat.whatsapp.com/KOKk46ZMmjMEZjvScFOf2f', '_blank')}
+                onClick={() => window.open('https://wa.me/5531983550409', '_blank')}
               >
                 💬 Falar com Especialista
               </button>
@@ -70,7 +70,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
       <Footer />
       
       {/* WhatsApp PopUp */}
-      <WhatsAppPopUp whatsappLink="https://chat.whatsapp.com/KOKk46ZMmjMEZjvScFOf2f" />
+      <WhatsAppPopUp whatsappLink="https://wa.me/5531983550409" />
     </div>
   );
 };

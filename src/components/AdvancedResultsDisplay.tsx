@@ -281,12 +281,12 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       yPos += 6;
       
       // Barra amarela contínua em cima de todos os cabeçalhos - amarelo da marca com efeito moderno
-      // Sombra sutil
+      // Sombra sutil (subida 3mm)
       doc.setFillColor(200, 120, 0);
-      doc.roundedRect(xPos - 10, yPos - 3, pageWidth - (margin * 2) - 20, 7, 1, 1, 'F');
-      // Barra principal
+      doc.roundedRect(xPos - 10, yPos - 6, pageWidth - (margin * 2) - 20, 7, 1, 1, 'F');
+      // Barra principal (subida 3mm)
       doc.setFillColor(255, 193, 7);
-      doc.roundedRect(xPos - 10, yPos - 4, pageWidth - (margin * 2) - 20, 7, 1, 1, 'F');
+      doc.roundedRect(xPos - 10, yPos - 7, pageWidth - (margin * 2) - 20, 7, 1, 1, 'F');
       
       // Cabeçalhos individuais em branco sobre a barra azul
       doc.setFontSize(8);
@@ -329,12 +329,12 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           
           // Recriar barra amarela contínua - amarelo da marca com efeito moderno
           xPos = tableStartX - 10;
-          // Sombra sutil
+          // Sombra sutil (subida 3mm)
           doc.setFillColor(200, 120, 0);
-          doc.roundedRect(xPos, yPos - 3, tableEndX - xPos, 7, 1, 1, 'F');
-          // Barra principal
+          doc.roundedRect(xPos, yPos - 6, tableEndX - xPos, 7, 1, 1, 'F');
+          // Barra principal (subida 3mm)
           doc.setFillColor(255, 193, 7);
-          doc.roundedRect(xPos, yPos - 4, tableEndX - xPos, 7, 1, 1, 'F');
+          doc.roundedRect(xPos, yPos - 7, tableEndX - xPos, 7, 1, 1, 'F');
           
           // Recriar headers
           xPos = tableStartX;
