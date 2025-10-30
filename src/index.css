@@ -230,15 +230,15 @@ svg text, svg tspan {
 }
 
 .hero-headline {
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   animation: fadeInUp 0.8s ease-out 0.2s both;
 }
 
 .main-title {
-  font-size: 56px;
+  font-size: 42px;
   font-weight: 700;
   line-height: 1.1;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   color: white;
 }
 
@@ -249,25 +249,25 @@ svg text, svg tspan {
 }
 
 .subtitle {
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 400;
   color: #e0e0e0;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .hero-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  margin-top: 40px;
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .stat-card {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 16px;
-  padding: 30px 20px;
+  border-radius: 12px;
+  padding: 15px 10px;
   text-align: center;
   transition: all 0.3s ease;
   animation: fadeInUp 0.8s ease-out 0.4s both;
@@ -288,35 +288,35 @@ svg text, svg tspan {
 }
 
 .stat-number {
-  font-size: 48px;
+  font-size: 32px;
   font-weight: 700;
   color: #ff9800;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   text-shadow: 0 0 20px rgba(255, 152, 0, 0.3);
 }
 
 .stat-label {
-  font-size: 16px;
+  font-size: 13px;
   color: #e0e0e0;
   font-weight: 500;
 }
 
 .social-proof {
-  margin: 40px 0;
+  margin: 20px 0;
   animation: fadeInUp 0.8s ease-out 1s both;
 }
 
 .proof-text {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
-  font-size: 18px;
+  margin-bottom: 8px;
+  font-size: 15px;
   color: #e0e0e0;
 }
 
 .proof-icon {
-  font-size: 24px;
-  margin-right: 15px;
+  font-size: 20px;
+  margin-right: 10px;
 }
 
 .hero-cta {
