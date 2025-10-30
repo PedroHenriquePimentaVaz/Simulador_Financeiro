@@ -1120,7 +1120,7 @@ svg text, svg tspan {
 
 @media (max-width: 768px) {
   .advanced-results {
-    padding: 20px 15px;
+    padding: 20px 10px;
   }
   
   .detailed-breakdown-grid {
@@ -1217,7 +1217,7 @@ svg text, svg tspan {
   
   /* Melhorar gráficos no mobile */
   .chart-container {
-    padding: 15px 10px !important;
+    padding: 10px 5px !important;
     margin-top: 20px !important;
   }
   
