@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { AdvancedSimulationResult, formatCurrency, formatPercentage, canAddStore, addStoreToSimulation } from '../utils/advancedCalculations';
 import jsPDF from 'jspdf';
@@ -18,8 +18,18 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   const [selectedMonth, setSelectedMonth] = useState<number>(1);
   const [showAddStoreForm, setShowAddStoreForm] = useState(false);
   const [addedStores, setAddedStores] = useState<Array<{month: number, implementationMonth: number}>>([]);
+  const [isMobile, setIsMobile] = useState(false);
   
   const { monthlyResults, totalInvestment, paybackPeriod, roi, finalCash } = currentResults;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Calcular tempo para alcançar a renda desejada
   const calculateTimeToTargetIncome = (): number | null => {
@@ -777,7 +787,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       <div className="charts-section">
         <div className="chart-container">
           <h4>Fluxo de Caixa Acumulado</h4>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="mes" />
