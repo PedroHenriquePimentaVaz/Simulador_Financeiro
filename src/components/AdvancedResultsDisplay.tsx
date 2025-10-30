@@ -179,7 +179,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     // Separador
     doc.setLineWidth(0.3);
     doc.setDrawColor(200, 200, 200);
-    doc.line(margin, 87, pageWidth - margin, 87);
+    doc.line(margin, 89, pageWidth - margin, 89);
     
     // Agrupar dados por ano (5 anos)
     const dataByYear: { [key: number]: typeof monthlyResults } = {};
