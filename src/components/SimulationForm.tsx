@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SimulationData } from '../types/simulation';
 import { analyzeInvestmentViability, ViabilityAnalysis } from '../utils/advancedCalculations';
+import { brazilianStates, citiesByState } from '../data/brazilianStates';
 
 interface SimulationFormProps {
   initialData: SimulationData;
@@ -27,10 +28,18 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
   }, [formData.investimentoInicial, formData.lucroDesejado, formData.perfilOperacao]);
 
   const handleInputChange = (field: keyof SimulationData, value: number | string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [field]: value
+      };
+      
+      if (field === 'estado') {
+        newData.cidade = '';
+      }
+      
+      return newData;
+    });
   };
 
   // Função para formatar números brasileiros
@@ -147,25 +156,32 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
 
         <div className="form-group" style={{ marginBottom: 0 }}>
           <label className="form-label">Estado *</label>
-          <input
-            type="text"
-            className="form-input"
-            placeholder="Digite seu estado"
+          <select 
+            className="form-select"
             value={formData.estado || ''}
             onChange={(e) => handleInputChange('estado', e.target.value)}
-          />
+          >
+            <option value="">Selecione o estado</option>
+            {Object.entries(brazilianStates).map(([code, name]) => (
+              <option key={code} value={code}>{name}</option>
+            ))}
+          </select>
         </div>
       </div>
 
       <div className="form-group" style={{ marginBottom: '20px' }}>
         <label className="form-label">Cidade *</label>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="Digite sua cidade"
+        <select 
+          className="form-select"
           value={formData.cidade || ''}
           onChange={(e) => handleInputChange('cidade', e.target.value)}
-        />
+          disabled={!formData.estado}
+        >
+          <option value="">{formData.estado ? 'Selecione a cidade' : 'Selecione primeiro o estado'}</option>
+          {formData.estado && citiesByState[formData.estado]?.map((city) => (
+            <option key={city} value={city}>{city}</option>
+          ))}
+        </select>
       </div>
 
       <div className="form-group">
