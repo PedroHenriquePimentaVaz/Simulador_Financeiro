@@ -108,6 +108,66 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
 
   return (
     <form onSubmit={handleSubmit}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+        <div className="form-group" style={{ marginBottom: 0 }}>
+          <label className="form-label">Nome *</label>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="Digite seu nome completo"
+            value={formData.nome || ''}
+            onChange={(e) => handleInputChange('nome', e.target.value)}
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: 0 }}>
+          <label className="form-label">E-mail *</label>
+          <input
+            type="email"
+            className="form-input"
+            placeholder="seu@email.com"
+            value={formData.email || ''}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+        <div className="form-group" style={{ marginBottom: 0 }}>
+          <label className="form-label">WhatsApp com DDD *</label>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="(00) 00000-0000"
+            value={formData.telefone ? formatPhone(formData.telefone) : ''}
+            onChange={(e) => handleInputChange('telefone', e.target.value.replace(/\D/g, ''))}
+            maxLength={11}
+          />
+        </div>
+
+        <div className="form-group" style={{ marginBottom: 0 }}>
+          <label className="form-label">Estado *</label>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="Digite seu estado"
+            value={formData.estado || ''}
+            onChange={(e) => handleInputChange('estado', e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="form-group" style={{ marginBottom: '20px' }}>
+        <label className="form-label">Cidade *</label>
+        <input
+          type="text"
+          className="form-input"
+          placeholder="Digite sua cidade"
+          value={formData.cidade || ''}
+          onChange={(e) => handleInputChange('cidade', e.target.value)}
+        />
+      </div>
+
       <div className="form-group">
         <label className="form-label">Quanto você deseja lucrar mensalmente com o negócio? *</label>
         <div style={{ position: 'relative' }}>
@@ -217,62 +277,6 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         }}>
           Os cenários representam diferentes projeções de desempenho
         </p>
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">Nome Completo *</label>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="Digite seu nome completo"
-          value={formData.nome || ''}
-          onChange={(e) => handleInputChange('nome', e.target.value)}
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">Telefone *</label>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="(00) 00000-0000"
-          value={formData.telefone ? formatPhone(formData.telefone) : ''}
-          onChange={(e) => handleInputChange('telefone', e.target.value.replace(/\D/g, ''))}
-          maxLength={11}
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">E-mail *</label>
-        <input
-          type="email"
-          className="form-input"
-          placeholder="seu@email.com"
-          value={formData.email || ''}
-          onChange={(e) => handleInputChange('email', e.target.value)}
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">Estado *</label>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="Digite seu estado"
-          value={formData.estado || ''}
-          onChange={(e) => handleInputChange('estado', e.target.value)}
-        />
-      </div>
-
-      <div className="form-group">
-        <label className="form-label">Cidade *</label>
-        <input
-          type="text"
-          className="form-input"
-          placeholder="Digite sua cidade"
-          value={formData.cidade || ''}
-          onChange={(e) => handleInputChange('cidade', e.target.value)}
-        />
       </div>
 
       {/* Análise de Viabilidade */}
