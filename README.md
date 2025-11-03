@@ -33,6 +33,8 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Interface Moderna**: Design baseado no tema BeHonest (azul da marca #001c54 e laranja)
 - **Tipografia Poppins**: Fonte moderna e consistente em toda a plataforma
 - **Footer Completo**: Rodapé com logos das redes sociais (locais), menu de navegação e download do app
+- **Formulário de Contato**: Captura de dados pessoais (Nome, Telefone, E-mail, Estado, Cidade)
+- **Formatação Automática**: Telefone formatado automaticamente no padrão brasileiro
 
 ## 📊 Métricas Calculadas
 
@@ -131,6 +133,8 @@ O Dockerfile usa **multi-stage build** para otimizar o tamanho da imagem final. 
    - Quanto deseja tirar mensalmente do negócio (campo livre)
    - Quanto tem de disponibilidade de investimento (campo livre)
    - Perfil de operação (seleção: integral, gestão ou terceirizar)
+   - Cenário da simulação (pessimista, médio ou otimista)
+   - Informações pessoais: Nome, Telefone, E-mail, Estado e Cidade
 
 2. **Visualize os Resultados**:
    - Cards com métricas principais
