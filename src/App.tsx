@@ -152,6 +152,8 @@ function App() {
       <div className="benefits-section">
         <div className="benefits-content">
           <h3 className="benefits-title">Por que investir na BeHonest?</h3>
+          
+          {/* First Row - Main Benefits */}
           <div className="benefits-grid">
             <div className="benefit-item">
               <div className="benefit-icon">💰</div>
@@ -179,6 +181,76 @@ function App() {
               <div className="benefit-content">
                 <h4>Sem Estoque</h4>
                 <p>Sem custos fixos de armazenamento</p>
+              </div>
+            </div>
+          </div>
+
+          {/* How It Works Section */}
+          <div style={{ marginTop: '60px' }}>
+            <h3 className="benefits-title">Como Funciona o Modelo de Negócio</h3>
+            <div className="benefits-grid">
+              <div className="benefit-item">
+                <div className="benefit-icon">🏪</div>
+                <div className="benefit-content">
+                  <h4>Estrutura Física</h4>
+                  <p>Mercados autônomos instalados em locais estratégicos de alto tráfego</p>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">💳</div>
+                <div className="benefit-content">
+                  <h4>Vendas Automáticas</h4>
+                  <p>Sistema integrado de pagamento e controle de estoque</p>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">🔄</div>
+                <div className="benefit-content">
+                  <h4>Reposição Regular</h4>
+                  <p>Operação de abastecimento feita de forma recorrente</p>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">📊</div>
+                <div className="benefit-content">
+                  <h4>Gestão Remota</h4>
+                  <p>Acompanhamento em tempo real via plataforma digital</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Advantages Section */}
+          <div style={{ marginTop: '60px' }}>
+            <h3 className="benefits-title">Vantagens Competitivas</h3>
+            <div className="benefits-grid">
+              <div className="benefit-item">
+                <div className="benefit-icon">⚡</div>
+                <div className="benefit-content">
+                  <h4>Payback Rápido</h4>
+                  <p>Retorno do investimento em 18 a 22 meses</p>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">🛡️</div>
+                <div className="benefit-content">
+                  <h4>Baixo Risco</h4>
+                  <p>Modelo já validado e em expansão no mercado</p>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">🎓</div>
+                <div className="benefit-content">
+                  <h4>Treinamento Completo</h4>
+                  <p>Suporte total para sua jornada como franqueado</p>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">📈</div>
+                <div className="benefit-content">
+                  <h4>Potencial de Crescimento</h4>
+                  <p>Expansão ilimitada em uma indústria em crescimento</p>
+                </div>
               </div>
             </div>
           </div>
