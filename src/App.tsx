@@ -4,7 +4,6 @@ import { simulate as advancedSimulate, AdvancedSimulationResult } from './utils/
 import SimulationForm from './components/SimulationForm';
 import ResultsPage from './pages/ResultsPage';
 import Footer from './components/Footer';
-import WhatsAppPopUp from './components/WhatsAppPopUp';
 
 function App() {
   const [simulationData, setSimulationData] = useState<SimulationData>({
@@ -187,9 +186,6 @@ function App() {
       </div>
 
       <Footer />
-      
-      {/* WhatsApp PopUp */}
-      <WhatsAppPopUp whatsappLink="https://wa.me/5531983550409" />
     </div>
   );
 }
