@@ -70,7 +70,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
       <Footer />
       
       {/* WhatsApp PopUp */}
-      <WhatsAppPopUp whatsappLink="https://wa.me/5531983550409" />
+      <WhatsAppPopUp whatsappLink="https://chat.whatsapp.com/KOKk46ZMmjMEZjvScFOf2f" />
     </div>
   );
 };

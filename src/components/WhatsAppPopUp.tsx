@@ -13,10 +13,10 @@ const WhatsAppPopUp: React.FC<WhatsAppPopUpProps> = ({ whatsappLink }) => {
     const hasDismissedPopup = localStorage.getItem('behonest_popup_dismissed');
     
     if (!hasDismissedPopup) {
-      // Mostrar pop-up após 10 segundos
+      // Mostrar pop-up após 5 segundos
       const timer = setTimeout(() => {
         setShowPopUp(true);
-      }, 10000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
