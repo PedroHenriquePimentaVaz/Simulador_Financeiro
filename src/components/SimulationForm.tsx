@@ -47,6 +47,15 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     return numValue.toLocaleString('pt-BR');
   };
 
+  // Função para formatar telefone brasileiro
+  const formatPhone = (value: string): string => {
+    const cleanValue = value.replace(/\D/g, '');
+    if (cleanValue.length <= 10) {
+      return cleanValue.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    }
+    return cleanValue.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -86,7 +95,12 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         ? formatBrazilianNumber(formData.lucroDesejado) 
         : formData.lucroDesejado,
       perfilOperacao: formData.perfilOperacao,
-      cenario: formData.cenario || 'medio'
+      cenario: formData.cenario || 'medio',
+      nome: formData.nome,
+      telefone: formData.telefone,
+      email: formData.email,
+      estado: formData.estado,
+      cidade: formData.cidade
     };
     
     onSimulate(simulatedData);
@@ -203,6 +217,62 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         }}>
           Os cenários representam diferentes projeções de desempenho
         </p>
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Nome Completo *</label>
+        <input
+          type="text"
+          className="form-input"
+          placeholder="Digite seu nome completo"
+          value={formData.nome || ''}
+          onChange={(e) => handleInputChange('nome', e.target.value)}
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Telefone *</label>
+        <input
+          type="text"
+          className="form-input"
+          placeholder="(00) 00000-0000"
+          value={formData.telefone ? formatPhone(formData.telefone) : ''}
+          onChange={(e) => handleInputChange('telefone', e.target.value.replace(/\D/g, ''))}
+          maxLength={11}
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">E-mail *</label>
+        <input
+          type="email"
+          className="form-input"
+          placeholder="seu@email.com"
+          value={formData.email || ''}
+          onChange={(e) => handleInputChange('email', e.target.value)}
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Estado *</label>
+        <input
+          type="text"
+          className="form-input"
+          placeholder="Digite seu estado"
+          value={formData.estado || ''}
+          onChange={(e) => handleInputChange('estado', e.target.value)}
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Cidade *</label>
+        <input
+          type="text"
+          className="form-input"
+          placeholder="Digite sua cidade"
+          value={formData.cidade || ''}
+          onChange={(e) => handleInputChange('cidade', e.target.value)}
+        />
       </div>
 
       {/* Análise de Viabilidade */}

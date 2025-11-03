@@ -67,8 +67,8 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
     roi: ((calculateCompoundInterest(initialInvestment, option.annualRate, currentPeriod.months) - initialInvestment) / initialInvestment) * 100
   }));
 
-  const franchiseProfit = franchiseValue - initialInvestment;
-  const franchiseROI = (franchiseProfit / initialInvestment) * 100;
+  // const franchiseProfit = franchiseValue - initialInvestment;
+  // const franchiseROI = (franchiseProfit / initialInvestment) * 100;
 
   const maxValue = Math.max(franchiseValue, ...comparisonData.map(d => d.value));
 

@@ -8,6 +8,11 @@ export interface SimulationData {
   lucroDesejado?: number;
   perfilOperacao?: string;
   cenario?: 'pessimista' | 'medio' | 'otimista';
+  nome?: string;
+  telefone?: string;
+  email?: string;
+  estado?: string;
+  cidade?: string;
 }
 
 export interface SimulationResult {

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { AdvancedSimulationResult, formatCurrency, formatPercentage, canAddStore, addStoreToSimulation } from '../utils/advancedCalculations';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import InvestmentComparisonChart from './InvestmentComparisonChart';
 
 interface AdvancedResultsDisplayProps {
@@ -130,7 +129,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     // Borda azul
     doc.setDrawColor(0, 28, 84);
     doc.setLineWidth(1);
-    doc.roundedRect(margin, boxY, boxWidth, boxHeight, 3, 3);
+    doc.roundedRect(margin, boxY, boxWidth, boxHeight, 3, 3, 'S');
     
     // Título do resumo - azul
     doc.setFontSize(11);
@@ -196,7 +195,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       const year = parseInt(yearNum);
       
       // Adicionar nova página para cada ano (incluindo o primeiro)
-      doc.addPage();
+        doc.addPage();
       
       // Fundo branco
       doc.setFillColor(255, 255, 255);
@@ -255,7 +254,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       // Borda azul
       doc.setDrawColor(0, 28, 84);
       doc.setLineWidth(1);
-      doc.roundedRect(barStartX, yPos, barWidth, boxHeight, 3, 3);
+      doc.roundedRect(barStartX, yPos, barWidth, boxHeight, 3, 3, 'S');
       
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
@@ -338,7 +337,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       
       // Dados mensais com linhas de grade
       
-      months.forEach((month, index) => {
+      months.forEach((month, _index) => {
         if (yPos > pageHeight - 10) {
           doc.addPage();
           
@@ -542,32 +541,32 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             border: '2px solid #81c784'
           }}>
             {/* Informações Gerais */}
-            <div className="breakdown-item">
-              <span>Lojas:</span>
-              <span>{lastMonth.stores}</span>
-            </div>
+          <div className="breakdown-item">
+            <span>Lojas:</span>
+            <span>{lastMonth.stores}</span>
+          </div>
             
             {/* Receitas */}
             <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '700', color: '#2e7d32' }}>Receita Bruta:</span>
               <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.totalRevenue)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '700', color: '#2e7d32' }}>Receita Líquida:</span>
               <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.netRevenue)}</span>
-            </div>
+          </div>
             
             {/* Lucro Bruto */}
             <div className="breakdown-item" style={{ backgroundColor: '#e3f2fd', padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '700', color: '#1565c0' }}>Lucro Bruto:</span>
               <span style={{ fontWeight: '700', color: '#1565c0', fontSize: '16px' }}>{formatCurrency(lastMonth.grossProfit)}</span>
-            </div>
+          </div>
             
             {/* Lucro Líquido */}
             <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '12px', borderRadius: '6px', border: '2px solid #4caf50' }}>
               <span style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>Lucro Líquido:</span>
               <span style={{ fontWeight: '700', color: '#1b5e20', fontSize: '18px' }}>{formatCurrency(lastMonth.netProfit)}</span>
-            </div>
+          </div>
           </div>
 
           {/* Coluna Direita - Todas as Despesas */}
@@ -580,39 +579,39 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Imposto:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.tax)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Custo 1:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.cmv)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Custo 2:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.losses)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Despesa 1:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.reposicao)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Despesa 2:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.royalties)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Despesa 3:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.otherRepasses)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Taxa de Cartão:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.cardFee)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Marketing:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.marketing)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Sistema:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.systemFee)}</span>
-            </div>
+          </div>
             <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
               <span style={{ fontWeight: '600', color: '#c62828' }}>Contabilidade:</span>
               <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.accounting)}</span>
@@ -1039,7 +1038,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 <td><strong>Saldo Acumulado</strong></td>
                 {monthlyResults.map((result) => (
                   <td 
-                    key={result.month}
+                    key={result.month} 
                     className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
                     style={{ position: 'relative' }}
                   >
