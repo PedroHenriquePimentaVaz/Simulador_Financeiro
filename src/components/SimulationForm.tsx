@@ -14,6 +14,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     cenario: initialData.cenario || 'medio'
   });
   const [viabilityAnalysis, setViabilityAnalysis] = useState<ViabilityAnalysis | null>(null);
+  const [showOtherCity, setShowOtherCity] = useState(false);
 
   // Analisar viabilidade sempre que os dados mudarem
   useEffect(() => {
@@ -36,6 +37,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       
       if (field === 'estado') {
         newData.cidade = '';
+        setShowOtherCity(false);
       }
       
       return newData;
@@ -171,17 +173,35 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
 
       <div className="form-group" style={{ marginBottom: '20px' }}>
         <label className="form-label">Cidade *</label>
-        <select 
-          className="form-select"
-          value={formData.cidade || ''}
-          onChange={(e) => handleInputChange('cidade', e.target.value)}
-          disabled={!formData.estado}
-        >
-          <option value="">{formData.estado ? 'Selecione a cidade' : 'Selecione primeiro o estado'}</option>
-          {formData.estado && citiesByState[formData.estado]?.map((city) => (
-            <option key={city} value={city}>{city}</option>
-          ))}
-        </select>
+        {showOtherCity ? (
+          <input
+            type="text"
+            className="form-input"
+            placeholder="Digite o nome da cidade"
+            value={formData.cidade || ''}
+            onChange={(e) => handleInputChange('cidade', e.target.value)}
+          />
+        ) : (
+          <select 
+            className="form-select"
+            value={formData.cidade || ''}
+            onChange={(e) => {
+              if (e.target.value === 'OUTRA') {
+                setShowOtherCity(true);
+                handleInputChange('cidade', '');
+              } else {
+                handleInputChange('cidade', e.target.value);
+              }
+            }}
+            disabled={!formData.estado}
+          >
+            <option value="">{formData.estado ? 'Selecione a cidade' : 'Selecione primeiro o estado'}</option>
+            {formData.estado && citiesByState[formData.estado]?.map((city) => (
+              <option key={city} value={city}>{city}</option>
+            ))}
+            <option value="OUTRA">Outra cidade</option>
+          </select>
+        )}
       </div>
 
       <div className="form-group">
