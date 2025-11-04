@@ -31,8 +31,8 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
   const handleInputChange = (field: keyof SimulationData, value: number | string) => {
     setFormData(prev => {
       const newData = {
-        ...prev,
-        [field]: value
+      ...prev,
+      [field]: value
       };
       
       if (field === 'estado') {

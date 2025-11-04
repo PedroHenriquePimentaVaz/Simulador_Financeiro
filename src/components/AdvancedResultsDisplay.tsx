@@ -294,7 +294,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       
       yPos += 20;
       
-      // Tabela mensal do ano - design moderno com linhas
+      // Tabela mensal do ano - design moderno com todas as métricas
       let xPos = tableStartX;
       
       // Título da tabela (subido 3mm)
@@ -313,32 +313,51 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       doc.roundedRect(barStartX, yPos - 7, barWidth, 7, 1, 1, 'F');
       
       // Cabeçalhos individuais em branco sobre a barra amarela (subidos 3mm)
-      doc.setFontSize(10);
+      doc.setFontSize(7);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
       
+      xPos = tableStartX;
       doc.text('Mês', xPos, yPos - 3);
-      
-      xPos += 28;
-      doc.text('Rec. Bruta', xPos, yPos - 3);
-      
-      xPos += 58;
-      doc.text('Rec. Líq.', xPos, yPos - 3);
-      
-      xPos += 58;
-      doc.text('Lucro Líq.', xPos, yPos - 3);
-      
-      xPos += 58;
-      doc.text('Saldo Final', xPos, yPos - 3);
+      xPos += 15;
+      doc.text('Rec.Bruta', xPos, yPos - 3);
+      xPos += 17;
+      doc.text('Imposto', xPos, yPos - 3);
+      xPos += 16;
+      doc.text('Rec.Líq', xPos, yPos - 3);
+      xPos += 17;
+      doc.text('Custo1', xPos, yPos - 3);
+      xPos += 16;
+      doc.text('Custo2', xPos, yPos - 3);
+      xPos += 16;
+      doc.text('Luc.Bruto', xPos, yPos - 3);
+      xPos += 17;
+      doc.text('Desp.1', xPos, yPos - 3);
+      xPos += 15;
+      doc.text('Desp.2', xPos, yPos - 3);
+      xPos += 15;
+      doc.text('Desp.3', xPos, yPos - 3);
+      xPos += 15;
+      doc.text('Tx.Cartão', xPos, yPos - 3);
+      xPos += 16;
+      doc.text('Marketing', xPos, yPos - 3);
+      xPos += 16;
+      doc.text('Sistema', xPos, yPos - 3);
+      xPos += 15;
+      doc.text('Contab.', xPos, yPos - 3);
+      xPos += 15;
+      doc.text('Luc.Líq', xPos, yPos - 3);
+      xPos += 17;
+      doc.text('Saldo', xPos, yPos - 3);
       
       yPos += 6;
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
+      doc.setFontSize(7);
       
       // Dados mensais com linhas de grade
       
       months.forEach((month, _index) => {
-        if (yPos > pageHeight - 10) {
+        if (yPos > pageHeight - 15) {
           doc.addPage();
           
           // Fundo branco
@@ -365,21 +384,43 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           // Recriar headers (subidos 3mm)
           xPos = tableStartX;
           doc.setFont('helvetica', 'bold');
-          doc.setFontSize(10);
+          doc.setFontSize(7);
           doc.setTextColor(255, 255, 255);
           
           doc.text('Mês', xPos, yPos - 3);
-          xPos += 28;
-          doc.text('Rec. Bruta', xPos, yPos - 3);
-          xPos += 58;
-          doc.text('Rec. Líq.', xPos, yPos - 3);
-          xPos += 58;
-          doc.text('Lucro Líq.', xPos, yPos - 3);
-          xPos += 58;
-          doc.text('Saldo Final', xPos, yPos - 3);
+          xPos += 15;
+          doc.text('Rec.Bruta', xPos, yPos - 3);
+          xPos += 17;
+          doc.text('Imposto', xPos, yPos - 3);
+          xPos += 16;
+          doc.text('Rec.Líq', xPos, yPos - 3);
+          xPos += 17;
+          doc.text('Custo1', xPos, yPos - 3);
+          xPos += 16;
+          doc.text('Custo2', xPos, yPos - 3);
+          xPos += 16;
+          doc.text('Luc.Bruto', xPos, yPos - 3);
+          xPos += 17;
+          doc.text('Desp.1', xPos, yPos - 3);
+          xPos += 15;
+          doc.text('Desp.2', xPos, yPos - 3);
+          xPos += 15;
+          doc.text('Desp.3', xPos, yPos - 3);
+          xPos += 15;
+          doc.text('Tx.Cartão', xPos, yPos - 3);
+          xPos += 16;
+          doc.text('Marketing', xPos, yPos - 3);
+          xPos += 16;
+          doc.text('Sistema', xPos, yPos - 3);
+          xPos += 15;
+          doc.text('Contab.', xPos, yPos - 3);
+          xPos += 15;
+          doc.text('Luc.Líq', xPos, yPos - 3);
+          xPos += 17;
+          doc.text('Saldo', xPos, yPos - 3);
           yPos += 6;
           doc.setFont('helvetica', 'normal');
-          doc.setFontSize(10);
+          doc.setFontSize(7);
         }
         
         // Linha horizontal para separar dados - totalmente alinhada
@@ -387,32 +428,61 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         doc.setLineWidth(0.2);
         doc.line(barStartX, yPos + 2, tableEndX, yPos + 2);
         
-        // Dados - todos em cor escura
+        // Dados - todos em cor escura, na mesma ordem
         xPos = tableStartX;
         doc.setTextColor(50, 50, 50);
         doc.text(month.month.toString(), xPos, yPos);
         
-        xPos += 28;
-        doc.setTextColor(50, 50, 50);
+        xPos += 15;
         doc.text(formatCurrency(month.totalRevenue), xPos, yPos);
         
-        xPos += 58;
-        doc.setTextColor(50, 50, 50);
+        xPos += 17;
+        doc.text(formatCurrency(-month.tax), xPos, yPos);
+        
+        xPos += 16;
         doc.text(formatCurrency(month.netRevenue), xPos, yPos);
         
-        xPos += 58;
-        doc.setTextColor(50, 50, 50);
+        xPos += 17;
+        doc.text(formatCurrency(-month.cmv), xPos, yPos);
+        
+        xPos += 16;
+        doc.text(formatCurrency(-month.losses), xPos, yPos);
+        
+        xPos += 16;
+        doc.text(formatCurrency(month.grossProfit), xPos, yPos);
+        
+        xPos += 17;
+        doc.text(formatCurrency(-month.reposicao), xPos, yPos);
+        
+        xPos += 15;
+        doc.text(formatCurrency(-month.royalties), xPos, yPos);
+        
+        xPos += 15;
+        doc.text(formatCurrency(-month.otherRepasses), xPos, yPos);
+        
+        xPos += 15;
+        doc.text(formatCurrency(-month.cardFee), xPos, yPos);
+        
+        xPos += 16;
+        doc.text(formatCurrency(-month.marketing), xPos, yPos);
+        
+        xPos += 16;
+        doc.text(formatCurrency(-month.systemFee), xPos, yPos);
+        
+        xPos += 15;
+        doc.text(formatCurrency(-month.accounting), xPos, yPos);
+        
+        xPos += 15;
         doc.text(formatCurrency(month.netProfit), xPos, yPos);
         
-        xPos += 58;
-        doc.setTextColor(50, 50, 50);
+        xPos += 17;
         doc.text(formatCurrency(month.cumulativeCash), xPos, yPos);
         
         yPos += 6;
       });
     });
     
-    doc.save(`BeHonest_Simulacao_Completa_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(`Be_Honest_Simulacao_Completa_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
   const chartData = monthlyResults.map(result => ({
@@ -532,90 +602,239 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
 
       <div className="detailed-breakdown">
         <h4>Último Mês (Mês {lastMonth.month})</h4>
-        <div className="detailed-breakdown-grid" style={{ alignItems: 'start' }}>
-          {/* Coluna Esquerda - Receitas e Lucros */}
-          <div className="breakdown-grid" style={{ 
-            backgroundColor: '#f1f8e9', 
-            padding: '15px', 
-            borderRadius: '10px',
-            border: '2px solid #81c784'
+        <div style={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: '12px', 
+          overflowX: 'auto',
+          padding: '15px',
+          backgroundColor: '#f8f9fa',
+          borderRadius: '10px',
+          justifyContent: 'center',
+          alignItems: 'flex-start'
+        }}>
+          {/* Receita Bruta - Verde */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#e8f5e9', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #4caf50',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
           }}>
-            {/* Informações Gerais */}
-          <div className="breakdown-item">
-            <span>Lojas:</span>
-            <span>{lastMonth.stores}</span>
-          </div>
-            
-            {/* Receitas */}
-            <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '700', color: '#2e7d32' }}>Receita Bruta:</span>
-              <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.totalRevenue)}</span>
-          </div>
-            <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '700', color: '#2e7d32' }}>Receita Líquida:</span>
-              <span style={{ fontWeight: '700', color: '#2e7d32', fontSize: '16px' }}>{formatCurrency(lastMonth.netRevenue)}</span>
-          </div>
-            
-            {/* Lucro Bruto */}
-            <div className="breakdown-item" style={{ backgroundColor: '#e3f2fd', padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '700', color: '#1565c0' }}>Lucro Bruto:</span>
-              <span style={{ fontWeight: '700', color: '#1565c0', fontSize: '16px' }}>{formatCurrency(lastMonth.grossProfit)}</span>
-          </div>
-            
-            {/* Lucro Líquido */}
-            <div className="breakdown-item" style={{ backgroundColor: '#e8f5e9', padding: '12px', borderRadius: '6px', border: '2px solid #4caf50' }}>
-              <span style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>Lucro Líquido:</span>
-              <span style={{ fontWeight: '700', color: '#1b5e20', fontSize: '18px' }}>{formatCurrency(lastMonth.netProfit)}</span>
-          </div>
+            <div style={{ fontWeight: '700', color: '#2e7d32', fontSize: '14px', marginBottom: '5px' }}>Receita Bruta</div>
+            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(lastMonth.totalRevenue)}</div>
           </div>
 
-          {/* Coluna Direita - Todas as Despesas */}
-          <div className="breakdown-grid" style={{ 
+          {/* Imposto - Vermelho */}
+          <div className="breakdown-item" style={{ 
             backgroundColor: '#ffebee', 
-            padding: '15px', 
-            borderRadius: '10px',
-            border: '2px solid #ef5350'
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
           }}>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Imposto:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.tax)}</span>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Imposto</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.tax)}</div>
           </div>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Custo 1:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.cmv)}</span>
+
+          {/* Receita Líquida - Verde */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#e8f5e9', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #4caf50',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#2e7d32', fontSize: '14px', marginBottom: '5px' }}>Receita Líquida</div>
+            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(lastMonth.netRevenue)}</div>
           </div>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Custo 2:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.losses)}</span>
+
+          {/* Custo 1 - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Custo 1</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.cmv)}</div>
           </div>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Despesa 1:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.reposicao)}</span>
+
+          {/* Custo 2 - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Custo 2</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.losses)}</div>
           </div>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Despesa 2:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.royalties)}</span>
+
+          {/* Lucro Bruto - Azul */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#e3f2fd', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #2196f3',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#1565c0', fontSize: '14px', marginBottom: '5px' }}>Lucro Bruto</div>
+            <div style={{ fontWeight: '700', color: '#0d47a1', fontSize: '16px' }}>{formatCurrency(lastMonth.grossProfit)}</div>
           </div>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Despesa 3:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.otherRepasses)}</span>
+
+          {/* Despesa 1 - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Despesa 1</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.reposicao)}</div>
           </div>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Taxa de Cartão:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.cardFee)}</span>
+
+          {/* Despesa 2 - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Despesa 2</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.royalties)}</div>
           </div>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Marketing:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.marketing)}</span>
+
+          {/* Despesa 3 - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Despesa 3</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.otherRepasses)}</div>
           </div>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Sistema:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.systemFee)}</span>
+
+          {/* Taxa Cartão - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Taxa Cartão</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.cardFee)}</div>
           </div>
-            <div className="breakdown-item" style={{ padding: '10px', borderRadius: '6px' }}>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>Contabilidade:</span>
-              <span style={{ fontWeight: '600', color: '#c62828' }}>{formatCurrency(-lastMonth.accounting)}</span>
-            </div>
+
+          {/* Marketing - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Marketing</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.marketing)}</div>
+          </div>
+
+          {/* Sistema - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Sistema</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.systemFee)}</div>
+          </div>
+
+          {/* Contabilidade - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Contabilidade</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.accounting)}</div>
+          </div>
+
+          {/* Lucro Líquido - Verde */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#e8f5e9', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #4caf50',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '14px', marginBottom: '5px' }}>Lucro Líquido</div>
+            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(lastMonth.netProfit)}</div>
           </div>
         </div>
       </div>
@@ -939,97 +1158,115 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 ))}
               </tr>
               
-              {/* Receitas e Lucros */}
+              {/* Receita Bruta */}
               <tr>
                 <td><strong>Receita Bruta</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(result.totalRevenue)}</td>
-                ))}
-              </tr>
-              <tr>
-                <td><strong>Receita Líquida</strong></td>
-                {monthlyResults.map((result) => (
-                  <td>{formatCurrency(result.netRevenue)}</td>
-                ))}
-              </tr>
-              <tr>
-                <td><strong>Lucro Bruto</strong></td>
-                {monthlyResults.map((result) => (
-                  <td>{formatCurrency(result.grossProfit)}</td>
-                ))}
-              </tr>
-              <tr>
-                <td><strong>Lucro Líquido</strong></td>
-                {monthlyResults.map((result) => (
-                  <td>{formatCurrency(result.netProfit)}</td>
+                  <td key={result.month}>{formatCurrency(result.totalRevenue)}</td>
                 ))}
               </tr>
               
-              {/* Todas as Despesas Agrupadas */}
+              {/* Imposto */}
               <tr>
                 <td><strong>Imposto</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.tax)}</td>
+                  <td key={result.month}>{formatCurrency(-result.tax)}</td>
                 ))}
               </tr>
+              
+              {/* Receita Líquida */}
+              <tr>
+                <td><strong>Receita Líquida</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month}>{formatCurrency(result.netRevenue)}</td>
+                ))}
+              </tr>
+              
+              {/* Custo 1 */}
               <tr>
                 <td><strong>Custo 1</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.cmv)}</td>
+                  <td key={result.month}>{formatCurrency(-result.cmv)}</td>
                 ))}
               </tr>
+              
+              {/* Custo 2 */}
               <tr>
                 <td><strong>Custo 2</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.losses)}</td>
+                  <td key={result.month}>{formatCurrency(-result.losses)}</td>
                 ))}
               </tr>
+              
+              {/* Lucro Bruto */}
+              <tr>
+                <td><strong>Lucro Bruto</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month}>{formatCurrency(result.grossProfit)}</td>
+                ))}
+              </tr>
+              
+              {/* Despesa 1 */}
               <tr>
                 <td><strong>Despesa 1</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.reposicao)}</td>
+                  <td key={result.month}>{formatCurrency(-result.reposicao)}</td>
                 ))}
               </tr>
+              
+              {/* Despesa 2 */}
               <tr>
                 <td><strong>Despesa 2</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.royalties)}</td>
+                  <td key={result.month}>{formatCurrency(-result.royalties)}</td>
                 ))}
               </tr>
+              
+              {/* Despesa 3 */}
               <tr>
                 <td><strong>Despesa 3</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.otherRepasses)}</td>
+                  <td key={result.month}>{formatCurrency(-result.otherRepasses)}</td>
                 ))}
               </tr>
+              
+              {/* Taxa Cartão */}
               <tr>
-                <td><strong>Taxa de Cartão</strong></td>
+                <td><strong>Taxa Cartão</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.cardFee)}</td>
+                  <td key={result.month}>{formatCurrency(-result.cardFee)}</td>
                 ))}
               </tr>
+              
+              {/* Marketing */}
               <tr>
                 <td><strong>Marketing</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.marketing)}</td>
+                  <td key={result.month}>{formatCurrency(-result.marketing)}</td>
                 ))}
               </tr>
+              
+              {/* Sistema */}
               <tr>
                 <td><strong>Sistema</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.systemFee)}</td>
+                  <td key={result.month}>{formatCurrency(-result.systemFee)}</td>
                 ))}
               </tr>
+              
+              {/* Contabilidade */}
               <tr>
                 <td><strong>Contabilidade</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.accounting)}</td>
+                  <td key={result.month}>{formatCurrency(-result.accounting)}</td>
                 ))}
               </tr>
+              
+              {/* Lucro Líquido */}
               <tr>
-                <td><strong>Custos Fixos</strong></td>
+                <td><strong>Lucro Líquido</strong></td>
                 {monthlyResults.map((result) => (
-                  <td>{formatCurrency(-result.fixedCosts)}</td>
+                  <td key={result.month}>{formatCurrency(result.netProfit)}</td>
                 ))}
               </tr>
               

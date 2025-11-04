@@ -45,7 +45,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
             <div className="success-icon">🎉</div>
             <h1 className="success-title">Simulação Concluída com Sucesso!</h1>
             <p className="success-subtitle">
-              Sua franquia BeHonest está projetada para gerar excelentes resultados
+              Sua franquia Be Honest está projetada para gerar excelentes resultados
             </p>
           </div>
         </div>

@@ -1,6 +1,6 @@
-# Simulador Financeiro BeHonest
+# Simulador Financeiro Be Honest
 
-Um simulador financeiro completo para calcular o potencial de retorno de investimento em franquias BeHonest.
+Um simulador financeiro completo para calcular o potencial de retorno de investimento em franquias Be Honest.
 
 ## 🚀 Quick Start com Docker
 
@@ -30,7 +30,7 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Simulação Interativa**: Adicione lojas em meses específicos e veja o impacto
 - **Planilha Completa**: Visualize todos os 60 meses de dados em uma tabela integrada
 - **Exportação PDF**: Baixe relatório completo da simulação
-- **Interface Moderna**: Design baseado no tema BeHonest (azul da marca #001c54 e laranja)
+- **Interface Moderna**: Design baseado no tema Be Honest (azul da marca #001c54 e laranja)
 - **Tipografia Poppins**: Fonte moderna e consistente em toda a plataforma
 - **Footer Completo**: Rodapé com logos das redes sociais (locais), menu de navegação e download do app
 - **Formulário de Contato**: Captura de dados pessoais (Nome, Telefone, E-mail, Estado, Cidade)
@@ -142,7 +142,7 @@ O Dockerfile usa **multi-stage build** para otimizar o tamanho da imagem final. 
    - Análise detalhada de receitas e retorno
 
 3. **Navegue pelo Footer**:
-   - Seção de branding: Logo BeHonest, ícones de redes sociais e logo ABF (empilhados verticalmente)
+   - Seção de branding: Logo Be Honest, ícones de redes sociais e logo ABF (empilhados verticalmente)
    - Menu de navegação (Home, Condomínio, Franqueado)
    - Download do app com logos locais (Google Play e App Store)
    - Rodapé inferior: Copyright e Política de Privacidade
@@ -201,4 +201,4 @@ O projeto utiliza Vite como bundler e está configurado para desenvolvimento rá
 
 ## 📄 Licença
 
-Este projeto é privado e destinado ao uso interno da BeHonest.
+Este projeto é privado e destinado ao uso interno da Be Honest.

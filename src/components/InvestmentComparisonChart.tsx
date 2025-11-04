@@ -104,7 +104,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
                 fontWeight: '700',
                 color: '#001c54'
               }}>
-                Franquia BeHonest
+                Franquia Be Honest
               </span>
               <div style={{ 
                 flex: 1, 
@@ -198,7 +198,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
         </h4>
         <div style={{ fontSize: '14px', lineHeight: '1.6', color: '#2c3e50' }}>
           <p>
-            <strong>Vantagem da Franquia:</strong> A franquia BeHonest supera significativamente 
+            <strong>Vantagem da Franquia:</strong> A franquia Be Honest supera significativamente 
             os investimentos em renda fixa em todos os períodos analisados, oferecendo retornos 
             muito superiores ao mercado tradicional.
           </p>

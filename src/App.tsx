@@ -79,7 +79,7 @@ function App() {
             <div className="hero-left">
               <div className="hero-headline">
                 <h1 className="main-title">
-                  Simule qual seria seu Lucro investimento na franquia de mercados autônomos da <span className="highlight-text">Be Honest</span>
+                  Simule qual seria o lucro do seu investimento na franquia de mercados autônomos da <span className="highlight-text">Be Honest</span>
                   <br />
                   <span className="subtitle">Payback de 18 a 22 meses</span>
                 </h1>
@@ -151,7 +151,7 @@ function App() {
       {/* Benefits Section */}
       <div className="benefits-section">
         <div className="benefits-content">
-          <h3 className="benefits-title">Por que investir na BeHonest?</h3>
+          <h3 className="benefits-title">Por que investir na Be Honest?</h3>
           
           {/* First Row - Main Benefits */}
           <div className="benefits-grid">
@@ -250,6 +250,41 @@ function App() {
                 <div className="benefit-content">
                   <h4>Potencial de Crescimento</h4>
                   <p>Expansão ilimitada em uma indústria em crescimento</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Next Steps Section */}
+          <div style={{ marginTop: '60px' }}>
+            <h3 className="benefits-title">Próximos Passos Após a Simulação</h3>
+            <div className="benefits-grid">
+              <div className="benefit-item">
+                <div className="benefit-icon">📞</div>
+                <div className="benefit-content">
+                  <h4>Entre em Contato</h4>
+                  <p>Nossa equipe está pronta para esclarecer todas as suas dúvidas e apresentar o modelo completo</p>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">📋</div>
+                <div className="benefit-content">
+                  <h4>Receba Materiais</h4>
+                  <p>Baixe apresentações, contratos e documentação completa sobre a franquia</p>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">🏢</div>
+                <div className="benefit-content">
+                  <h4>Visite uma Unidade</h4>
+                  <p>Conheça pessoalmente uma loja em funcionamento para ver na prática como tudo funciona</p>
+                </div>
+              </div>
+              <div className="benefit-item">
+                <div className="benefit-icon">✍️</div>
+                <div className="benefit-content">
+                  <h4>Feche o Negócio</h4>
+                  <p>Assine o contrato e inicie sua jornada como franqueado Be Honest com todo o suporte necessário</p>
                 </div>
               </div>
             </div>
