@@ -15,6 +15,23 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
   });
   const [viabilityAnalysis, setViabilityAnalysis] = useState<ViabilityAnalysis | null>(null);
   const [showOtherCity, setShowOtherCity] = useState(false);
+  const [utmParams, setUtmParams] = useState<Record<string, string>>({});
+
+  // Capturar parâmetros UTM da URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const utm: Record<string, string> = {};
+    
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+    utmKeys.forEach(key => {
+      const value = urlParams.get(key);
+      if (value) {
+        utm[key] = value;
+      }
+    });
+    
+    setUtmParams(utm);
+  }, []);
 
   // Analisar viabilidade sempre que os dados mudarem
   useEffect(() => {
@@ -67,8 +84,35 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     return cleanValue.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validar campos obrigatórios
+    if (!formData.nome || !formData.nome.trim()) {
+      alert('Por favor, preencha o campo Nome.');
+      return;
+    }
+    
+    if (!formData.email || !formData.email.trim()) {
+      alert('Por favor, preencha o campo E-mail.');
+      return;
+    }
+    
+    const phoneDigits = formData.telefone ? formData.telefone.replace(/\D/g, '') : '';
+    if (!formData.telefone || (phoneDigits.length !== 10 && phoneDigits.length !== 11)) {
+      alert('Por favor, preencha o campo WhatsApp com DDD + número (10 ou 11 dígitos).');
+      return;
+    }
+    
+    if (!formData.estado) {
+      alert('Por favor, selecione o Estado.');
+      return;
+    }
+    
+    if (!formData.cidade || !formData.cidade.trim()) {
+      alert('Por favor, preencha o campo Cidade.');
+      return;
+    }
     
     // Não calculamos mais o faturamento aqui, apenas passamos os dados
     const margemLiquida = 13; // Média entre 12-15%
@@ -114,6 +158,24 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       cidade: formData.cidade
     };
     
+    // Enviar dados para o webhook (incluindo UTM)
+    try {
+      const webhookData = {
+        ...simulatedData,
+        ...utmParams
+      };
+      
+      await fetch('https://hive-n8n.trnw0e.easypanel.host/webhook-test/335f6f4d-e471-4089-9bac-3b43771a71ba', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookData),
+      });
+    } catch (error) {
+      console.error('Erro ao enviar dados para o webhook:', error);
+    }
+    
     onSimulate(simulatedData);
   };
 
@@ -128,6 +190,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
             placeholder="Digite seu nome completo"
             value={formData.nome || ''}
             onChange={(e) => handleInputChange('nome', e.target.value)}
+            required
           />
         </div>
 
@@ -139,6 +202,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
             placeholder="seu@email.com"
             value={formData.email || ''}
             onChange={(e) => handleInputChange('email', e.target.value)}
+            required
           />
         </div>
       </div>
@@ -151,8 +215,13 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
             className="form-input"
             placeholder="(00) 00000-0000"
             value={formData.telefone ? formatPhone(formData.telefone) : ''}
-            onChange={(e) => handleInputChange('telefone', e.target.value.replace(/\D/g, ''))}
-            maxLength={11}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, '');
+              if (digits.length <= 11) {
+                handleInputChange('telefone', digits);
+              }
+            }}
+            required
           />
         </div>
 
@@ -162,6 +231,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
             className="form-select"
             value={formData.estado || ''}
             onChange={(e) => handleInputChange('estado', e.target.value)}
+            required
           >
             <option value="">Selecione o estado</option>
             {Object.entries(brazilianStates).map(([code, name]) => (
@@ -180,6 +250,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
             placeholder="Digite o nome da cidade"
             value={formData.cidade || ''}
             onChange={(e) => handleInputChange('cidade', e.target.value)}
+            required
           />
         ) : (
           <select 
@@ -194,6 +265,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
               }
             }}
             disabled={!formData.estado}
+            required
           >
             <option value="">{formData.estado ? 'Selecione a cidade' : 'Selecione primeiro o estado'}</option>
             {formData.estado && citiesByState[formData.estado]?.map((city) => (
