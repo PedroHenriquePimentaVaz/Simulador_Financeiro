@@ -22,11 +22,21 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     const urlParams = new URLSearchParams(window.location.search);
     const utm: Record<string, string> = {};
     
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-    utmKeys.forEach(key => {
+    // Mapear parâmetros UTM para os nomes esperados pelo webhook
+    const utmMapping: Record<string, string> = {
+      'utm_source': 'Source',
+      'utm_medium': 'Medium',
+      'utm_campaign': 'Campaign',
+      'utm_term': 'Term',
+      'utm_content': 'Content',
+      'page': 'Page',
+      'utm_page': 'Page'
+    };
+    
+    Object.keys(utmMapping).forEach(key => {
       const value = urlParams.get(key);
       if (value) {
-        utm[key] = value;
+        utm[utmMapping[key]] = value;
       }
     });
     
@@ -164,6 +174,9 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         ...simulatedData,
         ...utmParams
       };
+      
+      console.log('Dados enviados para webhook:', webhookData);
+      console.log('Parâmetros UTM capturados:', utmParams);
       
       await fetch('https://hive-n8n.trnw0e.easypanel.host/webhook-test/335f6f4d-e471-4089-9bac-3b43771a71ba', {
         method: 'POST',
