@@ -33,14 +33,47 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       'utm_page': 'Page'
     };
     
+    console.log('=== CAPTURA UTM NO CARREGAMENTO ===');
+    console.log('URL completa:', window.location.href);
+    console.log('URL search params:', window.location.search);
+    
     Object.keys(utmMapping).forEach(key => {
       const value = urlParams.get(key);
+      console.log(`Verificando ${key}:`, value);
       if (value) {
         utm[utmMapping[key]] = value;
       }
     });
     
+    console.log('Parâmetros UTM capturados:', utm);
+    
+    // Validação dos parâmetros UTM capturados
+    const expectedUtmFields = ['Source', 'Medium', 'Campaign', 'Content', 'Term', 'Page'];
+    const utmValidation: Record<string, { found: boolean; value: string | undefined }> = {};
+    
+    expectedUtmFields.forEach(field => {
+      utmValidation[field] = {
+        found: field in utm,
+        value: utm[field]
+      };
+    });
+    
+    console.log('=== VALIDAÇÃO UTM NO CARREGAMENTO ===');
+    console.table(utmValidation);
+    
+    const foundUtmCount = Object.values(utmValidation).filter(v => v.found).length;
+    console.log(`Parâmetros UTM encontrados: ${foundUtmCount} de ${expectedUtmFields.length}`);
+    
+    // Salvar no localStorage para preservar os parâmetros UTM originais
+    if (Object.keys(utm).length > 0) {
+      localStorage.setItem('utm_params', JSON.stringify(utm));
+      console.log('✅ Parâmetros UTM salvos no localStorage');
+    } else {
+      console.log('⚠️ Nenhum parâmetro UTM encontrado na URL');
+    }
+    
     setUtmParams(utm);
+    console.log('===================================');
   }, []);
 
   // Analisar viabilidade sempre que os dados mudarem
@@ -170,21 +203,111 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     
     // Enviar dados para o webhook (incluindo UTM)
     try {
-      const webhookData = {
-        ...simulatedData,
-        ...utmParams
+      // Capturar parâmetros UTM diretamente da URL no momento do submit
+      const urlParams = new URLSearchParams(window.location.search);
+      const utmMapping: Record<string, string> = {
+        'utm_source': 'Source',
+        'utm_medium': 'Medium',
+        'utm_campaign': 'Campaign',
+        'utm_term': 'Term',
+        'utm_content': 'Content',
+        'page': 'Page',
+        'utm_page': 'Page'
       };
       
-      console.log('Dados enviados para webhook:', webhookData);
-      console.log('Parâmetros UTM capturados:', utmParams);
+      const currentUtmParams: Record<string, string> = {};
+      Object.keys(utmMapping).forEach(key => {
+        const value = urlParams.get(key);
+        if (value) {
+          currentUtmParams[utmMapping[key]] = value;
+        }
+      });
       
-      await fetch('https://hive-n8n.trnw0e.easypanel.host/webhook-test/335f6f4d-e471-4089-9bac-3b43771a71ba', {
+      // Recuperar parâmetros UTM salvos no localStorage
+      let savedUtmParams: Record<string, string> = {};
+      try {
+        const saved = localStorage.getItem('utm_params');
+        if (saved) {
+          savedUtmParams = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.warn('Erro ao ler UTM do localStorage:', e);
+      }
+      
+      // Combinar parâmetros UTM: localStorage (prioridade) > URL atual > estado
+      const allUtmParams = {
+        ...utmParams,
+        ...currentUtmParams,
+        ...savedUtmParams  // localStorage tem prioridade final
+      };
+      
+      // Logs detalhados para debug
+      console.log('=== DEBUG UTM ===');
+      console.log('URL completa:', window.location.href);
+      console.log('URL search params:', window.location.search);
+      console.log('Parâmetros UTM do estado:', utmParams);
+      console.log('Parâmetros UTM da URL atual:', currentUtmParams);
+      console.log('Parâmetros UTM do localStorage:', savedUtmParams);
+      console.log('Parâmetros UTM combinados:', allUtmParams);
+      console.log('Keys em allUtmParams:', Object.keys(allUtmParams));
+      console.log('Quantidade de parâmetros UTM:', Object.keys(allUtmParams).length);
+      
+      // Validação detalhada dos parâmetros UTM
+      const expectedUtmFields = ['Source', 'Medium', 'Campaign', 'Content', 'Term', 'Page'];
+      const utmValidation: Record<string, { found: boolean; value: string | undefined }> = {};
+      
+      expectedUtmFields.forEach(field => {
+        utmValidation[field] = {
+          found: field in allUtmParams,
+          value: allUtmParams[field]
+        };
+      });
+      
+      console.log('=== VALIDAÇÃO UTM ===');
+      console.table(utmValidation);
+      
+      const foundUtmCount = Object.values(utmValidation).filter(v => v.found).length;
+      console.log(`Parâmetros UTM encontrados: ${foundUtmCount} de ${expectedUtmFields.length}`);
+      
+      // Verificar se há parâmetros UTM
+      if (Object.keys(allUtmParams).length === 0) {
+        console.warn('⚠️ ATENÇÃO: Nenhum parâmetro UTM encontrado!');
+        console.warn('Para testar, acesse a URL com parâmetros UTM, por exemplo:');
+        console.warn('http://localhost:5173/?utm_source=google&utm_medium=cpc&utm_campaign=teste&utm_term=keyword&utm_content=ad1&page=home');
+      } else {
+        console.log('✅ Parâmetros UTM encontrados e serão enviados ao webhook');
+        console.log('Parâmetros que serão enviados:', allUtmParams);
+      }
+      
+      // Garantir que os parâmetros UTM sejam sempre incluídos no webhook
+      const webhookData = {
+        ...simulatedData,
+        ...allUtmParams
+      };
+      
+      // Verificação final antes de enviar
+      const utmInWebhookData: Record<string, string> = {};
+      expectedUtmFields.forEach(field => {
+        if (field in webhookData) {
+          utmInWebhookData[field] = (webhookData as any)[field];
+        }
+      });
+      
+      console.log('=== VERIFICAÇÃO FINAL ===');
+      console.log('Parâmetros UTM no webhookData:', utmInWebhookData);
+      console.log('Dados completos enviados para webhook:', webhookData);
+      console.log('JSON stringificado:', JSON.stringify(webhookData));
+      console.log('================');
+      
+      const response = await fetch('https://hive-n8n.trnw0e.easypanel.host/webhook-test/335f6f4d-e471-4089-9bac-3b43771a71ba', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(webhookData),
       });
+      
+      console.log('Resposta do webhook:', response.status, response.statusText);
     } catch (error) {
       console.error('Erro ao enviar dados para o webhook:', error);
     }
