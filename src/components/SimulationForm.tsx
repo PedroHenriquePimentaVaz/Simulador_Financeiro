@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SimulationData } from '../types/simulation';
 import { analyzeInvestmentViability, ViabilityAnalysis } from '../utils/advancedCalculations';
 import { brazilianStates, citiesByState } from '../data/brazilianStates';
+import { recordUtmEvent, saveSimulationHistory } from '../utils/utmLogger';
 
 interface SimulationFormProps {
   initialData: SimulationData;
@@ -64,11 +65,24 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     const foundUtmCount = Object.values(utmValidation).filter(v => v.found).length;
     console.log(`Parâmetros UTM encontrados: ${foundUtmCount} de ${expectedUtmFields.length}`);
     
-    // Salvar no localStorage para preservar os parâmetros UTM originais
-    if (Object.keys(utm).length > 0) {
+    const capturedUtmCount = Object.keys(utm).length;
+    if (capturedUtmCount > 0) {
       localStorage.setItem('utm_params', JSON.stringify(utm));
+      recordUtmEvent('utmCaptured', {
+        context: 'initialLoad',
+        url: window.location.href,
+        params: utm,
+      });
+      recordUtmEvent('utmStored', {
+        context: 'initialLoad',
+        params: utm,
+      });
       console.log('✅ Parâmetros UTM salvos no localStorage');
     } else {
+      recordUtmEvent('utmMissing', {
+        context: 'initialLoad',
+        url: window.location.href,
+      });
       console.log('⚠️ Nenhum parâmetro UTM encontrado na URL');
     }
     
@@ -201,6 +215,11 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       cidade: formData.cidade
     };
     
+    const webhookUrl = 'https://hive-n8n.trnw0e.easypanel.host/webhook-test/335f6f4d-e471-4089-9bac-3b43771a71ba';
+    let responseStatus: number | undefined;
+    let responseOk = false;
+    let combinedUtmParams: Record<string, string> = {};
+
     // Enviar dados para o webhook (incluindo UTM)
     try {
       // Capturar parâmetros UTM diretamente da URL no momento do submit
@@ -240,6 +259,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         ...currentUtmParams,
         ...savedUtmParams  // localStorage tem prioridade final
       };
+      combinedUtmParams = allUtmParams;
       
       // Logs detalhados para debug
       console.log('=== DEBUG UTM ===');
@@ -270,13 +290,24 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       console.log(`Parâmetros UTM encontrados: ${foundUtmCount} de ${expectedUtmFields.length}`);
       
       // Verificar se há parâmetros UTM
-      if (Object.keys(allUtmParams).length === 0) {
+      const hasUtmParams = Object.keys(allUtmParams).length > 0;
+      if (!hasUtmParams) {
         console.warn('⚠️ ATENÇÃO: Nenhum parâmetro UTM encontrado!');
         console.warn('Para testar, acesse a URL com parâmetros UTM, por exemplo:');
         console.warn('http://localhost:5173/?utm_source=google&utm_medium=cpc&utm_campaign=teste&utm_term=keyword&utm_content=ad1&page=home');
+        recordUtmEvent('utmMissing', {
+          context: 'submit',
+          url: window.location.href,
+          data: simulatedData,
+        });
       } else {
         console.log('✅ Parâmetros UTM encontrados e serão enviados ao webhook');
         console.log('Parâmetros que serão enviados:', allUtmParams);
+        recordUtmEvent('utmCaptured', {
+          context: 'submit',
+          url: window.location.href,
+          params: allUtmParams,
+        });
       }
       
       // Garantir que os parâmetros UTM sejam sempre incluídos no webhook
@@ -299,7 +330,14 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       console.log('JSON stringificado:', JSON.stringify(webhookData));
       console.log('================');
       
-      const response = await fetch('https://hive-n8n.trnw0e.easypanel.host/webhook-test/335f6f4d-e471-4089-9bac-3b43771a71ba', {
+      recordUtmEvent('webhookPayload', {
+        context: 'submit',
+        url: window.location.href,
+        params: allUtmParams,
+        data: webhookData,
+      });
+
+      const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -307,10 +345,63 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         body: JSON.stringify(webhookData),
       });
       
+      responseStatus = response.status;
+      responseOk = response.ok;
       console.log('Resposta do webhook:', response.status, response.statusText);
+      if (!response.ok) {
+        throw new Error(`Webhook retornou status ${response.status}`);
+      }
+
+      recordUtmEvent('webhookSuccess', {
+        context: 'submit',
+        url: webhookUrl,
+        status: response.status,
+        params: allUtmParams,
+      });
     } catch (error) {
       console.error('Erro ao enviar dados para o webhook:', error);
+      recordUtmEvent('webhookError', {
+        context: 'submit',
+        url: window.location.href,
+        message: error instanceof Error ? error.message : 'Erro desconhecido',
+      });
+
+      if (navigator.sendBeacon) {
+        try {
+          const beaconPayload = JSON.stringify({
+            ...simulatedData,
+            ...combinedUtmParams,
+            fallback: true,
+            timestamp: new Date().toISOString(),
+          });
+          const beaconSent = navigator.sendBeacon(
+            webhookUrl,
+            new Blob([beaconPayload], { type: 'application/json' })
+          );
+
+          if (beaconSent) {
+            responseOk = true;
+            recordUtmEvent('webhookFallback', {
+              context: 'sendBeacon',
+              url: webhookUrl,
+              params: combinedUtmParams,
+            });
+          }
+        } catch (beaconError) {
+          console.warn('Falha ao enviar via sendBeacon:', beaconError);
+        }
+      }
     }
+    
+    saveSimulationHistory({
+      id: `simulation-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      url: window.location.href,
+      simulation: simulatedData,
+      utmParams: combinedUtmParams,
+      webhookStatus: responseStatus,
+      webhookOk: responseOk,
+    });
     
     onSimulate(simulatedData);
   };

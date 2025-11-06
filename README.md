@@ -35,6 +35,7 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Footer Completo**: Rodapé com logos das redes sociais (locais), menu de navegação e download do app
 - **Formulário de Contato**: Captura de dados pessoais (Nome, Telefone, E-mail, Estado, Cidade)
 - **Formatação Automática**: Telefone formatado automaticamente no padrão brasileiro
+- **Rastreamento UTM Resiliente**: Captura, validação, fallback e persistência de parâmetros UTM
 
 ## 📊 Métricas Calculadas
 
@@ -147,6 +148,22 @@ O Dockerfile usa **multi-stage build** para otimizar o tamanho da imagem final. 
    - Download do app com logos locais (Google Play e App Store)
    - Rodapé inferior: Copyright e Política de Privacidade
 
+- **Acompanhe UTMs e Submissões**:
+  - Console do navegador exibe tabelas de validação UTM no carregamento e no envio
+  - Histórico salvo em `localStorage` (`simulation_history` e `utm_event_log`) para auditoria
+  - Fallback automático com `navigator.sendBeacon` caso o POST principal falhe
+
+## 📡 Observabilidade de UTMs
+
+- **Validação Automática**: Cada carregamento e submissão gera tabelas (`console.table`) exibindo `Source`, `Medium`, `Campaign`, `Content`, `Term` e `Page`
+- **Persistência Local**: Submissões são arquivadas em `localStorage` (`simulation_history`) com timestamp, dados do formulário, UTMs e status do webhook
+- **Eventos de Monitoramento**: `utm_event_log` mantém os últimos 200 eventos (captura, ausência, payload, sucesso, erro, fallback)
+- **Fallback de Envio**: Caso o `fetch` falhe, o app tenta automaticamente `navigator.sendBeacon` preservando os dados
+- **Auditoria Manual**:
+  - Abra DevTools → Application → Local Storage
+  - Revise `simulation_history` e `utm_event_log`
+  - Limpe (`localStorage.clear()`) se desejar reiniciar os testes
+
 ## 📈 Exemplo de Uso
 
 ```typescript
@@ -176,7 +193,8 @@ src/
 ├── types/
 │   └── simulation.ts               # Tipos TypeScript
 ├── utils/
-│   └── advancedCalculations.ts     # Lógica avançada de cálculos financeiros
+│   ├── advancedCalculations.ts     # Lógica avançada de cálculos financeiros
+│   └── utmLogger.ts                # Persistência e monitoramento de eventos UTM
 ├── App.tsx                         # Componente principal
 ├── main.tsx                        # Ponto de entrada
 └── index.css                       # Estilos globais
