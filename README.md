@@ -156,7 +156,7 @@ O Dockerfile usa **multi-stage build** para otimizar o tamanho da imagem final. 
 ## 📡 Observabilidade de UTMs
 
 - **Validação Automática**: Cada carregamento e submissão gera tabelas (`console.table`) exibindo `Source`, `Medium`, `Campaign`, `Content`, `Term` e `Page`
-  - `Page` é normalizado como `simuladorfinanceiro`
+  - `Page` é sempre forçado para `simuladorfinanceiro`, ignorando valores da URL
   - `Source` registra exatamente a origem da campanha (ex.: `facebook`, `google`, `gpt`)
   - `Medium` registra o criativo / variação (ex.: `carrossel_a`, `video_1`)
   - `Campaign` registra o conjunto ou nome da campanha

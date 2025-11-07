@@ -93,7 +93,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       }
     });
 
-    utm.Page = utm.Page || 'simuladorfinanceiro';
+    utm.Page = 'simuladorfinanceiro';
     
     console.log('Parâmetros UTM capturados:', utm);
     
@@ -315,7 +315,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
             ...baseUtmParams,
           };
 
-      allUtmParams.Page = allUtmParams.Page || 'simuladorfinanceiro';
+      allUtmParams.Page = 'simuladorfinanceiro';
 
       combinedUtmParams = allUtmParams;
       
