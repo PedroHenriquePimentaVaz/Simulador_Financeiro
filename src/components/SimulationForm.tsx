@@ -4,6 +4,53 @@ import { analyzeInvestmentViability, ViabilityAnalysis } from '../utils/advanced
 import { brazilianStates, citiesByState } from '../data/brazilianStates';
 import { recordUtmEvent, saveSimulationHistory } from '../utils/utmLogger';
 
+const UTM_STORAGE_KEY = 'utm_params';
+const UTM_STORAGE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 dias
+
+interface StoredUtmWrapper {
+  __data: Record<string, string>;
+  __storedAt: number;
+}
+
+const persistUtmParams = (params: Record<string, string>) => {
+  const payload: StoredUtmWrapper = {
+    __data: params,
+    __storedAt: Date.now(),
+  };
+  localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(payload));
+  return payload.__storedAt;
+};
+
+const readStoredUtmParams = () => {
+  try {
+    const raw = localStorage.getItem(UTM_STORAGE_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as StoredUtmWrapper | Record<string, string>;
+
+    if ('__data' in parsed && '__storedAt' in parsed) {
+      const wrapper = parsed as StoredUtmWrapper;
+      const isExpired = Date.now() - wrapper.__storedAt > UTM_STORAGE_MAX_AGE;
+      if (isExpired) {
+        console.log('UTM armazenado expirado - descartando');
+        return null;
+      }
+      return {
+        params: wrapper.__data,
+        storedAt: wrapper.__storedAt,
+      };
+    }
+
+    return {
+      params: parsed as Record<string, string>,
+      storedAt: undefined,
+    };
+  } catch (error) {
+    console.warn('Falha ao ler UTMs armazenados', error);
+    return null;
+  }
+};
+
 interface SimulationFormProps {
   initialData: SimulationData;
   onSimulate: (data: SimulationData) => void;
@@ -45,6 +92,8 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         utm[utmMapping[key]] = value;
       }
     });
+
+    utm.Page = utm.Page || 'simuladorfinanceiro';
     
     console.log('Parâmetros UTM capturados:', utm);
     
@@ -62,12 +111,9 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     console.log('=== VALIDAÇÃO UTM NO CARREGAMENTO ===');
     console.table(utmValidation);
     
-    const foundUtmCount = Object.values(utmValidation).filter(v => v.found).length;
-    console.log(`Parâmetros UTM encontrados: ${foundUtmCount} de ${expectedUtmFields.length}`);
-    
     const capturedUtmCount = Object.keys(utm).length;
     if (capturedUtmCount > 0) {
-      localStorage.setItem('utm_params', JSON.stringify(utm));
+      const storedAt = persistUtmParams(utm);
       recordUtmEvent('utmCaptured', {
         context: 'initialLoad',
         url: window.location.href,
@@ -76,6 +122,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       recordUtmEvent('utmStored', {
         context: 'initialLoad',
         params: utm,
+        data: { storedAt: new Date(storedAt).toISOString() },
       });
       console.log('✅ Parâmetros UTM salvos no localStorage');
     } else {
@@ -243,22 +290,33 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       });
       
       // Recuperar parâmetros UTM salvos no localStorage
-      let savedUtmParams: Record<string, string> = {};
-      try {
-        const saved = localStorage.getItem('utm_params');
-        if (saved) {
-          savedUtmParams = JSON.parse(saved);
-        }
-      } catch (e) {
-        console.warn('Erro ao ler UTM do localStorage:', e);
-      }
-      
+      const storedUtmEntry = readStoredUtmParams();
+      const savedUtmParams = storedUtmEntry?.params ?? {};
+
       // Combinar parâmetros UTM: localStorage (prioridade) > URL atual > estado
-      const allUtmParams = {
+      const baseUtmParams = {
         ...utmParams,
         ...currentUtmParams,
-        ...savedUtmParams  // localStorage tem prioridade final
       };
+
+      const hasFreshMarketingUtm = Object.keys(currentUtmParams).some((key) => key !== 'Page');
+      const marketingKeysFromBase = Object.keys(baseUtmParams).filter((key) => key !== 'Page');
+      const shouldFallbackToSaved = !hasFreshMarketingUtm && marketingKeysFromBase.length === 0;
+
+      const sanitizedSavedUtmParams = { ...savedUtmParams };
+      delete sanitizedSavedUtmParams.Page;
+
+      const allUtmParams = shouldFallbackToSaved
+        ? {
+            ...sanitizedSavedUtmParams,
+            ...baseUtmParams,
+          }
+        : {
+            ...baseUtmParams,
+          };
+
+      allUtmParams.Page = allUtmParams.Page || 'simuladorfinanceiro';
+
       combinedUtmParams = allUtmParams;
       
       // Logs detalhados para debug
@@ -290,7 +348,8 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       console.log(`Parâmetros UTM encontrados: ${foundUtmCount} de ${expectedUtmFields.length}`);
       
       // Verificar se há parâmetros UTM
-      const hasUtmParams = Object.keys(allUtmParams).length > 0;
+      const marketingKeys = Object.keys(allUtmParams).filter((key) => key !== 'Page');
+      const hasUtmParams = marketingKeys.length > 0;
       if (!hasUtmParams) {
         console.warn('⚠️ ATENÇÃO: Nenhum parâmetro UTM encontrado!');
         console.warn('Para testar, acesse a URL com parâmetros UTM, por exemplo:');

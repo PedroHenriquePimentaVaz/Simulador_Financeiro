@@ -156,6 +156,11 @@ O Dockerfile usa **multi-stage build** para otimizar o tamanho da imagem final. 
 ## 📡 Observabilidade de UTMs
 
 - **Validação Automática**: Cada carregamento e submissão gera tabelas (`console.table`) exibindo `Source`, `Medium`, `Campaign`, `Content`, `Term` e `Page`
+  - `Page` é normalizado como `simuladorfinanceiro`
+  - `Source` registra exatamente a origem da campanha (ex.: `facebook`, `google`, `gpt`)
+  - `Medium` registra o criativo / variação (ex.: `carrossel_a`, `video_1`)
+  - `Campaign` registra o conjunto ou nome da campanha
+  - `Content` e `Term` refletem granularidades adicionais passadas na URL
 - **Persistência Local**: Submissões são arquivadas em `localStorage` (`simulation_history`) com timestamp, dados do formulário, UTMs e status do webhook
 - **Eventos de Monitoramento**: `utm_event_log` mantém os últimos 200 eventos (captura, ausência, payload, sucesso, erro, fallback)
 - **Fallback de Envio**: Caso o `fetch` falhe, o app tenta automaticamente `navigator.sendBeacon` preservando os dados
