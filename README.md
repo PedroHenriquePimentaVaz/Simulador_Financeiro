@@ -217,6 +217,9 @@ src/
 - `npm run dev` - Inicia servidor de desenvolvimento
 - `npm run build` - Gera build de produção
 - `npm run preview` - Preview do build de produção
+- `npm run test:e2e` - Executa testes end-to-end com Playwright (UTM sem campanha, com campanha e fallback do webhook)
+
+> Antes do primeiro uso, execute `npx playwright install --with-deps` para baixar os navegadores necessários.
 
 ## 🔧 Configuração
 
