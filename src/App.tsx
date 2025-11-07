@@ -75,15 +75,20 @@ function App() {
 
           {/* Main Content Grid */}
           <div className="hero-main-grid">
-            {/* Left Side - Headlines and Stats */}
-            <div className="hero-left">
-              <div className="hero-headline">
-                <h1 className="main-title">
-                  Simule qual seria o lucro do seu investimento na franquia de mercados autônomos da <span className="highlight-text">Be Honest</span>
-                  <br />
-                  <span className="subtitle">Payback de 18 a 22 meses</span>
-                </h1>
-                
+            <div className="hero-left-column">
+              {/* Headline */}
+              <div className="hero-headline-area">
+                <div className="hero-headline">
+                  <h1 className="main-title">
+                    Simule qual seria o lucro do seu investimento na franquia de mercados autônomos da <span className="highlight-text">Be Honest</span>
+                    <br />
+                    <span className="subtitle">Payback de 18 a 22 meses</span>
+                  </h1>
+                </div>
+              </div>
+
+              {/* Supporting Content */}
+              <div className="hero-support-area">
                 <div className="hero-stats">
                   <div className="stat-card">
                     <div className="stat-number">⚡</div>
@@ -98,36 +103,25 @@ function App() {
                     <div className="stat-label">Suporte Completo</div>
                   </div>
                 </div>
-              </div>
 
-              {/* Aviso sobre estimativas */}
-              <div style={{
-                marginTop: '25px',
-                padding: '15px 20px',
-                backgroundColor: 'rgba(255, 193, 7, 0.1)',
-                border: '2px solid rgba(255, 193, 7, 0.3)',
-                borderRadius: '8px',
-                fontSize: '13px',
-                color: '#ffc107',
-                lineHeight: '1.6'
-              }}>
-                <strong style={{ fontSize: '14px' }}>⚠️ Importante:</strong>
-                <p style={{ margin: '8px 0 0 0', color: '#fff8dc' }}>
-                  Os valores são estimativas baseadas em médias do mercado. Os resultados reais podem variar.
-                </p>
-              </div>
+                <div className="hero-warning">
+                  <strong>⚠️ Importante:</strong>
+                  <p>
+                    Os valores são estimativas baseadas em médias do mercado. Os resultados reais podem variar.
+                  </p>
+                </div>
 
-              {/* Social Proof */}
-              <div className="social-proof">
+                <div className="social-proof">
                   <div className="proof-text">
                     <span className="proof-icon">⭐</span>
                     <span>Operação <strong>100% automatizada</strong> sem funcionários</span>
                   </div>
+                </div>
               </div>
             </div>
 
-            {/* Right Side - Form */}
-            <div className="hero-right">
+            {/* Form */}
+            <div className="hero-form-area">
               <div className="hero-form-container">
                 <div className="hero-form-header">
                   <h2 className="hero-form-title">

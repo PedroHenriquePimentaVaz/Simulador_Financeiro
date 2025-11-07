@@ -188,9 +188,51 @@ svg text, svg tspan {
 .hero-main-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "headline form"
+    "support form";
   gap: 60px;
   align-items: center;
   margin-top: 20px;
+}
+
+.hero-headline-area {
+  grid-area: headline;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.hero-form-area {
+  grid-area: form;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.hero-support-area {
+  grid-area: support;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.hero-warning {
+  margin-top: 5px;
+  padding: 15px 20px;
+  background-color: rgba(255, 193, 7, 0.1);
+  border: 2px solid rgba(255, 193, 7, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #ffc107;
+  line-height: 1.6;
+}
+
+.hero-warning strong {
+  font-size: 14px;
+  color: #ffc107;
+}
+
+.hero-warning p {
+  margin: 8px 0 0 0;
+  color: #fff8dc;
 }
 
 .hero-left {
@@ -927,7 +969,11 @@ svg text, svg tspan {
 @media (max-width: 1024px) {
   .hero-main-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    grid-template-areas:
+      "headline"
+      "form"
+      "support";
+    gap: 30px;
   }
   
   .hero-form-container {
@@ -938,6 +984,35 @@ svg text, svg tspan {
 @media (max-width: 768px) {
   .hero-section {
     padding: 40px 15px;
+  }
+  
+  .hero-main-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  
+  .hero-headline-area,
+  .hero-form-area,
+  .hero-support-area {
+    width: 100%;
+  }
+  
+  .hero-headline-area {
+    order: 1;
+  }
+  
+  .hero-form-area {
+    order: 2;
+  }
+  
+  .hero-support-area {
+    order: 3;
+  }
+  
+  .hero-form-container {
+    padding: 25px;
+    margin-top: 0;
   }
   
   .main-title {
