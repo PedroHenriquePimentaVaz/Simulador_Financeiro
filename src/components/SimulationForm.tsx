@@ -65,6 +65,33 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
   const [showOtherCity, setShowOtherCity] = useState(false);
   const [utmParams, setUtmParams] = useState<Record<string, string>>({});
 
+  const normalizeUtm = (value: string | null): string | undefined => {
+    if (!value) return undefined;
+    const lower = value.toLowerCase();
+    const sourceMap: Record<string, string> = {
+      fb: 'facebook',
+      'facebook.com': 'facebook',
+      ig: 'instagram',
+      insta: 'instagram',
+      ggl: 'google',
+      'google.com': 'google',
+      yt: 'youtube',
+      tiktokads: 'tiktok',
+      chatgpt: 'gpt',
+    };
+
+    if (sourceMap[lower]) {
+      return sourceMap[lower];
+    }
+
+    return lower;
+  };
+
+  const normalizeUtmKeyValue = (key: string, value: string | null): string | undefined => {
+    if (!value) return undefined;
+    return key === 'utm_source' ? normalizeUtm(value) : value;
+  };
+
   // Capturar parâmetros UTM da URL
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -86,7 +113,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     console.log('URL search params:', window.location.search);
     
     Object.keys(utmMapping).forEach(key => {
-      const value = urlParams.get(key);
+      const value = normalizeUtmKeyValue(key, urlParams.get(key));
       console.log(`Verificando ${key}:`, value);
       if (value) {
         utm[utmMapping[key]] = value;
@@ -266,6 +293,10 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     let responseStatus: number | undefined;
     let responseOk = false;
     let combinedUtmParams: Record<string, string> = {};
+    const timestamp = new Date().toISOString();
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const locale = navigator.language;
+    const pageTitle = document.title;
 
     // Enviar dados para o webhook (incluindo UTM)
     try {
@@ -283,7 +314,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       
       const currentUtmParams: Record<string, string> = {};
       Object.keys(utmMapping).forEach(key => {
-        const value = urlParams.get(key);
+        const value = normalizeUtmKeyValue(key, urlParams.get(key));
         if (value) {
           currentUtmParams[utmMapping[key]] = value;
         }
@@ -372,7 +403,12 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       // Garantir que os parâmetros UTM sejam sempre incluídos no webhook
       const webhookData = {
         ...simulatedData,
-        ...allUtmParams
+        ...allUtmParams,
+        timestamp,
+        timestamp_local: timestamp,
+        timezone,
+        locale,
+        page_title: pageTitle,
       };
       
       // Verificação final antes de enviar
@@ -396,14 +432,49 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         data: webhookData,
       });
 
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(webhookData),
-      });
-      
+      const executeWebhook = async () => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10_000);
+
+        try {
+          const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(webhookData),
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+          return response;
+        } catch (err) {
+          clearTimeout(timeout);
+          throw err;
+        }
+      };
+
+      const maxAttempts = 3;
+      let attempt = 0;
+      let response: Response | null = null;
+      let lastError: unknown = null;
+
+      while (attempt < maxAttempts && !response) {
+        try {
+          response = await executeWebhook();
+        } catch (err) {
+          attempt += 1;
+          lastError = err;
+          if (attempt >= maxAttempts) {
+            throw err;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 500 * attempt));
+        }
+      }
+
+      if (!response) {
+        throw lastError || new Error('Webhook sem resposta');
+      }
+
       responseStatus = response.status;
       responseOk = response.ok;
       console.log('Resposta do webhook:', response.status, response.statusText);
@@ -431,7 +502,11 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
             ...simulatedData,
             ...combinedUtmParams,
             fallback: true,
-            timestamp: new Date().toISOString(),
+            timestamp,
+            timestamp_local: timestamp,
+            timezone,
+            locale,
+            page_title: pageTitle,
           });
           const beaconSent = navigator.sendBeacon(
             webhookUrl,

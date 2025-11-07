@@ -122,6 +122,10 @@ test.describe('UTM tracking', () => {
     expect(parsedFallback?.fallback).toBe(true);
     expect(parsedFallback?.Page).toBe('simuladorfinanceiro');
     expect(parsedFallback?.Source).toBe('google');
+    expect(parsedFallback?.timezone).toBeTruthy();
+    expect(parsedFallback?.locale).toBeTruthy();
+    expect(parsedFallback?.page_title).toBeTruthy();
+    expect(parsedFallback?.timestamp).toBeTruthy();
 
     await page.unroute(WEBHOOK_URL);
   });

@@ -157,13 +157,13 @@ O Dockerfile usa **multi-stage build** para otimizar o tamanho da imagem final. 
 
 - **Validação Automática**: Cada carregamento e submissão gera tabelas (`console.table`) exibindo `Source`, `Medium`, `Campaign`, `Content`, `Term` e `Page`
   - `Page` é sempre forçado para `simuladorfinanceiro`, ignorando valores da URL
-  - `Source` registra exatamente a origem da campanha (ex.: `facebook`, `google`, `gpt`)
+  - `Source` é normalizado para nomes padronizados (ex.: `fb` → `facebook`, `google.com` → `google`)
   - `Medium` registra o criativo / variação (ex.: `carrossel_a`, `video_1`)
   - `Campaign` registra o conjunto ou nome da campanha
   - `Content` e `Term` refletem granularidades adicionais passadas na URL
 - **Persistência Local**: Submissões são arquivadas em `localStorage` (`simulation_history`) com timestamp, dados do formulário, UTMs e status do webhook
 - **Eventos de Monitoramento**: `utm_event_log` mantém os últimos 200 eventos (captura, ausência, payload, sucesso, erro, fallback)
-- **Fallback de Envio**: Caso o `fetch` falhe, o app tenta automaticamente `navigator.sendBeacon` preservando os dados
+- **Reenvio Inteligente**: `fetch` com timeout (10s) + até 3 tentativas; em último caso o app usa `navigator.sendBeacon` preservando dados
 - **Auditoria Manual**:
   - Abra DevTools → Application → Local Storage
   - Revise `simulation_history` e `utm_event_log`
@@ -220,6 +220,11 @@ src/
 - `npm run test:e2e` - Executa testes end-to-end com Playwright (UTM sem campanha, com campanha e fallback do webhook)
 
 > Antes do primeiro uso, execute `npx playwright install --with-deps` para baixar os navegadores necessários.
+
+## 📡 Metadados Avançados
+
+- Payload do webhook inclui timezone (`timezone`), idioma do navegador (`locale`), título da página (`page_title`) e timestamp local (`timestamp_local`)
+- Dados enriquecidos também são enviados no fallback `sendBeacon`
 
 ## 🔧 Configuração
 
