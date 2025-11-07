@@ -168,6 +168,7 @@ O Dockerfile usa **multi-stage build** para otimizar o tamanho da imagem final. 
   - Abra DevTools → Application → Local Storage
   - Revise `simulation_history` e `utm_event_log`
   - Limpe (`localStorage.clear()`) se desejar reiniciar os testes
+- **Alertas opcionais**: defina `VITE_UTM_ALERT_WEBHOOK` para receber POST quando uma submissão ocorrer sem `Source/Medium/Campaign`
 
 ## 📈 Exemplo de Uso
 
@@ -225,6 +226,18 @@ src/
 
 - Payload do webhook inclui timezone (`timezone`), idioma do navegador (`locale`), título da página (`page_title`) e timestamp local (`timestamp_local`)
 - Dados enriquecidos também são enviados no fallback `sendBeacon`
+
+### Variáveis de Ambiente (opcionais)
+
+Configure no `.env` (ou variáveis do deploy) para habilitar integrações adicionais:
+
+```
+VITE_LEAD_PERSISTENCE_ENDPOINT=...   # Endpoint REST para salvar leads/UTMs no backend
+VITE_UTM_ALERT_ENDPOINT=...          # Endpoint que recebe alertas quando UTMs estão ausentes
+VITE_ANALYTICS_ENDPOINT=...          # Endpoint para enviar eventos analíticos/BI
+```
+
+Se não definidos, o app ignora esses envs e continua funcionando apenas com o webhook principal.
 
 ## 🔧 Configuração
 

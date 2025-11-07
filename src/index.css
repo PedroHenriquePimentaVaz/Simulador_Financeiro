@@ -187,27 +187,28 @@ svg text, svg tspan {
 
 .hero-main-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas:
-    "headline form"
-    "support form";
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 60px;
-  align-items: center;
+  align-items: flex-start;
   margin-top: 20px;
 }
 
+.hero-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
 .hero-headline-area {
-  grid-area: headline;
   animation: fadeInUp 0.8s ease-out 0.2s both;
 }
 
 .hero-form-area {
-  grid-area: form;
   animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
 .hero-support-area {
-  grid-area: support;
   display: flex;
   flex-direction: column;
   gap: 25px;
@@ -991,21 +992,25 @@ svg text, svg tspan {
     flex-direction: column;
     gap: 25px;
   }
-  
+
+  .hero-left-column {
+    display: contents;
+  }
+
   .hero-headline-area,
   .hero-form-area,
   .hero-support-area {
     width: 100%;
   }
-  
+
   .hero-headline-area {
     order: 1;
   }
-  
+
   .hero-form-area {
     order: 2;
   }
-  
+
   .hero-support-area {
     order: 3;
   }
