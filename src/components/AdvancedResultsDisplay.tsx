@@ -603,14 +603,12 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         <h4>Último Mês (Mês {lastMonth.month})</h4>
         <div style={{ 
           display: 'flex', 
-          flexWrap: 'wrap', 
+          flexDirection: 'column',
           gap: '12px', 
-          overflowX: 'auto',
           padding: '15px',
           backgroundColor: '#f8f9fa',
           borderRadius: '10px',
-          justifyContent: 'center',
-          alignItems: 'flex-start'
+          alignItems: 'stretch'
         }}>
           {/* Receita Bruta - Verde */}
           <div className="breakdown-item" style={{ 
