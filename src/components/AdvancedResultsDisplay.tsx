@@ -12,7 +12,6 @@ interface AdvancedResultsDisplayProps {
 }
 
 const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results, currentResults, lucroDesejado, onResultsUpdate }) => {
-  const [showMonthlyDetails, setShowMonthlyDetails] = useState(false);
   const [_originalResults, _setOriginalResults] = useState<AdvancedSimulationResult>(results);
   const [selectedMonth, setSelectedMonth] = useState<number>(1);
   const [showAddStoreForm, setShowAddStoreForm] = useState(false);
@@ -1102,43 +1101,8 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             >
               📄 Baixar PDF
             </button>
-            <button
-              onClick={() => setShowMonthlyDetails(!showMonthlyDetails)}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: showMonthlyDetails ? '#dc3545' : '#001c54',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: '600',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                minWidth: '160px',
-                justifyContent: 'center'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = showMonthlyDetails ? '#c82333' : '#001a4a';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = showMonthlyDetails ? '#dc3545' : '#001c54';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-              }}
-            >
-              <span>{showMonthlyDetails ? '👆' : '👇'}</span>
-              {showMonthlyDetails ? 'Ocultar Planilha' : 'Ver Planilha Completa'}
-            </button>
           </div>
         </div>
-        
-        {showMonthlyDetails && (
         <div className="table-container">
           <table>
             <thead>
@@ -1296,7 +1260,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             </tbody>
           </table>
         </div>
-        )}
       </div>
 
       {/* Next Steps Section */}
