@@ -342,7 +342,17 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       doc.text('Marketing', xPos, yPos - 3);
       xPos += 16;
       doc.text('Sistema', xPos, yPos - 3);
-      xPos += 15;
+      xPos += 14;
+      doc.text('AMLABS', xPos, yPos - 3);
+      xPos += 14;
+      doc.text('Contain.', xPos, yPos - 3);
+      xPos += 14;
+      doc.text('Gelad.', xPos, yPos - 3);
+      xPos += 14;
+      doc.text('Manut.', xPos, yPos - 3);
+      xPos += 14;
+      doc.text('Util.', xPos, yPos - 3);
+      xPos += 14;
       doc.text('Contab.', xPos, yPos - 3);
       xPos += 15;
       doc.text('Luc.Líq', xPos, yPos - 3);
@@ -411,7 +421,17 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           doc.text('Marketing', xPos, yPos - 3);
           xPos += 16;
           doc.text('Sistema', xPos, yPos - 3);
-          xPos += 15;
+          xPos += 14;
+          doc.text('AMLABS', xPos, yPos - 3);
+          xPos += 14;
+          doc.text('Contain.', xPos, yPos - 3);
+          xPos += 14;
+          doc.text('Gelad.', xPos, yPos - 3);
+          xPos += 14;
+          doc.text('Manut.', xPos, yPos - 3);
+          xPos += 14;
+          doc.text('Util.', xPos, yPos - 3);
+          xPos += 14;
           doc.text('Contab.', xPos, yPos - 3);
           xPos += 15;
           doc.text('Luc.Líq', xPos, yPos - 3);
@@ -468,7 +488,22 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         xPos += 16;
         doc.text(formatCurrency(-month.systemFee), xPos, yPos);
         
-        xPos += 15;
+        xPos += 14;
+        doc.text(formatCurrency(-month.amlabs), xPos, yPos);
+        
+        xPos += 14;
+        doc.text(formatCurrency(-month.container), xPos, yPos);
+        
+        xPos += 14;
+        doc.text(formatCurrency(-month.refrigerator), xPos, yPos);
+        
+        xPos += 14;
+        doc.text(formatCurrency(-month.maintenance), xPos, yPos);
+        
+        xPos += 14;
+        doc.text(formatCurrency(-month.utilities), xPos, yPos);
+        
+        xPos += 14;
         doc.text(formatCurrency(-month.accounting), xPos, yPos);
         
         xPos += 15;
@@ -496,9 +531,53 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   const lastMonth = monthlyResults[monthlyResults.length - 1];
   // const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
 
+  const getCenarioLabel = (cenario?: 'pessimista' | 'medio' | 'otimista') => {
+    switch(cenario) {
+      case 'pessimista':
+        return '🔻 Pessimista - Resultados 15% abaixo da média';
+      case 'otimista':
+        return '🔺 Otimista - Resultados 15% acima da média';
+      case 'medio':
+      default:
+        return '📊 Médio - Resultados na média';
+    }
+  };
+
+  const getCenarioColor = (cenario?: 'pessimista' | 'medio' | 'otimista') => {
+    switch(cenario) {
+      case 'pessimista':
+        return '#f44336';
+      case 'otimista':
+        return '#4caf50';
+      case 'medio':
+      default:
+        return '#ff9800';
+    }
+  };
+
   return (
     <div className="advanced-results">
       <h3 className="results-title">Resultados da Simulação Avançada</h3>
+      
+      {/* Exibição do Cenário */}
+      {currentResults.cenario && (
+        <div style={{
+          marginBottom: '20px',
+          padding: '12px 20px',
+          backgroundColor: '#f8f9fa',
+          borderRadius: '8px',
+          border: `2px solid ${getCenarioColor(currentResults.cenario)}`,
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '16px',
+            fontWeight: '700',
+            color: getCenarioColor(currentResults.cenario)
+          }}>
+            {getCenarioLabel(currentResults.cenario)}
+          </div>
+        </div>
+      )}
       
       <div className="results-summary">
         <div className="summary-card investment-card">
@@ -800,6 +879,86 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Sistema</div>
             <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.systemFee)}</div>
+          </div>
+
+          {/* AMLABS - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>AMLABS</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.amlabs)}</div>
+          </div>
+
+          {/* Container - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Container</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.container)}</div>
+          </div>
+
+          {/* Geladeira - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Geladeira</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.refrigerator)}</div>
+          </div>
+
+          {/* Manutenção - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Manutenção</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.maintenance)}</div>
+          </div>
+
+          {/* CD/Água/Luz/Internet - Vermelho */}
+          <div className="breakdown-item" style={{ 
+            backgroundColor: '#ffebee', 
+            padding: '12px 16px', 
+            borderRadius: '8px',
+            border: '2px solid #ef5350',
+            minWidth: '150px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>CD/Água/Luz/Internet</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.utilities)}</div>
           </div>
 
           {/* Contabilidade - Vermelho */}
@@ -1213,6 +1372,46 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 <td><strong>Sistema</strong></td>
                 {monthlyResults.map((result) => (
                   <td key={result.month}>{formatCurrency(-result.systemFee)}</td>
+                ))}
+              </tr>
+              
+              {/* AMLABS */}
+              <tr>
+                <td><strong>AMLABS</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month}>{formatCurrency(-result.amlabs)}</td>
+                ))}
+              </tr>
+              
+              {/* Container */}
+              <tr>
+                <td><strong>Container</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month}>{formatCurrency(-result.container)}</td>
+                ))}
+              </tr>
+              
+              {/* Geladeira */}
+              <tr>
+                <td><strong>Geladeira</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month}>{formatCurrency(-result.refrigerator)}</td>
+                ))}
+              </tr>
+              
+              {/* Manutenção */}
+              <tr>
+                <td><strong>Manutenção</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month}>{formatCurrency(-result.maintenance)}</td>
+                ))}
+              </tr>
+              
+              {/* CD/Água/Luz/Internet */}
+              <tr>
+                <td><strong>CD/Água/Luz/Internet</strong></td>
+                {monthlyResults.map((result) => (
+                  <td key={result.month}>{formatCurrency(-result.utilities)}</td>
                 ))}
               </tr>
               

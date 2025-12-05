@@ -16,6 +16,11 @@ export interface BeHonestParams {
   rev_per_store_m2: number;
   rev_growth_factor: number;
   stores_timeline: number[];
+  amlabs_per_store: number;
+  container_per_store: number;
+  refrigerator_per_store: number;
+  maintenance_fixed: number;
+  utilities_fixed: number;
 }
 
 export interface MonthlyResult {
@@ -34,6 +39,11 @@ export interface MonthlyResult {
   cardFee: number;
   marketing: number;
   systemFee: number;
+  amlabs: number;
+  container: number;
+  refrigerator: number;
+  maintenance: number;
+  utilities: number;
   fixedCosts: number;
   accounting: number;
   operatingProfit: number;
@@ -48,6 +58,7 @@ export interface AdvancedSimulationResult {
   paybackPeriod: number;
   roi: number;
   finalCash: number;
+  cenario?: 'pessimista' | 'medio' | 'otimista';
 }
 
 export function validateFormData(lucroDesejado: number, investimentoInicial: number): boolean {
@@ -104,10 +115,11 @@ export function simulate(
   }
   
   // Calcular número de lojas baseado no investimento
-  // Taxa de franquia (30k) + primeira loja (20k) + lojas adicionais (20k cada)
+  // Taxa de franquia (30k) + primeira loja (20k + container + geladeira) + lojas adicionais (mesmo valor cada)
   const baseStores = 1; // Sempre começa com 1 loja
-  const availableForAdditionalStores = investimentoInicial - params.franchise_fee - params.capex_per_store;
-  const additionalStores = Math.floor(availableForAdditionalStores / params.capex_per_store);
+  const firstStoreTotalCapex = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+  const availableForAdditionalStores = investimentoInicial - params.franchise_fee - firstStoreTotalCapex;
+  const additionalStores = Math.floor(availableForAdditionalStores / firstStoreTotalCapex);
   const stores = baseStores + additionalStores;
   
   // Ajustar custos fixos baseado no perfil de operação
@@ -181,10 +193,14 @@ export function simulate(
     const cardFee = totalRevenue * params.card_fee_rate;
     const marketing = totalRevenue * params.marketing_rate;
     const systemFee = currentStores * params.system_fee_per_store;
+    const amlabs = currentStores * params.amlabs_per_store;
+    // Container e Geladeira são custos únicos (CAPEX), não mensais
+    const maintenance = params.maintenance_fixed;
+    const utilities = params.utilities_fixed;
     const accounting = params.accounting_fixed;
     
-    // Custos fixos ajustados pelo perfil
-    const fixedCosts = (systemFee + accounting) * fixedCostsMultiplier;
+    // Custos fixos mensais ajustados pelo perfil
+    const fixedCosts = (systemFee + amlabs + maintenance + utilities + accounting) * fixedCostsMultiplier;
     
     // Lucro Operacional (não duplicar dedução de systemFee e accounting, pois já estão em fixedCosts)
     const operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts;
@@ -199,7 +215,9 @@ export function simulate(
     if (month === 1) {
       cashFlow -= params.franchise_fee; // Mês 1: paga taxa de franquia (30k)
     } else if (month === 2) {
-      cashFlow -= params.capex_per_store; // Mês 2: paga implementação primeira loja (20k)
+      // Mês 2: paga implementação primeira loja (20k + container + geladeira)
+      const firstStoreCapex = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+      cashFlow -= firstStoreCapex;
     } else if (month >= 3 && additionalStores > 0) {
       // Paga lojas adicionais para que abram a cada 3 meses a partir do mês 4
       // Mês 6: paga loja 1 (abre mês 7)
@@ -209,7 +227,9 @@ export function simulate(
       if (monthsSinceStart > 0 && monthsSinceStart % 3 === 1) { // Paga nos meses 6, 9, 12, 15, etc.
         const storeIndexToPay = Math.floor(monthsSinceStart / 3); // Índice da loja (0, 1, 2, ...)
         if (storeIndexToPay < additionalStores) {
-          cashFlow -= params.capex_per_store; // Paga mais uma loja (20k)
+          // Paga mais uma loja (20k + container + geladeira)
+          const additionalStoreCapex = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+          cashFlow -= additionalStoreCapex;
         }
       }
     }
@@ -235,6 +255,11 @@ export function simulate(
       cardFee,
       marketing,
       systemFee,
+      amlabs,
+      container: 0, // Container é CAPEX, não custo mensal
+      refrigerator: 0, // Geladeira é CAPEX, não custo mensal
+      maintenance,
+      utilities,
       fixedCosts,
       accounting,
       operatingProfit,
@@ -266,7 +291,8 @@ export function simulate(
     totalInvestment,
     paybackPeriod,
     roi: monthlyRentability, // Mantém nome 'roi' para compatibilidade, mas agora é rentabilidade mensal
-    finalCash
+    finalCash,
+    cenario
   };
 }
 
@@ -299,6 +325,7 @@ export function analyzeInvestmentViability(
   lucroDesejado: number,
   _perfilOperacao: string
 ): ViabilityAnalysis {
+  const params = behonestParams as BeHonestParams;
   const recommendations: string[] = [];
   let score = 100;
   let isViable = true;
@@ -307,8 +334,8 @@ export function analyzeInvestmentViability(
   let maxRealisticMonthlyIncome = 0;
 
   // Calcular quantas lojas iniciais o investimento permite
-  const franchiseFee = 30000; // Taxa de franquia
-  const capexPerStore = 20000; // CAPEX por loja
+  const franchiseFee = params.franchise_fee; // Taxa de franquia
+  const capexPerStore = params.capex_per_store + params.container_per_store + params.refrigerator_per_store; // CAPEX por loja (inclui container e geladeira)
   const baseStores = 1; // Sempre começa com 1 loja
   
   let availableForStores = investimentoInicial - franchiseFee - capexPerStore; // Desconta taxa + primeira loja
@@ -371,6 +398,7 @@ export function analyzeInvestmentViabilityWithResults(
   perfilOperacao: string,
   monthlyResults: MonthlyResult[]
 ): ViabilityAnalysis {
+  const params = behonestParams as BeHonestParams;
   const recommendations: string[] = [];
   let score = 100;
   let isViable = true;
@@ -379,8 +407,8 @@ export function analyzeInvestmentViabilityWithResults(
   let maxRealisticMonthlyIncome = 0;
 
   // Calcular quantas lojas iniciais o investimento permite
-  const franchiseFee = 30000; // Taxa de franquia
-  const capexPerStore = 20000; // CAPEX por loja
+  const franchiseFee = params.franchise_fee; // Taxa de franquia
+  const capexPerStore = params.capex_per_store + params.container_per_store + params.refrigerator_per_store; // CAPEX por loja (inclui container e geladeira)
   const baseStores = 1; // Sempre começa com 1 loja
   
   let availableForStores = investimentoInicial - franchiseFee - capexPerStore; // Desconta taxa + primeira loja
@@ -536,52 +564,82 @@ export function addStoreToSimulation(
   // O investimento total não muda, pois a nova loja é paga com o lucro acumulado
   const newTotalInvestment = totalInvestment;
   const newMonthlyResults = [...monthlyResults];
+  const params = behonestParams as BeHonestParams;
+  
+  // Obter multiplicador do cenário
+  let cenarioMultiplier = 1;
+  if (simulationResult.cenario) {
+    switch(simulationResult.cenario) {
+      case 'pessimista':
+        cenarioMultiplier = 0.85;
+        break;
+      case 'medio':
+        cenarioMultiplier = 1.0;
+        break;
+      case 'otimista':
+        cenarioMultiplier = 1.15;
+        break;
+    }
+  }
   
   // A partir do mês escolhido, recalcular com uma loja a mais
   for (let i = monthToAdd - 1; i < newMonthlyResults.length; i++) {
     const currentResult = newMonthlyResults[i];
     const previousResult = i > 0 ? newMonthlyResults[i - 1] : null;
+    const month = currentResult.month;
     
     // Recalcular com +1 loja
     const newStores = currentResult.stores + 1;
     
-    // Recalcular receita considerando período de implementação
+    // Recalcular receita considerando período de implementação, crescimento e cenário
     let totalRevenue = 0;
-    if (i >= monthToAdd - 1) {
-      // Nova loja tem período de implementação de 1 mês
+    let revenuePerStore = 0;
+    if (month > 2 && newStores > 0) {
       if (i === monthToAdd - 1) {
         // Mês da adição: nova loja não gera receita (período implementação)
         totalRevenue = currentResult.totalRevenue;
+        revenuePerStore = currentResult.revenuePerStore;
       } else {
         // Mês seguinte: nova loja já opera e gera receita
-        totalRevenue = currentResult.totalRevenue + (currentResult.totalRevenue / currentResult.stores);
+        // Calcular receita com crescimento mensal e multiplicador do cenário
+        const baseRevenuePerStore = params.rev_per_store_m2;
+        const growthFactor = Math.pow(params.rev_growth_factor, month - 3);
+        revenuePerStore = baseRevenuePerStore * growthFactor * cenarioMultiplier;
+        totalRevenue = revenuePerStore * newStores;
       }
     } else {
       totalRevenue = currentResult.totalRevenue;
+      revenuePerStore = currentResult.revenuePerStore;
     }
     
     // Recalcular todas as variáveis com a nova receita
-    const tax = totalRevenue * 0.04;
-    const cmv = totalRevenue * 0.57;
-    const losses = totalRevenue * 0.045;
-    const grossProfit = totalRevenue - tax - cmv - losses;
-    const reposicao = grossProfit * 0.174;
-    const royalties = totalRevenue * 0.06;
-    const otherRepasses = totalRevenue * 0.03;
-    const cardFee = totalRevenue * 0.016;
-    const marketing = totalRevenue * 0.01;
-    const systemFee = newStores * 150; // R$ 150 por loja
-    const accounting = newStores * 116.67; // R$ 116.67 por loja
-    const fixedCosts = systemFee + accounting;
+    const tax = totalRevenue * params.simples_rate_m2;
+    const netRevenue = totalRevenue - tax;
+    const cmv = netRevenue * params.cmv_rate;
+    const losses = netRevenue * params.loss_rate;
+    const grossProfit = netRevenue - cmv - losses;
+    const reposicao = totalRevenue * params.reposicao_rate;
+    const royalties = totalRevenue * params.royalties_rate;
+    const otherRepasses = totalRevenue * params.other_repasses_rate;
+    const cardFee = totalRevenue * params.card_fee_rate;
+    const marketing = totalRevenue * params.marketing_rate;
+    const systemFee = newStores * params.system_fee_per_store;
+    const amlabs = newStores * params.amlabs_per_store;
+    // Container e Geladeira são CAPEX, não custos mensais
+    const maintenance = params.maintenance_fixed;
+    const utilities = params.utilities_fixed;
+    const accounting = params.accounting_fixed;
+    const fixedCosts = systemFee + amlabs + maintenance + utilities + accounting;
     const operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts;
     const netProfit = operatingProfit;
     
     // Calcular fluxo de caixa
     let cashFlow = netProfit;
     
-    // Se for o mês em que a loja é adicionada, subtrair R$ 20.000 do fluxo de caixa
+    // Se for o mês em que a loja é adicionada, subtrair CAPEX completo (20k + container + geladeira)
     if (i === monthToAdd - 1) {
-      cashFlow -= 20000;
+      const additionalStoreCapex = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+      cashFlow -= additionalStoreCapex;
     }
     
     const cumulativeCash = previousResult ? previousResult.cumulativeCash + cashFlow : cashFlow;
@@ -590,7 +648,7 @@ export function addStoreToSimulation(
       month: currentResult.month,
       stores: newStores,
       totalRevenue,
-      revenuePerStore: totalRevenue / newStores,
+      revenuePerStore,
       tax,
       netRevenue: totalRevenue - tax,
       cmv,
@@ -602,8 +660,13 @@ export function addStoreToSimulation(
       cardFee,
       marketing,
       systemFee,
-      accounting,
+      amlabs,
+      container: 0, // Container é CAPEX, não custo mensal
+      refrigerator: 0, // Geladeira é CAPEX, não custo mensal
+      maintenance,
+      utilities,
       fixedCosts,
+      accounting,
       operatingProfit,
       netProfit,
       cashFlow,
@@ -632,7 +695,8 @@ export function addStoreToSimulation(
     totalInvestment: newTotalInvestment,
     paybackPeriod,
     roi: monthlyRentability,
-    finalCash
+    finalCash,
+    cenario: simulationResult.cenario
   };
 }
 
@@ -644,13 +708,26 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
     throw new Error('Não é possível remover lojas dos primeiros 3 meses');
   }
   
-  // Encontrar o mês onde a loja foi adicionada (mês anterior ao mês de implementação)
-  // const storeAddedMonth = monthToRemove - 1;
-  
   // Verificar se existe uma loja para remover neste mês
   const monthResult = results.monthlyResults.find(r => r.month === monthToRemove);
   if (!monthResult || monthResult.stores <= 1) {
     throw new Error('Não há lojas adicionais para remover neste mês');
+  }
+  
+  // Obter multiplicador do cenário
+  let cenarioMultiplier = 1;
+  if (results.cenario) {
+    switch(results.cenario) {
+      case 'pessimista':
+        cenarioMultiplier = 0.85;
+        break;
+      case 'medio':
+        cenarioMultiplier = 1.0;
+        break;
+      case 'otimista':
+        cenarioMultiplier = 1.15;
+        break;
+    }
   }
   
   // Criar nova simulação sem a loja adicional
@@ -659,9 +736,18 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
       // Reduzir número de lojas a partir do mês de implementação
       const newStores = Math.max(1, result.stores - 1); // Mínimo 1 loja (primeira)
       
-      // Recalcular receita
-      const revenuePerStore = params.rev_per_store_m2 * 50; // Assumindo 50m² por loja
-      const totalRevenue = newStores * revenuePerStore;
+      // Recalcular receita considerando crescimento e cenário
+      let totalRevenue = 0;
+      let revenuePerStore = 0;
+      if (result.month > 2 && newStores > 0) {
+        const baseRevenuePerStore = params.rev_per_store_m2;
+        const growthFactor = Math.pow(params.rev_growth_factor, result.month - 3);
+        revenuePerStore = baseRevenuePerStore * growthFactor * cenarioMultiplier;
+        totalRevenue = revenuePerStore * newStores;
+      } else {
+        totalRevenue = result.totalRevenue;
+        revenuePerStore = result.revenuePerStore;
+      }
       
       // Recalcular todos os valores baseados na nova receita
       const tax = totalRevenue * params.simples_rate_m2;
@@ -669,16 +755,20 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
       const cmv = netRevenue * params.cmv_rate;
       const losses = netRevenue * params.loss_rate;
       const grossProfit = netRevenue - cmv - losses;
-      const reposicao = grossProfit * params.reposicao_rate;
-      const royalties = grossProfit * params.royalties_rate;
-      const otherRepasses = grossProfit * params.other_repasses_rate;
+      const reposicao = totalRevenue * params.reposicao_rate;
+      const royalties = totalRevenue * params.royalties_rate;
+      const otherRepasses = totalRevenue * params.other_repasses_rate;
       const cardFee = totalRevenue * params.card_fee_rate;
       const marketing = totalRevenue * params.marketing_rate;
       const systemFee = params.system_fee_per_store * newStores;
+      const amlabs = params.amlabs_per_store * newStores;
+      // Container e Geladeira são CAPEX, não custos mensais
+      const maintenance = params.maintenance_fixed;
+      const utilities = params.utilities_fixed;
       const accounting = params.accounting_fixed;
-      const fixedCosts = 0; // Sem custos fixos adicionais
+      const fixedCosts = systemFee + amlabs + maintenance + utilities + accounting;
       
-      const operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - systemFee - accounting - fixedCosts;
+      const operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts;
       const netProfit = operatingProfit;
       
       // Recalcular fluxo de caixa
@@ -690,8 +780,8 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
       return {
         ...result,
         stores: newStores,
-        revenuePerStore,
         totalRevenue,
+        revenuePerStore,
         tax,
         netRevenue,
         cmv,
@@ -703,8 +793,13 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
         cardFee,
         marketing,
         systemFee,
-        accounting,
+        amlabs,
+        container: 0, // Container é CAPEX, não custo mensal
+        refrigerator: 0, // Geladeira é CAPEX, não custo mensal
+        maintenance,
+        utilities,
         fixedCosts,
+        accounting,
         operatingProfit,
         netProfit,
         cashFlow,
@@ -738,6 +833,7 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
     totalInvestment: newTotalInvestment,
     paybackPeriod,
     roi: monthlyRentability,
-    finalCash
+    finalCash,
+    cenario: results.cenario
   };
 }
