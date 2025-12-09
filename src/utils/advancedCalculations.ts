@@ -58,7 +58,7 @@ export interface AdvancedSimulationResult {
   paybackPeriod: number;
   roi: number;
   finalCash: number;
-  cenario?: 'pessimista' | 'medio' | 'otimista';
+  cenario: 'pessimista' | 'medio' | 'otimista';
 }
 
 export function validateFormData(lucroDesejado: number, investimentoInicial: number): boolean {
@@ -212,11 +212,16 @@ export function simulate(
     let cashFlow = netProfit;
     
     // Pagamentos escalonados do investimento inicial
+    let containerCapex = 0;
+    let refrigeratorCapex = 0;
+    
     if (month === 1) {
       cashFlow -= params.franchise_fee; // Mês 1: paga taxa de franquia (30k)
     } else if (month === 2) {
       // Mês 2: paga implementação primeira loja (20k + container + geladeira)
-      const firstStoreCapex = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+      containerCapex = params.container_per_store;
+      refrigeratorCapex = params.refrigerator_per_store;
+      const firstStoreCapex = params.capex_per_store + containerCapex + refrigeratorCapex;
       cashFlow -= firstStoreCapex;
     } else if (month >= 3 && additionalStores > 0) {
       // Paga lojas adicionais para que abram a cada 3 meses a partir do mês 4
@@ -228,7 +233,9 @@ export function simulate(
         const storeIndexToPay = Math.floor(monthsSinceStart / 3); // Índice da loja (0, 1, 2, ...)
         if (storeIndexToPay < additionalStores) {
           // Paga mais uma loja (20k + container + geladeira)
-          const additionalStoreCapex = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+          containerCapex = params.container_per_store;
+          refrigeratorCapex = params.refrigerator_per_store;
+          const additionalStoreCapex = params.capex_per_store + containerCapex + refrigeratorCapex;
           cashFlow -= additionalStoreCapex;
         }
       }
@@ -256,8 +263,8 @@ export function simulate(
       marketing,
       systemFee,
       amlabs,
-      container: 0, // Container é CAPEX, não custo mensal
-      refrigerator: 0, // Geladeira é CAPEX, não custo mensal
+      container: containerCapex, // Container é CAPEX por loja, registrado quando uma loja é adicionada
+      refrigerator: refrigeratorCapex, // Geladeira é CAPEX por loja, registrado quando uma loja é adicionada
       maintenance,
       utilities,
       fixedCosts,
@@ -555,32 +562,30 @@ export function addStoreToSimulation(
   simulationResult: AdvancedSimulationResult, 
   monthToAdd: number
 ): AdvancedSimulationResult {
-  const { monthlyResults, totalInvestment } = simulationResult;
+  const { monthlyResults, totalInvestment, cenario } = simulationResult;
   
   if (!canAddStore(monthlyResults, monthToAdd, totalInvestment)) {
     throw new Error('Não é possível adicionar uma loja neste mês. Ainda não há lucro acumulado suficiente (R$ 20.000).');
+  }
+  
+  // Obter multiplicador do cenário
+  let cenarioMultiplier = 1;
+  switch(cenario) {
+    case 'pessimista':
+      cenarioMultiplier = 0.85;
+      break;
+    case 'medio':
+      cenarioMultiplier = 1.0;
+      break;
+    case 'otimista':
+      cenarioMultiplier = 1.15;
+      break;
   }
   
   // O investimento total não muda, pois a nova loja é paga com o lucro acumulado
   const newTotalInvestment = totalInvestment;
   const newMonthlyResults = [...monthlyResults];
   const params = behonestParams as BeHonestParams;
-  
-  // Obter multiplicador do cenário
-  let cenarioMultiplier = 1;
-  if (simulationResult.cenario) {
-    switch(simulationResult.cenario) {
-      case 'pessimista':
-        cenarioMultiplier = 0.85;
-        break;
-      case 'medio':
-        cenarioMultiplier = 1.0;
-        break;
-      case 'otimista':
-        cenarioMultiplier = 1.15;
-        break;
-    }
-  }
   
   // A partir do mês escolhido, recalcular com uma loja a mais
   for (let i = monthToAdd - 1; i < newMonthlyResults.length; i++) {
@@ -594,7 +599,8 @@ export function addStoreToSimulation(
     // Recalcular receita considerando período de implementação, crescimento e cenário
     let totalRevenue = 0;
     let revenuePerStore = 0;
-    if (month > 2 && newStores > 0) {
+    if (i >= monthToAdd - 1) {
+      // Nova loja tem período de implementação de 1 mês
       if (i === monthToAdd - 1) {
         // Mês da adição: nova loja não gera receita (período implementação)
         totalRevenue = currentResult.totalRevenue;
@@ -637,8 +643,12 @@ export function addStoreToSimulation(
     let cashFlow = netProfit;
     
     // Se for o mês em que a loja é adicionada, subtrair CAPEX completo (20k + container + geladeira)
+    let containerCapex = 0;
+    let refrigeratorCapex = 0;
     if (i === monthToAdd - 1) {
-      const additionalStoreCapex = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+      containerCapex = params.container_per_store;
+      refrigeratorCapex = params.refrigerator_per_store;
+      const additionalStoreCapex = params.capex_per_store + containerCapex + refrigeratorCapex;
       cashFlow -= additionalStoreCapex;
     }
     
@@ -661,8 +671,8 @@ export function addStoreToSimulation(
       marketing,
       systemFee,
       amlabs,
-      container: 0, // Container é CAPEX, não custo mensal
-      refrigerator: 0, // Geladeira é CAPEX, não custo mensal
+      container: containerCapex, // Container é CAPEX por loja, registrado quando uma loja é adicionada
+      refrigerator: refrigeratorCapex, // Geladeira é CAPEX por loja, registrado quando uma loja é adicionada
       maintenance,
       utilities,
       fixedCosts,
@@ -696,38 +706,40 @@ export function addStoreToSimulation(
     paybackPeriod,
     roi: monthlyRentability,
     finalCash,
-    cenario: simulationResult.cenario
+    cenario
   };
 }
 
 export function removeStoreFromSimulation(results: AdvancedSimulationResult, monthToRemove: number): AdvancedSimulationResult {
   const params = behonestParams as BeHonestParams;
+  const { cenario } = results;
+  
+  // Obter multiplicador do cenário
+  let cenarioMultiplier = 1;
+  switch(cenario) {
+    case 'pessimista':
+      cenarioMultiplier = 0.85;
+      break;
+    case 'medio':
+      cenarioMultiplier = 1.0;
+      break;
+    case 'otimista':
+      cenarioMultiplier = 1.15;
+      break;
+  }
   
   // Verificar se é possível remover a loja
   if (monthToRemove < 4) {
     throw new Error('Não é possível remover lojas dos primeiros 3 meses');
   }
   
+  // Encontrar o mês onde a loja foi adicionada (mês anterior ao mês de implementação)
+  // const storeAddedMonth = monthToRemove - 1;
+  
   // Verificar se existe uma loja para remover neste mês
   const monthResult = results.monthlyResults.find(r => r.month === monthToRemove);
   if (!monthResult || monthResult.stores <= 1) {
     throw new Error('Não há lojas adicionais para remover neste mês');
-  }
-  
-  // Obter multiplicador do cenário
-  let cenarioMultiplier = 1;
-  if (results.cenario) {
-    switch(results.cenario) {
-      case 'pessimista':
-        cenarioMultiplier = 0.85;
-        break;
-      case 'medio':
-        cenarioMultiplier = 1.0;
-        break;
-      case 'otimista':
-        cenarioMultiplier = 1.15;
-        break;
-    }
   }
   
   // Criar nova simulação sem a loja adicional
@@ -780,8 +792,8 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
       return {
         ...result,
         stores: newStores,
-        totalRevenue,
         revenuePerStore,
+        totalRevenue,
         tax,
         netRevenue,
         cmv,
@@ -834,6 +846,6 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
     paybackPeriod,
     roi: monthlyRentability,
     finalCash,
-    cenario: results.cenario
+    cenario
   };
 }

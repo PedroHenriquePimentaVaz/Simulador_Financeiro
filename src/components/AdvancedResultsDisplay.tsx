@@ -531,53 +531,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   const lastMonth = monthlyResults[monthlyResults.length - 1];
   // const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
 
-  const getCenarioLabel = (cenario?: 'pessimista' | 'medio' | 'otimista') => {
-    switch(cenario) {
-      case 'pessimista':
-        return '🔻 Pessimista - Resultados 15% abaixo da média';
-      case 'otimista':
-        return '🔺 Otimista - Resultados 15% acima da média';
-      case 'medio':
-      default:
-        return '📊 Médio - Resultados na média';
-    }
-  };
-
-  const getCenarioColor = (cenario?: 'pessimista' | 'medio' | 'otimista') => {
-    switch(cenario) {
-      case 'pessimista':
-        return '#f44336';
-      case 'otimista':
-        return '#4caf50';
-      case 'medio':
-      default:
-        return '#ff9800';
-    }
-  };
-
   return (
     <div className="advanced-results">
       <h3 className="results-title">Resultados da Simulação Avançada</h3>
-      
-      {/* Exibição do Cenário */}
-      {currentResults.cenario && (
-        <div style={{
-          marginBottom: '20px',
-          padding: '12px 20px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '8px',
-          border: `2px solid ${getCenarioColor(currentResults.cenario)}`,
-          textAlign: 'center'
-        }}>
-          <div style={{
-            fontSize: '16px',
-            fontWeight: '700',
-            color: getCenarioColor(currentResults.cenario)
-          }}>
-            {getCenarioLabel(currentResults.cenario)}
-          </div>
-        </div>
-      )}
       
       <div className="results-summary">
         <div className="summary-card investment-card">

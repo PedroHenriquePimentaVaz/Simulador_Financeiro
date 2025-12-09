@@ -76,46 +76,46 @@ function App() {
           {/* Main Content Grid */}
           <div className="hero-main-grid">
             <div className="hero-left-column">
-              {/* Headline */}
-              <div className="hero-headline-area">
-                <div className="hero-headline">
-                  <h1 className="main-title">
-                    Simule qual seria o lucro do seu investimento na franquia de mercados autônomos da <span className="highlight-text">Be Honest</span>
-                    <br />
-                    <span className="subtitle">Payback de 18 a 22 meses</span>
-                  </h1>
+            {/* Headline */}
+            <div className="hero-headline-area">
+              <div className="hero-headline">
+                <h1 className="main-title">
+                  Simule qual seria o lucro do seu investimento na franquia de mercados autônomos da <span className="highlight-text">Be Honest</span>
+                  <br />
+                  <span className="subtitle">Payback de 18 a 22 meses</span>
+                </h1>
+              </div>
+            </div>
+
+            {/* Supporting Content */}
+            <div className="hero-support-area">
+              <div className="hero-stats">
+                <div className="stat-card">
+                  <div className="stat-number">⚡</div>
+                  <div className="stat-label">100% Automatizado</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-number">📈</div>
+                  <div className="stat-label">Alto Potencial de Crescimento</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-number">🤝</div>
+                  <div className="stat-label">Suporte Completo</div>
                 </div>
               </div>
 
-              {/* Supporting Content */}
-              <div className="hero-support-area">
-                <div className="hero-stats">
-                  <div className="stat-card">
-                    <div className="stat-number">⚡</div>
-                    <div className="stat-label">100% Automatizado</div>
-                  </div>
-                  <div className="stat-card">
-                    <div className="stat-number">📈</div>
-                    <div className="stat-label">Alto Potencial de Crescimento</div>
-                  </div>
-                  <div className="stat-card">
-                    <div className="stat-number">🤝</div>
-                    <div className="stat-label">Suporte Completo</div>
-                  </div>
-                </div>
+              <div className="hero-warning">
+                <strong>⚠️ Importante:</strong>
+                <p>
+                  Os valores são estimativas baseadas em médias do mercado. Os resultados reais podem variar.
+                </p>
+              </div>
 
-                <div className="hero-warning">
-                  <strong>⚠️ Importante:</strong>
-                  <p>
-                    Os valores são estimativas baseadas em médias do mercado. Os resultados reais podem variar.
-                  </p>
+              <div className="social-proof">
+                <div className="proof-text">
+                  <span className="proof-icon">⭐</span>
+                  <span>Operação <strong>100% automatizada</strong> sem funcionários</span>
                 </div>
-
-                <div className="social-proof">
-                  <div className="proof-text">
-                    <span className="proof-icon">⭐</span>
-                    <span>Operação <strong>100% automatizada</strong> sem funcionários</span>
-                  </div>
                 </div>
               </div>
             </div>
