@@ -18,21 +18,13 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
       <div 
         className="results-hero-section"
         style={{
-          background: 'linear-gradient(135deg, #001c54 0%, #0a2f7d 45%, #0f4d9b 100%)',
-          color: '#fff',
+          background: '#ffffff',
+          color: '#001c54',
           position: 'relative',
           overflow: 'hidden',
-          boxShadow: '0 16px 40px rgba(0, 28, 84, 0.35)'
+          boxShadow: '0 16px 40px rgba(0, 28, 84, 0.12)'
         }}
       >
-        <div 
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'radial-gradient(circle at 20% 20%, rgba(255,193,7,0.15), transparent 45%), radial-gradient(circle at 80% 10%, rgba(255,193,7,0.12), transparent 40%)',
-            pointerEvents: 'none'
-          }}
-        />
         <div className="results-hero-content" style={{ position: 'relative', zIndex: 1 }}>
           {/* Header com Logo e Actions */}
           <div className="results-header">
