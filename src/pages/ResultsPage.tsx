@@ -51,15 +51,16 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
         </div>
       </div>
 
-      <div className="main-container">
-        <div className="results-page-shell">
-          
-          <AdvancedResultsDisplay 
-            results={results}
-            currentResults={currentResults}
-            lucroDesejado={lucroDesejado}
-            onResultsUpdate={onResultsUpdate}
-          />
+      <div className="main-container results-main-bg">
+        <div className="results-page-container">
+          <div className="results-surface">
+            <AdvancedResultsDisplay 
+              results={results}
+              currentResults={currentResults}
+              lucroDesejado={lucroDesejado}
+              onResultsUpdate={onResultsUpdate}
+            />
+          </div>
         </div>
       </div>
       <Footer />
