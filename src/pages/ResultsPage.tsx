@@ -51,16 +51,27 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
         </div>
       </div>
 
-      <div className="main-container results-main-bg">
-        <div className="results-page-container">
-          <div className="results-surface">
-            <AdvancedResultsDisplay 
-              results={results}
-              currentResults={currentResults}
-              lucroDesejado={lucroDesejado}
-              onResultsUpdate={onResultsUpdate}
-            />
-          </div>
+      <div className="main-container" style={{
+        background: 'linear-gradient(180deg, #f0f4ff 0%, #f8f9fb 100%)',
+        padding: '40px 0'
+      }}>
+        <div className="results-page-container" style={{
+          width: '100%',
+          maxWidth: '1400px',
+          margin: '0 auto',
+          padding: '32px',
+          backgroundColor: '#ffffff',
+          borderRadius: '16px',
+          boxShadow: '0 12px 30px rgba(0, 28, 84, 0.08)',
+          border: '1px solid #e6ecf5'
+        }}>
+          
+          <AdvancedResultsDisplay 
+            results={results}
+            currentResults={currentResults}
+            lucroDesejado={lucroDesejado}
+            onResultsUpdate={onResultsUpdate}
+          />
         </div>
       </div>
       <Footer />
