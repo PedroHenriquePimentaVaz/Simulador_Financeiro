@@ -629,8 +629,8 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           Comparação com Investimentos em Renda Fixa
         </h2>
         <InvestmentComparisonChart 
-          franchiseResults={results}
-          initialInvestment={results.totalInvestment}
+          franchiseResults={currentResults}
+          initialInvestment={currentResults.totalInvestment}
         />
       </div>
 
