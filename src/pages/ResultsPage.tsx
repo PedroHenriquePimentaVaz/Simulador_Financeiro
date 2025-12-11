@@ -48,22 +48,20 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
               Sua franquia Be Honest está projetada para gerar excelentes resultados
             </p>
           </div>
+
+          <div className="results-brand-banner">
+            <div className="brand-pill">Be Honest</div>
+            <div className="brand-tagline">Mercados autônomos com payback rápido e operação enxuta</div>
+          </div>
         </div>
       </div>
 
-      <div className="main-container" style={{
-        background: 'linear-gradient(180deg, #f0f4ff 0%, #f8f9fb 100%)',
-        padding: '40px 0'
-      }}>
+      <div className="main-container">
         <div className="results-page-container" style={{
           width: '100%',
           maxWidth: '1400px',
           margin: '0 auto',
-          padding: '32px',
-          backgroundColor: '#ffffff',
-          borderRadius: '16px',
-          boxShadow: '0 12px 30px rgba(0, 28, 84, 0.08)',
-          border: '1px solid #e6ecf5'
+          padding: '40px 20px'
         }}>
           
           <AdvancedResultsDisplay 
