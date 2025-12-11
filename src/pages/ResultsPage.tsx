@@ -12,22 +12,28 @@ interface ResultsPageProps {
 }
 
 const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucroDesejado, onNewSimulation, onResultsUpdate }) => {
-  const brandBlue = '#001c54';
-  const brandOrange = '#ff9d00';
-
   return (
-    <div className="app-container" style={{ backgroundColor: '#f3f6fb' }}>
+    <div className="app-container">
       {/* Hero Results Section */}
       <div 
         className="results-hero-section"
         style={{
-          background: `linear-gradient(120deg, ${brandBlue} 0%, #0a2f7a 50%, #123d9d 100%)`,
-          color: 'white',
-          padding: '28px 0',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.25)'
+          background: 'linear-gradient(135deg, #001c54 0%, #0a2f7d 45%, #0f4d9b 100%)',
+          color: '#fff',
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: '0 16px 40px rgba(0, 28, 84, 0.35)'
         }}
       >
-        <div className="results-hero-content" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+        <div 
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(circle at 20% 20%, rgba(255,193,7,0.15), transparent 45%), radial-gradient(circle at 80% 10%, rgba(255,193,7,0.12), transparent 40%)',
+            pointerEvents: 'none'
+          }}
+        />
+        <div className="results-hero-content" style={{ position: 'relative', zIndex: 1 }}>
           {/* Header com Logo e Actions */}
           <div className="results-header">
             <div className="results-logo-container" style={{ cursor: 'pointer' }} onClick={onNewSimulation}>
@@ -38,26 +44,12 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
             <div className="results-actions">
               <button 
                 className="results-action-btn secondary"
-                style={{
-                  borderColor: 'white',
-                  color: 'white',
-                  backgroundColor: 'transparent',
-                  boxShadow: '0 0 0 1px rgba(255,255,255,0.4)',
-                  transition: 'all 0.2s ease'
-                }}
                 onClick={onNewSimulation}
               >
                 🔄 Nova Simulação
               </button>
               <button 
                 className="results-action-btn primary"
-                style={{
-                  backgroundColor: brandOrange,
-                  borderColor: brandOrange,
-                  color: brandBlue,
-                  fontWeight: 800,
-                  boxShadow: '0 8px 18px rgba(0,0,0,0.18)'
-                }}
                 onClick={() => window.open('https://wa.me/5531983550409', '_blank')}
               >
                 💬 Falar com Especialista
@@ -66,31 +58,33 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
           </div>
 
           {/* Success Message */}
-          <div 
-            className="results-success-message"
-            style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.15)',
-              boxShadow: '0 12px 24px rgba(0,0,0,0.25)',
-              borderRadius: '14px',
-              padding: '22px',
-              backdropFilter: 'blur(4px)',
-              marginTop: '18px'
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-              <span style={{ background: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 800, padding: '6px 12px', borderRadius: '999px', letterSpacing: '0.4px' }}>
-                BeHonest • Resultados
-              </span>
-              <div style={{ height: '1px', flex: 1, background: 'rgba(255,255,255,0.2)' }} />
-            </div>
+          <div className="results-success-message">
             <div className="success-icon">🎉</div>
-            <h1 className="success-title" style={{ color: 'white', textShadow: '0 4px 12px rgba(0,0,0,0.35)' }}>
-              Simulação Concluída com Sucesso!
-            </h1>
-            <p className="success-subtitle" style={{ color: 'rgba(255,255,255,0.85)' }}>
+            <h1 className="success-title">Simulação Concluída com Sucesso!</h1>
+            <p className="success-subtitle">
               Sua franquia Be Honest está projetada para gerar excelentes resultados
             </p>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '8px 14px',
+              borderRadius: '30px',
+              backgroundColor: 'rgba(255, 193, 7, 0.15)',
+              color: '#ffe08a',
+              fontWeight: 700,
+              letterSpacing: '0.5px',
+              marginTop: '10px'
+            }}>
+              <span style={{
+                width: '10px',
+                height: '10px',
+                borderRadius: '50%',
+                backgroundColor: '#ffc107',
+                boxShadow: '0 0 0 4px rgba(255,193,7,0.2)'
+              }} />
+              Resultados oficiais Be Honest
+            </div>
           </div>
         </div>
       </div>
@@ -100,14 +94,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
           width: '100%',
           maxWidth: '1400px',
           margin: '0 auto',
-          padding: '40px 20px',
-          background: 'linear-gradient(180deg, #ffffff 0%, #f5f7fb 60%, #eef2f9 100%)',
-          borderRadius: '14px',
-          boxShadow: '0 18px 32px rgba(0,0,0,0.12)',
-          border: '1px solid #e5e9f2',
-          marginTop: '-50px',
-          position: 'relative',
-          zIndex: 2
+          padding: '40px 20px'
         }}>
           
           <AdvancedResultsDisplay 

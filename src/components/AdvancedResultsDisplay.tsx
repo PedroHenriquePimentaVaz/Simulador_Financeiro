@@ -529,11 +529,70 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   }));
 
   const lastMonth = monthlyResults[monthlyResults.length - 1];
+  const scenarioLabel = currentResults.cenario === 'otimista'
+    ? 'Cenário Otimista (+15%)'
+    : currentResults.cenario === 'pessimista'
+      ? 'Cenário Pessimista (-15%)'
+      : 'Cenário Médio';
+  const operationLabel = currentResults.perfilOperacao === 'terceirizar'
+    ? 'Operação terceirizada'
+    : 'Operação própria';
   // const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
 
   return (
-    <div className="advanced-results modern">
-      <h3 className="results-title">Resultados da Simulação Avançada</h3>
+    <div 
+      className="advanced-results"
+      style={{
+        background: '#f5f7fb',
+        borderRadius: '16px',
+        padding: '18px',
+        border: '1px solid #e2e8f0',
+        boxShadow: '0 12px 30px rgba(0, 28, 84, 0.08)'
+      }}
+    >
+      <div style={{
+        background: 'linear-gradient(135deg, #001c54 0%, #0a3a8a 60%, #0f4d9b 100%)',
+        color: '#fff',
+        padding: '16px 18px',
+        borderRadius: '12px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '18px',
+        boxShadow: '0 12px 24px rgba(0,28,84,0.25)'
+      }}>
+        <div>
+          <div style={{ fontSize: '12px', letterSpacing: '0.08em', opacity: 0.85, textTransform: 'uppercase' }}>Be Honest • Resultados</div>
+          <div style={{ fontSize: '20px', fontWeight: 800, marginTop: '4px' }}>Visão consolidada da sua operação</div>
+          <div style={{ fontSize: '13px', opacity: 0.9, marginTop: '6px' }}>{scenarioLabel} · {operationLabel}</div>
+        </div>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{
+            padding: '10px 14px',
+            borderRadius: '10px',
+            background: 'rgba(255,193,7,0.15)',
+            color: '#ffe08a',
+            fontWeight: 700,
+            minWidth: '120px',
+            textAlign: 'center'
+          }}>
+            {lastMonth.stores} PDVs ativos
+          </div>
+          <div style={{
+            padding: '10px 14px',
+            borderRadius: '10px',
+            background: 'rgba(255,255,255,0.12)',
+            color: '#fff',
+            fontWeight: 700,
+            minWidth: '120px',
+            textAlign: 'center'
+          }}>
+            60 meses simulados
+          </div>
+        </div>
+      </div>
+
+      <h3 className="results-title" style={{ color: '#001c54' }}>Resultados da Simulação Avançada</h3>
       
       <div className="results-summary">
         <div className="summary-card investment-card">
