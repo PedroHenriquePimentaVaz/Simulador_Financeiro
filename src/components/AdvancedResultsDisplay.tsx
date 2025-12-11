@@ -532,7 +532,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   // const avgMonthlyProfit = monthlyResults.reduce((sum, result) => sum + result.netProfit, 0) / monthlyResults.length;
 
   return (
-    <div className="advanced-results">
+    <div className="advanced-results modern">
       <h3 className="results-title">Resultados da Simulação Avançada</h3>
       
       <div className="results-summary">
