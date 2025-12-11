@@ -74,13 +74,13 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   const maxValue = Math.max(franchiseValue, ...comparisonData.map(d => d.value));
 
   return (
-    <div className="comparison-card">
+    <div className="investment-comparison" style={{ marginBottom: '20px' }}>
       {/* Visual Bar Chart */}
       <div>
         <h3 style={{ 
           textAlign: 'center', 
           marginBottom: '20px',
-          color: '#2c3e50',
+          color: '#e9edf5',
           fontSize: '18px'
         }}>
           Comparação Visual de Retorno - 5 Anos
@@ -105,7 +105,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
               <div style={{ 
                 flex: 1, 
                 height: '35px', 
-                backgroundColor: '#ecf0f1', 
+                backgroundColor: 'rgba(255,255,255,0.08)', 
                 borderRadius: '5px',
                 position: 'relative'
               }}>
@@ -148,7 +148,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
                 <div style={{ 
                   flex: 1, 
                   height: '30px', 
-                  backgroundColor: '#ecf0f1', 
+                backgroundColor: 'rgba(255,255,255,0.08)', 
                   borderRadius: '5px',
                   position: 'relative'
                 }}>
