@@ -6,9 +6,9 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: #001c54;
+  background: #ffffff;
   min-height: 100vh;
-  color: white;
+  color: #001c54;
   font-weight: 400;
   font-style: normal;
 }
@@ -582,9 +582,7 @@ svg text, svg tspan {
 
 /* Results Page Hero Section */
 .results-hero-section {
-  background: radial-gradient(circle at 20% 20%, rgba(255, 152, 0, 0.12), transparent 35%),
-              radial-gradient(circle at 80% 10%, rgba(255, 152, 0, 0.08), transparent 30%),
-              linear-gradient(135deg, #001c54 0%, #001a4a 100%);
+  background: linear-gradient(135deg, #001c54 0%, #001a4a 100%);
   padding: 40px 20px;
   position: relative;
   overflow: hidden;
@@ -598,15 +596,6 @@ svg text, svg tspan {
   right: 0;
   bottom: 0;
   background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ffffff" opacity="0.05"/><circle cx="75" cy="75" r="1" fill="%23ffffff" opacity="0.05"/><circle cx="50" cy="10" r="0.5" fill="%23ffffff" opacity="0.03"/><circle cx="10" cy="60" r="0.5" fill="%23ffffff" opacity="0.03"/><circle cx="90" cy="40" r="0.5" fill="%23ffffff" opacity="0.03"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-  pointer-events: none;
-}
-
-.results-hero-section::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 152, 0, 0.12), transparent 40%);
-  mix-blend-mode: screen;
   pointer-events: none;
 }
 
@@ -693,7 +682,6 @@ svg text, svg tspan {
 .results-success-message {
   text-align: center;
   animation: fadeInUp 0.8s ease-out;
-  position: relative;
 }
 
 .success-icon {
@@ -713,35 +701,6 @@ svg text, svg tspan {
   font-size: 20px;
   color: rgba(255, 255, 255, 0.9);
   margin: 0;
-}
-
-.results-brand-banner {
-  margin-top: 18px;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 18px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.brand-pill {
-  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  box-shadow: 0 6px 15px rgba(255, 152, 0, 0.35);
-}
-
-.brand-tagline {
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
-  font-size: 14px;
 }
 
 @keyframes bounce {
