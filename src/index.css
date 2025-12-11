@@ -1328,7 +1328,26 @@ svg text, svg tspan {
 .main-container {
   display: flex;
   flex: 1;
-  background: #001c54;
+  padding: 40px 20px;
+  position: relative;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 152, 0, 0.08), transparent 32%),
+              radial-gradient(circle at 80% 0%, rgba(0, 255, 255, 0.06), transparent 30%),
+              linear-gradient(135deg, #0a1d3f 0%, #00142f 100%);
+  overflow: hidden;
+}
+
+.main-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="%23ffffff" opacity="0.08"/></pattern></defs><rect width="120" height="120" fill="url(%23dots)"/></svg>');
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.main-container > * {
+  position: relative;
+  z-index: 1;
 }
 
 .left-section {
@@ -2243,203 +2262,5 @@ svg text, svg tspan {
   .whatsapp-popup-button {
     font-size: 16px;
     padding: 12px 24px;
-  }
-}
-
-/* --- UI/UX Refresh - Área de Resultados --- */
-.advanced-results {
-  background: radial-gradient(120% 120% at 10% 20%, rgba(255, 193, 7, 0.08), transparent 40%),
-              radial-gradient(140% 140% at 90% 10%, rgba(76, 175, 80, 0.08), transparent 45%),
-              linear-gradient(135deg, #0a1535 0%, #0c1b45 50%, #0a1535 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  border-radius: 20px;
-  padding: 32px;
-  color: #eef3ff;
-  backdrop-filter: blur(6px);
-}
-
-.results-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  text-align: center;
-  margin-bottom: 28px;
-  color: #f7f9ff;
-}
-
-.results-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px;
-  margin-bottom: 24px;
-}
-
-.summary-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 18px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.summary-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.32);
-  border-color: rgba(255, 255, 255, 0.16);
-}
-
-.summary-card h4 {
-  margin: 0 0 4px 0;
-  font-size: 14px;
-  color: #cdd7ff;
-  letter-spacing: 0.01em;
-}
-
-.summary-card .summary-value {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 800;
-  color: #f7f9ff;
-}
-
-.summary-card .card-period {
-  font-size: 12px;
-  color: #9fb2ff;
-}
-
-.summary-card .card-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.12);
-  display: grid;
-  place-items: center;
-  font-size: 22px;
-}
-
-.results-summary .balance-card .card-icon { background: rgba(76, 175, 80, 0.18); }
-.results-summary .roi-card .card-icon { background: rgba(255, 193, 7, 0.18); }
-.results-summary .payback-card .card-icon { background: rgba(33, 150, 243, 0.18); }
-
-.charts-section,
-.comparison-section,
-.monthly-table,
-.detailed-breakdown {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
-}
-
-.chart-container {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.chart-container h4 {
-  color: #f7f9ff;
-  font-weight: 700;
-}
-
-.comparison-section h2,
-.detailed-breakdown h4,
-.monthly-table h4 {
-  color: #f7f9ff;
-  letter-spacing: -0.01em;
-}
-
-.detailed-breakdown .breakdown-grid,
-.detailed-breakdown .detailed-breakdown-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-}
-
-.breakdown-item {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.monthly-table .table-container {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 14px;
-  padding: 14px;
-  overflow-x: auto;
-}
-
-.monthly-table table {
-  color: #e8edff;
-}
-
-.monthly-table th {
-  background: rgba(255, 255, 255, 0.06);
-  color: #f7f9ff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.monthly-table td {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.next-steps-section {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
-}
-
-.next-step-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.step-btn.primary {
-  background: linear-gradient(135deg, #25d366, #1abc9c);
-  border: none;
-  color: #0a1535;
-}
-
-.step-btn.secondary {
-  background: linear-gradient(135deg, #1e88e5, #3949ab);
-  border: none;
-  color: #f7f9ff;
-}
-
-@media (max-width: 1024px) {
-  .advanced-results {
-    padding: 24px;
-  }
-}
-
-@media (max-width: 768px) {
-  .advanced-results {
-    padding: 20px;
-  }
-  
-  .summary-card {
-    padding: 16px;
-  }
-  
-  .charts-section,
-  .comparison-section,
-  .monthly-table,
-  .detailed-breakdown {
-    padding: 18px;
   }
 }
