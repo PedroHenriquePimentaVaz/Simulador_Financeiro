@@ -39,7 +39,7 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Lucro realista por cenário**: Exibição ajustada em +15% (otimista) ou -15% (pessimista) no card de recomendação
 - **Comparação interativa**: Gráfico de comparação com renda fixa agora reflete lojas adicionadas na simulação
 - **Comparação precisa**: Gráfico usa apenas o saldo acumulado (sem somar o investimento inicial novamente)
-- **UI/UX refinada**: Tela de simulação com gradientes, sombras suaves e cards modernizados
+- **UI da simulação modernizada**: container em glassmorphism, gradiente de fundo e layout mais limpo
 
 ## 📊 Métricas Calculadas
 

@@ -52,12 +52,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ results, currentResults, lucr
       </div>
 
       <div className="main-container">
-        <div className="results-page-container" style={{
-          width: '100%',
-          maxWidth: '1400px',
-          margin: '0 auto',
-          padding: '40px 20px'
-        }}>
+        <div className="results-page-shell">
           
           <AdvancedResultsDisplay 
             results={results}
