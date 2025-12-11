@@ -582,8 +582,10 @@ svg text, svg tspan {
 
 /* Results Page Hero Section */
 .results-hero-section {
-  background: linear-gradient(135deg, #001c54 0%, #001a4a 100%);
-  padding: 40px 20px;
+  background: radial-gradient(circle at 15% 20%, rgba(255, 193, 7, 0.12), transparent 35%),
+              radial-gradient(circle at 80% 0%, rgba(0, 163, 255, 0.12), transparent 30%),
+              linear-gradient(135deg, #001c54 0%, #001a4a 100%);
+  padding: 40px 20px 10px;
   position: relative;
   overflow: hidden;
 }
@@ -1328,26 +1330,17 @@ svg text, svg tspan {
 .main-container {
   display: flex;
   flex: 1;
-  padding: 40px 20px;
+  background: linear-gradient(180deg, #0b1634 0%, #0c1c44 45%, #081229 100%);
   position: relative;
-  background: radial-gradient(circle at 20% 20%, rgba(255, 152, 0, 0.08), transparent 32%),
-              radial-gradient(circle at 80% 0%, rgba(0, 255, 255, 0.06), transparent 30%),
-              linear-gradient(135deg, #0a1d3f 0%, #00142f 100%);
-  overflow: hidden;
 }
 
 .main-container::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="%23ffffff" opacity="0.08"/></pattern></defs><rect width="120" height="120" fill="url(%23dots)"/></svg>');
-  opacity: 0.7;
+  background: radial-gradient(circle at 20% 30%, rgba(255, 193, 7, 0.09), transparent 45%),
+              radial-gradient(circle at 80% 20%, rgba(0, 163, 255, 0.09), transparent 40%);
   pointer-events: none;
-}
-
-.main-container > * {
-  position: relative;
-  z-index: 1;
 }
 
 .left-section {
@@ -1883,11 +1876,20 @@ svg text, svg tspan {
   border: none;
 }
 
+.results-page-container {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(6px);
+}
+
 .advanced-results {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%);
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 28, 84, 0.08);
 }
 
 .results-summary {
@@ -1898,14 +1900,16 @@ svg text, svg tspan {
 }
 
 .summary-card {
-  background: #f8f9fa;
+  background: linear-gradient(145deg, #ffffff, #f2f6ff);
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   text-align: center;
+  border: 1px solid rgba(0, 28, 84, 0.06);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
 }
 
 .summary-card h4 {
-  color: #333;
+  color: #2c3e50;
   font-size: 14px;
   margin-bottom: 10px;
 }
