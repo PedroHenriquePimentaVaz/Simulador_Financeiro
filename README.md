@@ -40,7 +40,6 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Comparação interativa**: Gráfico de comparação com renda fixa agora reflete lojas adicionadas na simulação
 - **Comparação precisa**: Gráfico usa apenas o saldo acumulado (sem somar o investimento inicial novamente)
 - **Identidade Be Honest reforçada**: Hero e painel de resultados com gradientes e badges da marca
-- **Hero claro nos resultados**: Fundo branco para destacar os cards e métricas
 
 ## 📊 Métricas Calculadas
 

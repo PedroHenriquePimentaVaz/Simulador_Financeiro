@@ -14,7 +14,7 @@ function App() {
     despesasVariaveis: 1000,
     periodoSimulacao: 60,
     lucroDesejado: 2000,
-    perfilOperacao: 'gestao'
+    perfilOperacao: 'proprio'
   });
 
   const [advancedResults, setAdvancedResults] = useState<AdvancedSimulationResult | null>(null);
@@ -29,7 +29,7 @@ function App() {
       const result = advancedSimulate(
         data.lucroDesejado || 2000,
         data.investimentoInicial,
-        data.perfilOperacao || 'gestao',
+        data.perfilOperacao || 'proprio',
         60,
         data.cenario || 'medio'
       );
