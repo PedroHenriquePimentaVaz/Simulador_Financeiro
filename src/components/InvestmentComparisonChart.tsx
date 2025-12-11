@@ -74,12 +74,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   const maxValue = Math.max(franchiseValue, ...comparisonData.map(d => d.value));
 
   return (
-    <div style={{ 
-      backgroundColor: '#f8f9fa', 
-      padding: '30px', 
-      borderRadius: '12px',
-      marginBottom: '20px'
-    }}>
+    <div className="comparison-card">
       {/* Visual Bar Chart */}
       <div>
         <h3 style={{ 

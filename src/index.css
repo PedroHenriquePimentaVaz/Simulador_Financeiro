@@ -1892,6 +1892,17 @@ svg text, svg tspan {
   border: 1px solid rgba(0, 28, 84, 0.08);
 }
 
+.advanced-results h3, .advanced-results h4 {
+  color: #0f1f3f;
+  letter-spacing: 0.2px;
+}
+
+.advanced-results .cta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .results-summary {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1906,6 +1917,17 @@ svg text, svg tspan {
   text-align: center;
   border: 1px solid rgba(0, 28, 84, 0.06);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 193, 7, 0.12), transparent 55%),
+              radial-gradient(circle at 80% 10%, rgba(0, 163, 255, 0.12), transparent 50%);
+  pointer-events: none;
 }
 
 .summary-card h4 {
@@ -1919,6 +1941,32 @@ svg text, svg tspan {
   font-size: 24px;
   font-weight: 700;
   margin: 0;
+}
+
+.comparison-card {
+  background: linear-gradient(135deg, #0f1f3f 0%, #0c1730 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 26px;
+  margin-bottom: 24px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+  color: #f7f9ff;
+  backdrop-filter: blur(6px);
+}
+
+.comparison-card h3 {
+  color: #f7f9ff;
+  letter-spacing: 0.3px;
+}
+
+.comparison-card .bar-bg {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.comparison-card .bar-fill {
+  background: linear-gradient(90deg, #ffb74d, #ff9800);
+  box-shadow: 0 6px 16px rgba(255, 152, 0, 0.35);
 }
 
 .detailed-breakdown {
