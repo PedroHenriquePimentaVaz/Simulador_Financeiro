@@ -36,6 +36,7 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Formulário de Contato**: Captura de dados pessoais (Nome, Telefone, E-mail, Estado, Cidade)
 - **Formatação Automática**: Telefone formatado automaticamente no padrão brasileiro
 - **Rastreamento UTM Resiliente**: Captura, validação, fallback e persistência de parâmetros UTM
+- **Lucro realista por cenário**: Exibição ajustada em +15% (otimista) ou -15% (pessimista) no card de recomendação
 
 ## 📊 Métricas Calculadas
 
