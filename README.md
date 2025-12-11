@@ -38,6 +38,7 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Rastreamento UTM Resiliente**: Captura, validação, fallback e persistência de parâmetros UTM
 - **Lucro realista por cenário**: Exibição ajustada em +15% (otimista) ou -15% (pessimista) no card de recomendação
 - **Comparação interativa**: Gráfico de comparação com renda fixa agora reflete lojas adicionadas na simulação
+- **Comparação precisa**: Gráfico usa apenas o saldo acumulado (sem somar o investimento inicial novamente)
 
 ## 📊 Métricas Calculadas
 
