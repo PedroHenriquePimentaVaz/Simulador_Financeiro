@@ -512,14 +512,27 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     doc.save(`Be_Honest_Simulacao_Completa_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
-  const chartData = monthlyResults.map(result => ({
-    mes: result.month,
-    fluxoCaixa: result.cumulativeCash,
-    fluxoCaixaPositivo: result.cumulativeCash >= 0 ? result.cumulativeCash : null,
-    fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null,
-    isFirstMonth: result.month === 1,
-    isSecondMonth: result.month === 2
-  }));
+  const capexPerStoreByScenario = currentResults.cenario === 'pessimista'
+    ? 1500
+    : currentResults.cenario === 'otimista'
+      ? 30000
+      : 20000;
+
+  const chartData = monthlyResults.map(result => {
+    const implementationCost = (result.container > 0 || result.refrigerator > 0)
+      ? capexPerStoreByScenario + result.container + result.refrigerator
+      : 0;
+
+    return {
+      mes: result.month,
+      fluxoCaixa: result.cumulativeCash,
+      fluxoCaixaPositivo: result.cumulativeCash >= 0 ? result.cumulativeCash : null,
+      fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null,
+      isFirstMonth: result.month === 1,
+      isSecondMonth: result.month === 2,
+      implementationCost
+    };
+  });
 
   const lastMonth = monthlyResults[monthlyResults.length - 1];
   const scenarioLabel = currentResults.cenario === 'otimista'
@@ -1177,11 +1190,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 formatter={(value, name, props) => {
                   if (name === 'Saldo Acumulado (Positivo)' || name === 'Saldo Acumulado (Negativo)') {
                     let note = '';
-                    if (props.payload.mes === 1) {
-                      note = ' (Taxa de Franquia: -R$ 30.000)';
-                    } else if (props.payload.mes === 2) {
-                      note = ' (Implementação 1ª Loja: -R$ 20.000)';
-                    }
+                  if (props.payload.mes === 1) {
+                    note = ' (Taxa de Franquia: -R$ 30.000)';
+                  } else if (props.payload.implementationCost && props.payload.implementationCost > 0) {
+                    note = ` (⚠️ Implementação 1ª Loja: -${formatCurrency(props.payload.implementationCost)})`;
+                  }
                     return [formatCurrency(value as number) + note, 'Saldo Acumulado'];
                   }
                   return [formatCurrency(value as number), name];
@@ -1418,25 +1431,30 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               {/* Saldo Acumulado */}
               <tr>
                 <td><strong>Saldo Acumulado</strong></td>
-                {monthlyResults.map((result) => (
-                  <td 
-                    key={result.month} 
-                    className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
-                    style={{ position: 'relative' }}
-                  >
-                    <div>{formatCurrency(result.cumulativeCash)}</div>
-                    {result.month === 1 && (
-                      <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
-                        ⚠️ Taxa de Franquia: -R$ 30.000
-                      </div>
-                    )}
-                    {result.month === 2 && (
-                      <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
-                        ⚠️ Implementação 1ª Loja: -R$ 20.000
-                      </div>
-                    )}
-                  </td>
-                ))}
+                {monthlyResults.map((result) => {
+                  const implementationCost = (result.container > 0 || result.refrigerator > 0)
+                    ? capexPerStoreByScenario + result.container + result.refrigerator
+                    : 0;
+                  return (
+                    <td 
+                      key={result.month} 
+                      className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
+                      style={{ position: 'relative' }}
+                    >
+                      <div>{formatCurrency(result.cumulativeCash)}</div>
+                      {result.month === 1 && (
+                        <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
+                          ⚠️ Taxa de Franquia: -R$ 30.000
+                        </div>
+                      )}
+                      {implementationCost > 0 && (
+                        <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
+                          ⚠️ Implementação 1ª Loja: -{formatCurrency(implementationCost)}
+                        </div>
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             </tbody>
           </table>
