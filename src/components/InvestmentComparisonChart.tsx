@@ -60,14 +60,23 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   };
 
   const franchiseValue = getFranchiseValueAtPeriod(currentPeriod.months);
+  const comparisonData = investmentOptions.map(option => {
+    const compounded = calculateCompoundInterest(initialInvestment, option.annualRate, currentPeriod.months);
+    return {
+      ...option,
+      value: compounded,
+      profit: compounded - initialInvestment,
+      roi: ((compounded - initialInvestment) / initialInvestment) * 100
+    };
+  });
+  const bestInvestment = comparisonData.reduce((prev, curr) => curr.value > prev.value ? curr : prev, comparisonData[0]);
+  const bestFixedValue = bestInvestment.value;
+  const finalMonth = franchiseResults.monthlyResults[franchiseResults.monthlyResults.length - 1];
+  const finalStores = finalMonth ? Math.max(finalMonth.stores, 1) : 1;
+  const perStoreValue = finalStores > 0 ? franchiseValue / finalStores : 0;
+  const shortfall = Math.max(bestFixedValue - franchiseValue, 0);
+  const suggestedExtraStores = perStoreValue > 0 ? Math.ceil(shortfall / perStoreValue) : 0;
   
-  const comparisonData = investmentOptions.map(option => ({
-    ...option,
-    value: calculateCompoundInterest(initialInvestment, option.annualRate, currentPeriod.months),
-    profit: calculateCompoundInterest(initialInvestment, option.annualRate, currentPeriod.months) - initialInvestment,
-    roi: ((calculateCompoundInterest(initialInvestment, option.annualRate, currentPeriod.months) - initialInvestment) / initialInvestment) * 100
-  }));
-
   // const franchiseProfit = franchiseValue - initialInvestment;
   // const franchiseROI = (franchiseProfit / initialInvestment) * 100;
 
@@ -198,16 +207,27 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
           💡 Análise Comparativa
         </h4>
         <div style={{ fontSize: '14px', lineHeight: '1.6', color: '#2c3e50' }}>
-          <p>
-            <strong>Vantagem da Franquia:</strong> A franquia Be Honest supera significativamente 
-            os investimentos em renda fixa em todos os períodos analisados, oferecendo retornos 
-            muito superiores ao mercado tradicional.
-          </p>
-          <p>
-            <strong>Diferença no período de {currentPeriod.label}:</strong> A franquia gera 
-            R$ {(franchiseValue - Math.max(...comparisonData.map(d => d.value))).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} 
-            a mais que o melhor investimento em renda fixa.
-          </p>
+          {franchiseValue >= bestFixedValue ? (
+            <>
+              <p>
+                <strong>Vantagem da Franquia:</strong> A franquia Be Honest supera os investimentos em renda fixa no período analisado.
+              </p>
+              <p>
+                <strong>Diferença no período de {currentPeriod.label}:</strong> A franquia gera 
+                R$ {(franchiseValue - bestFixedValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} 
+                a mais que o melhor investimento em renda fixa.
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                <strong>Alerta:</strong> Hoje a franquia fica R$ {shortfall.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} abaixo do melhor investimento ({bestInvestment.name}) em {currentPeriod.label}.
+              </p>
+              <p>
+                <strong>Como melhorar:</strong> Considere projetar +{suggestedExtraStores} loja(s) (estimativa linear usando performance atual) para a franquia superar a renda fixa nesse período. Ajuste o número de lojas na simulação para testar.
+              </p>
+            </>
+          )}
         </div>
       </div>
 

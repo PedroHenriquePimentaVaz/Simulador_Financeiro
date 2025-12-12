@@ -39,6 +39,7 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Lucro realista por cenário**: Exibição ajustada em +15% (otimista) ou -15% (pessimista) no card de recomendação
 - **Comparação interativa**: Gráfico de comparação com renda fixa agora reflete lojas adicionadas na simulação
 - **Comparação precisa**: Gráfico usa apenas o saldo acumulado (sem somar o investimento inicial novamente)
+- **Comparação orientativa**: Se a franquia ficar abaixo dos investimentos de renda fixa, o gráfico sugere quantas lojas extras projetar para superar o melhor rendimento; taxas usadas: SELIC 10.75%, CDB 10%, LCI/LCA 9.2%, Poupança 6.17% a.a.
 - **Identidade Be Honest reforçada**: Hero e painel de resultados com gradientes e badges da marca
 
 ## 📊 Métricas Calculadas
