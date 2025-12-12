@@ -356,6 +356,7 @@ export function simulate(
     cenario,
     perfilOperacao: perfilOperacao as 'proprio' | 'terceirizar'
   };
+  };
 
   // Primeiro, simular com apenas 1 loja
   const singleStoreResult = runSimulation(0);
