@@ -197,7 +197,8 @@ export function simulate(
     if (month > 2 && currentStores > 0) {
       // Calcular receita com crescimento mensal (começando do mês 3)
       const monthsSinceStart = month - 3; // Meses desde o início da operação
-      revenuePerStoreValue = revenuePerStore * Math.pow(growthFactor, monthsSinceStart);
+      const cappedMonths = Math.min(monthsSinceStart, 6); // crescimento apenas até o 6º mês
+      revenuePerStoreValue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
       totalRevenue = revenuePerStoreValue * currentStores;
     }
     
@@ -732,14 +733,16 @@ export function addStoreToSimulation(
 
     // Receita das lojas existentes (mantém crescimento padrão)
     const monthsSinceStartExisting = month > 3 ? month - 3 : 0;
-    const existingRevenuePerStoreGrown = existingRevenuePerStore * Math.pow(growthFactor, monthsSinceStartExisting);
+    const cappedExistingMonths = Math.min(monthsSinceStartExisting, 6); // crescimento trava após 6 meses
+    const existingRevenuePerStoreGrown = existingRevenuePerStore * Math.pow(growthFactor, cappedExistingMonths);
     let revenueExisting = existingRevenuePerStoreGrown * existingStores;
 
     // Receita da nova loja (sem receita no mês de implementação; rampa nos 2 primeiros meses operando)
     const monthsSinceNewStoreStart = month - (monthToAdd); // mês de operação é monthToAdd (implementação foi monthToAdd-1)
     let revenueNewStore = 0;
     if (monthsSinceNewStoreStart >= 1) {
-      const growthNewStore = Math.pow(growthFactor, monthsSinceNewStoreStart - 1);
+      const cappedNewStoreMonths = Math.min(Math.max(monthsSinceNewStoreStart - 1, 0), 6);
+      const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
       const baseNewStore = baseRevenuePerStore * growthNewStore;
       const ramp =
         monthsSinceNewStoreStart === 1 ? 0.7 :
@@ -902,7 +905,8 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
       let revenuePerStoreValue = 0;
       if (result.month > 2 && newStores > 0) {
         const monthsSinceStart = result.month - 3;
-        revenuePerStoreValue = revenuePerStore * Math.pow(growthFactor, monthsSinceStart);
+        const cappedMonths = Math.min(monthsSinceStart, 6); // crescimento apenas até o 6º mês
+        revenuePerStoreValue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
         totalRevenue = revenuePerStoreValue * newStores;
       } else {
         totalRevenue = result.totalRevenue;
