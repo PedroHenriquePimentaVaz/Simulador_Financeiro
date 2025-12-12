@@ -174,22 +174,10 @@ export function simulate(
   const bestFixedAnnualRate = 0.15; // melhor renda fixa (~Selic efetiva)
   const bestFixedValue = investimentoInicial * Math.pow(1 + bestFixedAnnualRate / 12, months);
 
-  const runSimulation = (additionalStores: number, autoReinvest: boolean): AdvancedSimulationResult => {
-    const stores = baseStores + additionalStores;
-
-    // Programação para pagar e abrir lojas adicionais (determinística) se não for reinvest automático
-    const additionalPaySchedule: number[] = [];
-    const additionalOpenSchedule: number[] = [];
-    if (!autoReinvest) {
-      for (let i = 0; i < additionalStores; i++) {
-        const payMonth = 3 + i * 2; // paga a loja adicional no mês 3, 5, 7...
-        const openMonth = payMonth + 1; // abre no mês seguinte
-        additionalPaySchedule.push(payMonth);
-        additionalOpenSchedule.push(openMonth);
-      }
-    }
-    // Reinvestimento automático: agenda vazia; usaremos caixa acumulado
-    const reinvestOpenSchedule: number[] = [];
+  const runSimulation = (targetAdditionalStores: number): AdvancedSimulationResult => {
+    const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
+    const openSchedule: number[] = []; // meses em que novas lojas abrem (além da primeira)
+    let purchasedAdditional = 0;
   
   // Os custos de operação (cooperativa, funcionário, transporte) são calculados diretamente baseado no perfil
   
@@ -202,9 +190,8 @@ export function simulate(
     let currentStores = 0;
     if (month >= 2) {
       currentStores = 1; // primeira loja
-      const openedAdditionals = additionalOpenSchedule.filter(openMonth => month >= openMonth).length;
-      const openedReinvest = reinvestOpenSchedule.filter(openMonth => month >= openMonth).length;
-      currentStores += openedAdditionals + openedReinvest;
+        const openedAdditionals = openSchedule.filter(openMonth => month >= openMonth).length;
+        currentStores += openedAdditionals;
     }
     
     // Período de implementação: primeiros 2 meses sem receita
@@ -289,34 +276,21 @@ export function simulate(
       refrigeratorCapex = params.refrigerator_per_store;
       const firstStoreCapex = capexPerStore + containerCapex + refrigeratorCapex;
       cashFlow -= firstStoreCapex;
-    } else if (!autoReinvest && additionalStores > 0 && additionalPaySchedule.includes(month)) {
-      // Paga lojas adicionais pré-programadas
-      containerCapex = params.container_per_store;
-      refrigeratorCapex = params.refrigerator_per_store;
-      const additionalStoreCapex = capexPerStore + containerCapex + refrigeratorCapex;
-      cashFlow -= additionalStoreCapex;
     }
 
-    // Reinvestir lucros em novas lojas (usar caixa acumulado + fluxo do mês), respeitando limite de investimento e de lojas
-    if (autoReinvest && month < months) {
-      const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
+    // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas e de caixa (até -investimentoInicial)
+    if (month < months) {
       let availableCash = cumulativeCash + cashFlow;
-      let newStoresBought = 0;
-      const alreadyPlannedStores = additionalOpenSchedule.length + reinvestOpenSchedule.length;
-
       while (
-        alreadyPlannedStores + newStoresBought < maxAdditionalStores &&
+        purchasedAdditional < targetAdditionalStores &&
         availableCash - capexTotalPorLoja >= -investimentoInicial
       ) {
         availableCash -= capexTotalPorLoja;
-        newStoresBought += 1;
-        reinvestOpenSchedule.push(month + 1); // abre no mês seguinte
-      }
-
-      if (newStoresBought > 0) {
-        containerCapex += params.container_per_store * newStoresBought;
-        refrigeratorCapex += params.refrigerator_per_store * newStoresBought;
-        cashFlow -= capexTotalPorLoja * newStoresBought;
+        purchasedAdditional += 1;
+        openSchedule.push(month + 1); // abre no mês seguinte ao pagamento
+        containerCapex += params.container_per_store;
+        refrigeratorCapex += params.refrigerator_per_store;
+        cashFlow -= capexTotalPorLoja;
       }
     }
     
@@ -386,15 +360,17 @@ export function simulate(
     };
   };
 
-  // Primeiro, simular com apenas 1 loja
-  const singleStoreResult = runSimulation(0, false);
+  const maxAutoAdditional = Math.min(maxAdditionalStores, 9); // limitar número de lojas extras para evitar valores irreais
 
-  // Se a renda fixa ganha e há capital/caixa para mais lojas, reinvestir lucros em novas lojas
-  if (singleStoreResult.finalCash < bestFixedValue) {
-    return runSimulation(0, true);
+  // Testar incrementalmente e parar assim que superar renda fixa
+  let chosen = runSimulation(0);
+  for (let n = 1; n <= maxAutoAdditional && chosen.finalCash < bestFixedValue; n++) {
+    const candidate = runSimulation(n);
+    chosen = candidate;
+    if (candidate.finalCash >= bestFixedValue) break;
   }
 
-  return singleStoreResult;
+  return chosen;
 }
 
 export function formatCurrency(value: number): string {
