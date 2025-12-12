@@ -683,7 +683,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           fontWeight: '700',
           marginBottom: '20px',
           textAlign: 'center',
-          color: 'white'
+          color: '#102347'
         }}>
           Comparação com Investimentos em Renda Fixa
         </h2>
