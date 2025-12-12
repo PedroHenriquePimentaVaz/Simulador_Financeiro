@@ -7,7 +7,7 @@
   "other_repasses_rate": 0.035,
   "card_fee_rate": 0.016,
   "marketing_rate": 0.01,
-  "system_fee_per_store": 150.0,
+  "system_fee_per_store": 0,
   "accounting_fixed": 300.0,
   "amlabs_per_store": 150.0,
   "container_per_store": 1275.0,

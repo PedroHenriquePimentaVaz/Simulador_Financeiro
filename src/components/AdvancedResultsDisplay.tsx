@@ -325,24 +325,22 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       xPos += 16;
       doc.text('Rec.Líq', xPos, yPos - 3);
       xPos += 17;
-      doc.text('Custo1', xPos, yPos - 3);
-      xPos += 16;
-      doc.text('Custo2', xPos, yPos - 3);
+      doc.text('CMV', xPos, yPos - 3);
+      xPos += 14;
+      doc.text('Perdas', xPos, yPos - 3);
       xPos += 16;
       doc.text('Luc.Bruto', xPos, yPos - 3);
       xPos += 17;
-      doc.text('Desp.1', xPos, yPos - 3);
-      xPos += 15;
-      doc.text('Desp.2', xPos, yPos - 3);
-      xPos += 15;
-      doc.text('Desp.3', xPos, yPos - 3);
-      xPos += 15;
+      doc.text('Reposição', xPos, yPos - 3);
+      xPos += 18;
+      doc.text('Royalties', xPos, yPos - 3);
+      xPos += 16;
+      doc.text('Outros rep.', xPos, yPos - 3);
+      xPos += 20;
       doc.text('Tx.Cartão', xPos, yPos - 3);
       xPos += 16;
       doc.text('Marketing', xPos, yPos - 3);
       xPos += 16;
-      doc.text('Sistema', xPos, yPos - 3);
-      xPos += 14;
       doc.text('AMLABS', xPos, yPos - 3);
       xPos += 14;
       doc.text('Contain.', xPos, yPos - 3);
@@ -404,24 +402,22 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           xPos += 16;
           doc.text('Rec.Líq', xPos, yPos - 3);
           xPos += 17;
-          doc.text('Custo1', xPos, yPos - 3);
-          xPos += 16;
-          doc.text('Custo2', xPos, yPos - 3);
+          doc.text('CMV', xPos, yPos - 3);
+          xPos += 14;
+          doc.text('Perdas', xPos, yPos - 3);
           xPos += 16;
           doc.text('Luc.Bruto', xPos, yPos - 3);
           xPos += 17;
-          doc.text('Desp.1', xPos, yPos - 3);
-          xPos += 15;
-          doc.text('Desp.2', xPos, yPos - 3);
-          xPos += 15;
-          doc.text('Desp.3', xPos, yPos - 3);
-          xPos += 15;
+          doc.text('Reposição', xPos, yPos - 3);
+          xPos += 18;
+          doc.text('Royalties', xPos, yPos - 3);
+          xPos += 16;
+          doc.text('Outros rep.', xPos, yPos - 3);
+          xPos += 20;
           doc.text('Tx.Cartão', xPos, yPos - 3);
           xPos += 16;
           doc.text('Marketing', xPos, yPos - 3);
           xPos += 16;
-          doc.text('Sistema', xPos, yPos - 3);
-          xPos += 14;
           doc.text('AMLABS', xPos, yPos - 3);
           xPos += 14;
           doc.text('Contain.', xPos, yPos - 3);
@@ -464,7 +460,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         xPos += 17;
         doc.text(formatCurrency(-month.cmv), xPos, yPos);
         
-        xPos += 16;
+        xPos += 14;
         doc.text(formatCurrency(-month.losses), xPos, yPos);
         
         xPos += 16;
@@ -473,22 +469,19 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         xPos += 17;
         doc.text(formatCurrency(-month.reposicao), xPos, yPos);
         
-        xPos += 15;
+        xPos += 18;
         doc.text(formatCurrency(-month.royalties), xPos, yPos);
         
-        xPos += 15;
+        xPos += 16;
         doc.text(formatCurrency(-month.otherRepasses), xPos, yPos);
         
-        xPos += 15;
+        xPos += 20;
         doc.text(formatCurrency(-month.cardFee), xPos, yPos);
         
         xPos += 16;
         doc.text(formatCurrency(-month.marketing), xPos, yPos);
         
         xPos += 16;
-        doc.text(formatCurrency(-month.systemFee), xPos, yPos);
-        
-        xPos += 14;
         doc.text(formatCurrency(-month.amlabs), xPos, yPos);
         
         xPos += 14;
@@ -752,7 +745,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(lastMonth.netRevenue)}</div>
           </div>
 
-          {/* Custo 1 - Vermelho */}
+          {/* CMV - Vermelho */}
           <div className="breakdown-item" style={{ 
             backgroundColor: '#ffebee', 
             padding: '12px 16px', 
@@ -764,11 +757,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             alignItems: 'center',
             textAlign: 'center'
           }}>
-            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Custo 1</div>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>CMV</div>
             <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.cmv)}</div>
           </div>
 
-          {/* Custo 2 - Vermelho */}
+          {/* Perdas - Vermelho */}
           <div className="breakdown-item" style={{ 
             backgroundColor: '#ffebee', 
             padding: '12px 16px', 
@@ -780,7 +773,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             alignItems: 'center',
             textAlign: 'center'
           }}>
-            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Custo 2</div>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Perdas</div>
             <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.losses)}</div>
           </div>
 
@@ -800,7 +793,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             <div style={{ fontWeight: '700', color: '#0d47a1', fontSize: '16px' }}>{formatCurrency(lastMonth.grossProfit)}</div>
           </div>
 
-          {/* Despesa 1 - Vermelho */}
+          {/* Reposição - Vermelho */}
           <div className="breakdown-item" style={{ 
             backgroundColor: '#ffebee', 
             padding: '12px 16px', 
@@ -812,11 +805,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             alignItems: 'center',
             textAlign: 'center'
           }}>
-            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Despesa 1</div>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Reposição</div>
             <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.reposicao)}</div>
           </div>
 
-          {/* Despesa 2 - Vermelho */}
+          {/* Royalties - Vermelho */}
           <div className="breakdown-item" style={{ 
             backgroundColor: '#ffebee', 
             padding: '12px 16px', 
@@ -828,11 +821,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             alignItems: 'center',
             textAlign: 'center'
           }}>
-            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Despesa 2</div>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Royalties</div>
             <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.royalties)}</div>
           </div>
 
-          {/* Despesa 3 - Vermelho */}
+          {/* Outros Repasses - Vermelho */}
           <div className="breakdown-item" style={{ 
             backgroundColor: '#ffebee', 
             padding: '12px 16px', 
@@ -844,7 +837,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             alignItems: 'center',
             textAlign: 'center'
           }}>
-            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Despesa 3</div>
+            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Outros Repasses</div>
             <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.otherRepasses)}</div>
           </div>
 
@@ -878,22 +871,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Marketing</div>
             <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.marketing)}</div>
-          </div>
-
-          {/* Sistema - Vermelho */}
-          <div className="breakdown-item" style={{ 
-            backgroundColor: '#ffebee', 
-            padding: '12px 16px', 
-            borderRadius: '8px',
-            border: '2px solid #ef5350',
-            minWidth: '150px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            textAlign: 'center'
-          }}>
-            <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Sistema</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.systemFee)}</div>
           </div>
 
           {/* AMLABS - Vermelho */}
@@ -1318,17 +1295,17 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 ))}
               </tr>
               
-              {/* Custo 1 */}
+              {/* CMV */}
               <tr>
-                <td><strong>Custo 1</strong></td>
+                <td><strong>CMV</strong></td>
                 {monthlyResults.map((result) => (
                   <td key={result.month}>{formatCurrency(-result.cmv)}</td>
                 ))}
               </tr>
               
-              {/* Custo 2 */}
+              {/* Perdas */}
               <tr>
-                <td><strong>Custo 2</strong></td>
+                <td><strong>Perdas</strong></td>
                 {monthlyResults.map((result) => (
                   <td key={result.month}>{formatCurrency(-result.losses)}</td>
                 ))}
@@ -1342,25 +1319,25 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 ))}
               </tr>
               
-              {/* Despesa 1 */}
+              {/* Reposição */}
               <tr>
-                <td><strong>Despesa 1</strong></td>
+                <td><strong>Reposição</strong></td>
                 {monthlyResults.map((result) => (
                   <td key={result.month}>{formatCurrency(-result.reposicao)}</td>
                 ))}
               </tr>
               
-              {/* Despesa 2 */}
+              {/* Royalties */}
               <tr>
-                <td><strong>Despesa 2</strong></td>
+                <td><strong>Royalties</strong></td>
                 {monthlyResults.map((result) => (
                   <td key={result.month}>{formatCurrency(-result.royalties)}</td>
                 ))}
               </tr>
               
-              {/* Despesa 3 */}
+              {/* Outros Repasses */}
               <tr>
-                <td><strong>Despesa 3</strong></td>
+                <td><strong>Outros Repasses</strong></td>
                 {monthlyResults.map((result) => (
                   <td key={result.month}>{formatCurrency(-result.otherRepasses)}</td>
                 ))}
@@ -1379,14 +1356,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 <td><strong>Marketing</strong></td>
                 {monthlyResults.map((result) => (
                   <td key={result.month}>{formatCurrency(-result.marketing)}</td>
-                ))}
-              </tr>
-              
-              {/* Sistema */}
-              <tr>
-                <td><strong>Sistema</strong></td>
-                {monthlyResults.map((result) => (
-                  <td key={result.month}>{formatCurrency(-result.systemFee)}</td>
                 ))}
               </tr>
               

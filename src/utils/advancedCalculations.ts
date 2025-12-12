@@ -229,7 +229,7 @@ export function simulate(
     const otherRepasses = totalRevenue * repasseRate;
     const cardFee = totalRevenue * params.card_fee_rate;
     const marketing = totalRevenue * params.marketing_rate;
-    const systemFee = currentStores * params.system_fee_per_store;
+    const systemFee = 0; // Sistema descontinuado
     const amlabs = currentStores * params.amlabs_per_store;
     // Container e Geladeira são custos únicos (CAPEX), não mensais
     const maintenance = params.maintenance_fixed;
@@ -259,7 +259,7 @@ export function simulate(
     }
     
     // Custos fixos mensais (sem multiplicador, pois já aplicamos os custos específicos acima)
-    const fixedCosts = systemFee + amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
+    const fixedCosts = amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
     
     // Lucro Operacional (não duplicar dedução de systemFee e accounting, pois já estão em fixedCosts)
     const operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts;
@@ -742,7 +742,7 @@ export function addStoreToSimulation(
     const otherRepasses = totalRevenue * repasseRate;
     const cardFee = totalRevenue * params.card_fee_rate;
     const marketing = totalRevenue * params.marketing_rate;
-    const systemFee = newStores * params.system_fee_per_store;
+    const systemFee = 0; // Sistema descontinuado
     const amlabs = newStores * params.amlabs_per_store;
     // Container e Geladeira são CAPEX, não custos mensais
     const maintenance = params.maintenance_fixed;
@@ -768,7 +768,7 @@ export function addStoreToSimulation(
       funcionario = funcionariosNecessarios * params.funcionario_cost;
     }
     
-    const fixedCosts = systemFee + amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
+    const fixedCosts = amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
     const operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts;
     const netProfit = operatingProfit;
     
@@ -901,7 +901,7 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
       const otherRepasses = totalRevenue * repasseRate;
       const cardFee = totalRevenue * params.card_fee_rate;
       const marketing = totalRevenue * params.marketing_rate;
-      const systemFee = params.system_fee_per_store * newStores;
+      const systemFee = 0; // Sistema descontinuado
       const amlabs = params.amlabs_per_store * newStores;
       // Container e Geladeira são CAPEX, não custos mensais
       const maintenance = params.maintenance_fixed;
@@ -927,7 +927,7 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
         funcionario = funcionariosNecessarios * params.funcionario_cost;
       }
       
-      const fixedCosts = systemFee + amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
+      const fixedCosts = amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
       
       const operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts;
       const netProfit = operatingProfit;
