@@ -518,8 +518,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       ? 30000
       : 20000;
 
+  let implementationCounter = 0;
   const chartData = monthlyResults.map(result => {
-    const implementationCost = (result.container > 0 || result.refrigerator > 0)
+    const isImplementation = result.container > 0 || result.refrigerator > 0;
+    const implementationIndex = isImplementation ? ++implementationCounter : null;
+    const implementationCost = isImplementation
       ? capexPerStoreByScenario + result.container + result.refrigerator
       : 0;
 
@@ -530,9 +533,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null,
       isFirstMonth: result.month === 1,
       isSecondMonth: result.month === 2,
-      implementationCost
+      implementationCost,
+      implementationIndex
     };
   });
+  const implementationByMonth = new Map(chartData.map(c => [c.mes, { cost: c.implementationCost, index: c.implementationIndex }]));
 
   const lastMonth = monthlyResults[monthlyResults.length - 1];
   const scenarioLabel = currentResults.cenario === 'otimista'
@@ -1192,8 +1197,8 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                     let note = '';
                   if (props.payload.mes === 1) {
                     note = ' (Taxa de Franquia: -R$ 30.000)';
-                  } else if (props.payload.implementationCost && props.payload.implementationCost > 0) {
-                    note = ` (⚠️ Implementação 1ª Loja: -${formatCurrency(props.payload.implementationCost)})`;
+                  } else if (props.payload.implementationCost && props.payload.implementationCost > 0 && props.payload.implementationIndex) {
+                    note = ` (⚠️ Implementação Loja #${props.payload.implementationIndex}: -${formatCurrency(props.payload.implementationCost)})`;
                   }
                     return [formatCurrency(value as number) + note, 'Saldo Acumulado'];
                   }
@@ -1432,9 +1437,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               <tr>
                 <td><strong>Saldo Acumulado</strong></td>
                 {monthlyResults.map((result) => {
-                  const implementationCost = (result.container > 0 || result.refrigerator > 0)
-                    ? capexPerStoreByScenario + result.container + result.refrigerator
-                    : 0;
+                  const implementationInfo = implementationByMonth.get(result.month);
+                  const implementationCost = implementationInfo?.cost ?? 0;
+                  const implementationIndex = implementationInfo?.index ?? null;
                   return (
                     <td 
                       key={result.month} 
@@ -1447,9 +1452,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                           ⚠️ Taxa de Franquia: -R$ 30.000
                         </div>
                       )}
-                      {implementationCost > 0 && (
+                      {implementationCost > 0 && implementationIndex && (
                         <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
-                          ⚠️ Implementação 1ª Loja: -{formatCurrency(implementationCost)}
+                          ⚠️ Implementação Loja #{implementationIndex}: -{formatCurrency(implementationCost)}
                         </div>
                       )}
                     </td>
