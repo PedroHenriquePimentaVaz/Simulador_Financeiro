@@ -709,6 +709,8 @@ export function addStoreToSimulation(
     
     // Recalcular com +1 loja
     const newStores = currentResult.stores + 1;
+    const isImplementationMonth = i === monthToAdd - 1;
+    const operatingStores = isImplementationMonth ? currentResult.stores : newStores;
     
     // Recalcular receita considerando período de implementação, crescimento e cenário
     let totalRevenue = 0;
@@ -743,7 +745,7 @@ export function addStoreToSimulation(
     const cardFee = totalRevenue * params.card_fee_rate;
     const marketing = totalRevenue * params.marketing_rate;
     const systemFee = 0; // Sistema descontinuado
-    const amlabs = newStores * params.amlabs_per_store;
+    const amlabs = operatingStores * params.amlabs_per_store;
     // Container e Geladeira são CAPEX, não custos mensais
     const maintenance = params.maintenance_fixed;
     const utilities = params.utilities_fixed;
@@ -755,16 +757,16 @@ export function addStoreToSimulation(
     let transporte = 0;
     
     if (perfilOperacao === 'proprio') {
-      if (newStores <= 15) {
-        transporte = params.transporte_reembolso * newStores;
+      if (operatingStores <= 15) {
+        transporte = params.transporte_reembolso * operatingStores;
       } else {
-        transporte = params.transporte_reembolso * newStores;
-        const funcionariosNecessarios = Math.floor((newStores - 15) / 15) + 1;
+        transporte = params.transporte_reembolso * operatingStores;
+        const funcionariosNecessarios = Math.floor((operatingStores - 15) / 15) + 1;
         funcionario = funcionariosNecessarios * params.funcionario_cost;
       }
     } else if (perfilOperacao === 'terceirizar') {
-      cooperativa = params.cooperativa_per_store * newStores;
-      const funcionariosNecessarios = Math.ceil(newStores / 15);
+      cooperativa = params.cooperativa_per_store * operatingStores;
+      const funcionariosNecessarios = Math.ceil(operatingStores / 15);
       funcionario = funcionariosNecessarios * params.funcionario_cost;
     }
     
