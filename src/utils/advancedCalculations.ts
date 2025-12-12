@@ -298,6 +298,11 @@ export function simulate(
     // Custos fixos já estão incluídos no netProfit (via fixedCosts deduzidos em operatingProfit)
     // Não precisamos deduzi-los novamente aqui
     
+    // Garantir que o saldo não ultrapasse o limite do investimento inicial
+    if (cumulativeCash + cashFlow < -investimentoInicial) {
+      cashFlow = -investimentoInicial - cumulativeCash;
+    }
+    
     cumulativeCash += cashFlow;
     
     monthlyResults.push({
