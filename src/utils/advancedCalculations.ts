@@ -168,8 +168,7 @@ export function simulate(
   // Taxa de franquia (30k) + primeira loja (capex + container + geladeira) + lojas adicionais (mesmo valor cada)
   const baseStores = 1; // Sempre começa com 1 loja
   const firstStoreTotalCapex = capexPerStore + params.container_per_store + params.refrigerator_per_store;
-  const availableForAdditionalStores = investimentoInicial - params.franchise_fee - firstStoreTotalCapex;
-  const maxAdditionalStores = Math.max(0, Math.floor(availableForAdditionalStores / firstStoreTotalCapex));
+  const maxAdditionalStores = 2; // Limite de lojas extras (total máximo 3 lojas)
 
   const bestFixedAnnualRate = 0.15; // melhor renda fixa (~Selic efetiva)
   const bestFixedValue = investimentoInicial * Math.pow(1 + bestFixedAnnualRate / 12, months);
@@ -279,14 +278,9 @@ export function simulate(
       cashFlow -= firstStoreCapex;
     }
 
-    // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas e de caixa (até -investimentoInicial)
+    // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
     if (month < months) {
-      let availableCash = cumulativeCash + cashFlow;
-      while (
-        paidAdditional < targetAdditionalStores &&
-        availableCash - capexTotalPorLoja >= -investimentoInicial
-      ) {
-        availableCash -= capexTotalPorLoja;
+      while (paidAdditional < targetAdditionalStores) {
         paidAdditional += 1;
         openSchedule.push(month + 1); // abre no mês seguinte ao pagamento
         containerCapex += params.container_per_store;
