@@ -166,8 +166,6 @@ export function simulate(
   
   // Calcular capacidade de lojas baseado no investimento
   // Taxa de franquia (30k) + primeira loja (capex + container + geladeira) + lojas adicionais (mesmo valor cada)
-  const baseStores = 1; // Sempre começa com 1 loja
-  const firstStoreTotalCapex = capexPerStore + params.container_per_store + params.refrigerator_per_store;
   const maxAdditionalStores = 2; // Limite de lojas extras (total máximo 3 lojas)
 
   const bestFixedAnnualRate = 0.15; // melhor renda fixa (~Selic efetiva)
@@ -176,7 +174,6 @@ export function simulate(
   const runSimulation = (targetAdditionalStores: number): AdvancedSimulationResult => {
     const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
     const openSchedule: number[] = []; // meses em que novas lojas abrem (além da primeira)
-    let purchasedAdditional = 0;
     let paidAdditional = 0;
   
   // Os custos de operação (cooperativa, funcionário, transporte) são calculados diretamente baseado no perfil
@@ -292,7 +289,6 @@ export function simulate(
         refrigeratorCapex += params.refrigerator_per_store;
         cashFlow -= capexTotalPorLoja;
       }
-      purchasedAdditional = paidAdditional; // mesmas lojas pagas e agendadas
     }
     
     // Custos fixos já estão incluídos no netProfit (via fixedCosts deduzidos em operatingProfit)
