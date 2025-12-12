@@ -169,8 +169,18 @@ export function simulate(
   const baseStores = 1; // Sempre começa com 1 loja
   const firstStoreTotalCapex = capexPerStore + params.container_per_store + params.refrigerator_per_store;
   const availableForAdditionalStores = investimentoInicial - params.franchise_fee - firstStoreTotalCapex;
-  const additionalStores = Math.floor(availableForAdditionalStores / firstStoreTotalCapex);
+  const additionalStores = Math.max(0, Math.floor(availableForAdditionalStores / firstStoreTotalCapex));
   const stores = baseStores + additionalStores;
+
+  // Programação para pagar e abrir lojas adicionais o mais cedo possível
+  const additionalPaySchedule: number[] = [];
+  const additionalOpenSchedule: number[] = [];
+  for (let i = 0; i < additionalStores; i++) {
+    const payMonth = 3 + i * 2; // paga a loja adicional no mês 3, 5, 7...
+    const openMonth = payMonth + 1; // abre no mês seguinte
+    additionalPaySchedule.push(payMonth);
+    additionalOpenSchedule.push(openMonth);
+  }
   
   // Os custos de operação (cooperativa, funcionário, transporte) são calculados diretamente baseado no perfil
   
@@ -180,24 +190,11 @@ export function simulate(
   
   for (let month = 1; month <= months; month++) {
     // Calcular quantas lojas estão operando no mês atual
-    // Mês 1: 0 lojas (paga taxa de franquia)
-    // Mês 2: 1 loja (paga implementação) - período implementação  
-    // Mês 3+: 1 loja operando com receita
-    // Se tem investimento para mais lojas, elas começam no mesmo mês do pagamento
     let currentStores = 0;
     if (month >= 2) {
-      // Primeira loja existe desde o mês 2 (após pagar implementação)
-      currentStores = 1;
-      
-      // Lojas adicionais: começa a operar a partir do mês 7, depois a cada 3 meses
-      // Lojas são pagas nos meses 6, 9, 12 e começam a operar nos meses 7, 10, 13
-      if (stores > 1 && month >= 7) {
-        const monthsSinceM7 = month - 6; // Meses desde o mês 7
-        // Calcula quantas lojas já estão operando (uma a cada 3 meses)
-        const storesOperating = Math.ceil(monthsSinceM7 / 3);
-        const maxAdditionalStores = Math.min(additionalStores, storesOperating);
-        currentStores = 1 + maxAdditionalStores;
-      }
+      currentStores = 1; // primeira loja
+      const openedAdditionals = additionalOpenSchedule.filter(openMonth => month >= openMonth).length;
+      currentStores += openedAdditionals;
     }
     
     // Período de implementação: primeiros 2 meses sem receita
@@ -282,22 +279,12 @@ export function simulate(
       refrigeratorCapex = params.refrigerator_per_store;
       const firstStoreCapex = capexPerStore + containerCapex + refrigeratorCapex;
       cashFlow -= firstStoreCapex;
-    } else if (month >= 3 && additionalStores > 0) {
-      // Paga lojas adicionais para que abram a cada 3 meses a partir do mês 4
-      // Mês 6: paga loja 1 (abre mês 7)
-      // Mês 9: paga loja 2 (abre mês 10)
-      // Mês 12: paga loja 3 (abre mês 13)
-      const monthsSinceStart = month - 5; // Meses desde o mês 5
-      if (monthsSinceStart > 0 && monthsSinceStart % 3 === 1) { // Paga nos meses 6, 9, 12, 15, etc.
-        const storeIndexToPay = Math.floor(monthsSinceStart / 3); // Índice da loja (0, 1, 2, ...)
-        if (storeIndexToPay < additionalStores) {
-          // Paga mais uma loja (capex + container + geladeira)
-          containerCapex = params.container_per_store;
-          refrigeratorCapex = params.refrigerator_per_store;
-          const additionalStoreCapex = capexPerStore + containerCapex + refrigeratorCapex;
-          cashFlow -= additionalStoreCapex;
-        }
-      }
+    } else if (additionalStores > 0 && additionalPaySchedule.includes(month)) {
+      // Paga lojas adicionais o mais cedo possível
+      containerCapex = params.container_per_store;
+      refrigeratorCapex = params.refrigerator_per_store;
+      const additionalStoreCapex = capexPerStore + containerCapex + refrigeratorCapex;
+      cashFlow -= additionalStoreCapex;
     }
     
     // Custos fixos já estão incluídos no netProfit (via fixedCosts deduzidos em operatingProfit)
