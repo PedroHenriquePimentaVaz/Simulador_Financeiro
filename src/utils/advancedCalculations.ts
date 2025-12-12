@@ -178,6 +178,7 @@ export function simulate(
     const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
     const openSchedule: number[] = []; // meses em que novas lojas abrem (além da primeira)
     let purchasedAdditional = 0;
+    let paidAdditional = 0;
   
   // Os custos de operação (cooperativa, funcionário, transporte) são calculados diretamente baseado no perfil
   
@@ -282,16 +283,17 @@ export function simulate(
     if (month < months) {
       let availableCash = cumulativeCash + cashFlow;
       while (
-        purchasedAdditional < targetAdditionalStores &&
+        paidAdditional < targetAdditionalStores &&
         availableCash - capexTotalPorLoja >= -investimentoInicial
       ) {
         availableCash -= capexTotalPorLoja;
-        purchasedAdditional += 1;
+        paidAdditional += 1;
         openSchedule.push(month + 1); // abre no mês seguinte ao pagamento
         containerCapex += params.container_per_store;
         refrigeratorCapex += params.refrigerator_per_store;
         cashFlow -= capexTotalPorLoja;
       }
+      purchasedAdditional = paidAdditional; // mesmas lojas pagas e agendadas
     }
     
     // Custos fixos já estão incluídos no netProfit (via fixedCosts deduzidos em operatingProfit)
