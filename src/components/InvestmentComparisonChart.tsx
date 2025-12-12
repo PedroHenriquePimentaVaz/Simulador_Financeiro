@@ -20,25 +20,25 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   const investmentOptions: InvestmentOption[] = [
     {
       name: 'SELIC (Taxa Atual)',
-      annualRate: 10.75, // Taxa SELIC atual aproximada
+      annualRate: 15.0, // ~15% efetivo a.a.
       color: '#e74c3c',
       description: 'Taxa básica de juros do Brasil'
     },
     {
       name: 'CDB',
-      annualRate: 10.0, // CDB geralmente rende próximo ao CDI (Selic)
+      annualRate: 13.3, // ~110% CDI líquido IR (~13,3% a.a.)
       color: '#f39c12',
       description: 'Certificado de Depósito Bancário'
     },
     {
       name: 'Poupança',
-      annualRate: 6.17, // Poupança rende 0,5% ao mês quando Selic > 8,5%
+      annualRate: 8.2, // ~8,2% a.a. efetivo
       color: '#27ae60',
       description: 'Caderneta de poupança tradicional'
     },
     {
       name: 'LCI/LCA',
-      annualRate: 9.2,
+      annualRate: 14.3, // ~95% CDI isento IR (~14,3% a.a.)
       color: '#9b59b6',
       description: 'Isento de IR para pessoa física'
     }

@@ -39,7 +39,7 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Lucro realista por cenário**: Exibição ajustada em +15% (otimista) ou -15% (pessimista) no card de recomendação
 - **Comparação interativa**: Gráfico de comparação com renda fixa agora reflete lojas adicionadas na simulação
 - **Comparação precisa**: Gráfico usa apenas o saldo acumulado (sem somar o investimento inicial novamente)
-- **Comparação orientativa**: Se a franquia ficar abaixo dos investimentos de renda fixa, o gráfico sugere quantas lojas extras projetar para superar o melhor rendimento; taxas usadas: SELIC 10.75%, CDB 10%, LCI/LCA 9.2%, Poupança 6.17% a.a.
+- **Comparação orientativa**: Se a franquia ficar abaixo dos investimentos de renda fixa, o gráfico sugere quantas lojas extras projetar para superar o melhor rendimento; taxas usadas: SELIC ~15% a.a., CDB ~13,3% a.a. líquido (110% CDI), LCI/LCA ~14,3% a.a. (95% CDI isento), Poupança ~8,2% a.a.
 - **Custos atualizados**: Custo de sistema removido; DRE exibe CMV, Perdas, Reposição, Royalties e Outros Repasses com seus nomes reais
 - **Expansão consistente**: Ao adicionar novas lojas, o mês de implementação desconta apenas o CAPEX e mantém despesas operacionais das lojas já ativas
 - **Identidade Be Honest reforçada**: Hero e painel de resultados com gradientes e badges da marca
