@@ -232,8 +232,8 @@ export function simulate(
     const systemFee = 0; // Sistema descontinuado
     const amlabs = currentStores * params.amlabs_per_store;
     // Container e Geladeira são custos únicos (CAPEX), não mensais
-    const maintenance = params.maintenance_fixed;
-    const utilities = params.utilities_fixed;
+    const maintenance = month === 1 ? 0 : params.maintenance_fixed;
+    const utilities = month === 1 ? 0 : params.utilities_fixed;
     const accounting = params.accounting_fixed;
     
     // Custos de operação baseados no perfil e número de lojas
