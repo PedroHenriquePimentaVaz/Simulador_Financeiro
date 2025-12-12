@@ -174,18 +174,22 @@ export function simulate(
   const bestFixedAnnualRate = 0.15; // melhor renda fixa (~Selic efetiva)
   const bestFixedValue = investimentoInicial * Math.pow(1 + bestFixedAnnualRate / 12, months);
 
-  const runSimulation = (additionalStores: number): AdvancedSimulationResult => {
+  const runSimulation = (additionalStores: number, autoReinvest: boolean): AdvancedSimulationResult => {
     const stores = baseStores + additionalStores;
 
-    // Programação para pagar e abrir lojas adicionais o mais cedo possível
+    // Programação para pagar e abrir lojas adicionais (determinística) se não for reinvest automático
     const additionalPaySchedule: number[] = [];
     const additionalOpenSchedule: number[] = [];
-    for (let i = 0; i < additionalStores; i++) {
-      const payMonth = 3 + i * 2; // paga a loja adicional no mês 3, 5, 7...
-      const openMonth = payMonth + 1; // abre no mês seguinte
-      additionalPaySchedule.push(payMonth);
-      additionalOpenSchedule.push(openMonth);
+    if (!autoReinvest) {
+      for (let i = 0; i < additionalStores; i++) {
+        const payMonth = 3 + i * 2; // paga a loja adicional no mês 3, 5, 7...
+        const openMonth = payMonth + 1; // abre no mês seguinte
+        additionalPaySchedule.push(payMonth);
+        additionalOpenSchedule.push(openMonth);
+      }
     }
+    // Reinvestimento automático: agenda vazia; usaremos caixa acumulado
+    const reinvestOpenSchedule: number[] = [];
   
   // Os custos de operação (cooperativa, funcionário, transporte) são calculados diretamente baseado no perfil
   
@@ -199,7 +203,8 @@ export function simulate(
     if (month >= 2) {
       currentStores = 1; // primeira loja
       const openedAdditionals = additionalOpenSchedule.filter(openMonth => month >= openMonth).length;
-      currentStores += openedAdditionals;
+      const openedReinvest = reinvestOpenSchedule.filter(openMonth => month >= openMonth).length;
+      currentStores += openedAdditionals + openedReinvest;
     }
     
     // Período de implementação: primeiros 2 meses sem receita
@@ -284,12 +289,29 @@ export function simulate(
       refrigeratorCapex = params.refrigerator_per_store;
       const firstStoreCapex = capexPerStore + containerCapex + refrigeratorCapex;
       cashFlow -= firstStoreCapex;
-    } else if (additionalStores > 0 && additionalPaySchedule.includes(month)) {
-      // Paga lojas adicionais o mais cedo possível
+    } else if (!autoReinvest && additionalStores > 0 && additionalPaySchedule.includes(month)) {
+      // Paga lojas adicionais pré-programadas
       containerCapex = params.container_per_store;
       refrigeratorCapex = params.refrigerator_per_store;
       const additionalStoreCapex = capexPerStore + containerCapex + refrigeratorCapex;
       cashFlow -= additionalStoreCapex;
+    }
+
+    // Reinvestir lucros em novas lojas (usar caixa acumulado + fluxo do mês)
+    if (autoReinvest && month < months) {
+      const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
+      let availableCash = cumulativeCash + cashFlow;
+      let newStoresBought = 0;
+      while (availableCash >= capexTotalPorLoja) {
+        availableCash -= capexTotalPorLoja;
+        newStoresBought += 1;
+        reinvestOpenSchedule.push(month + 1); // abre no mês seguinte
+      }
+      if (newStoresBought > 0) {
+        containerCapex += params.container_per_store * newStoresBought;
+        refrigeratorCapex += params.refrigerator_per_store * newStoresBought;
+        cashFlow -= capexTotalPorLoja * newStoresBought;
+      }
     }
     
     // Custos fixos já estão incluídos no netProfit (via fixedCosts deduzidos em operatingProfit)
@@ -330,40 +352,40 @@ export function simulate(
     });
   }
   
-  // Calcular payback
-  let paybackPeriod = 0;
-  for (let i = 0; i < monthlyResults.length; i++) {
-    if (monthlyResults[i].cumulativeCash >= 0) {
-      paybackPeriod = i + 1;
-      break;
+    // Calcular payback
+    let paybackPeriod = 0;
+    for (let i = 0; i < monthlyResults.length; i++) {
+      if (monthlyResults[i].cumulativeCash >= 0) {
+        paybackPeriod = i + 1;
+        break;
+      }
     }
-  }
-  
-  // Calcular Rentabilidade Mensal Média
-  const finalCash = monthlyResults[monthlyResults.length - 1].cumulativeCash;
-  
-  // Calcular lucro líquido médio dos últimos 12 meses (ou todos se menos de 12)
-  const lastMonths = monthlyResults.slice(-12);
-  const avgMonthlyProfit = lastMonths.reduce((sum, month) => sum + month.netProfit, 0) / lastMonths.length;
-  const monthlyRentability = (avgMonthlyProfit / totalInvestment) * 100;
-  
-  return {
-    monthlyResults,
-    totalInvestment,
-    paybackPeriod,
-    roi: monthlyRentability, // Mantém nome 'roi' para compatibilidade, mas agora é rentabilidade mensal
-    finalCash,
-    cenario,
-    perfilOperacao: perfilOperacao as 'proprio' | 'terceirizar'
-  };
+    
+    // Calcular Rentabilidade Mensal Média
+    const finalCash = monthlyResults[monthlyResults.length - 1].cumulativeCash;
+    
+    // Calcular lucro líquido médio dos últimos 12 meses (ou todos se menos de 12)
+    const lastMonths = monthlyResults.slice(-12);
+    const avgMonthlyProfit = lastMonths.reduce((sum, month) => sum + month.netProfit, 0) / lastMonths.length;
+    const monthlyRentability = (avgMonthlyProfit / totalInvestment) * 100;
+    
+    return {
+      monthlyResults,
+      totalInvestment,
+      paybackPeriod,
+      roi: monthlyRentability, // Mantém nome 'roi' para compatibilidade, mas agora é rentabilidade mensal
+      finalCash,
+      cenario,
+      perfilOperacao: perfilOperacao as 'proprio' | 'terceirizar'
+    };
   };
 
   // Primeiro, simular com apenas 1 loja
-  const singleStoreResult = runSimulation(0);
+  const singleStoreResult = runSimulation(0, false);
 
-  // Se a renda fixa ganha e há capital para mais lojas, abrir todas as possíveis
-  if (maxAdditionalStores > 0 && singleStoreResult.finalCash < bestFixedValue) {
-    return runSimulation(maxAdditionalStores);
+  // Se a renda fixa ganha e há capital/caixa para mais lojas, reinvestir lucros em novas lojas
+  if (singleStoreResult.finalCash < bestFixedValue) {
+    return runSimulation(0, true);
   }
 
   return singleStoreResult;
