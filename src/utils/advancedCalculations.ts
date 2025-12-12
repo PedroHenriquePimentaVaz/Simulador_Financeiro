@@ -280,7 +280,12 @@ export function simulate(
 
     // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
     if (month < months) {
-      while (paidAdditional < targetAdditionalStores) {
+      let availableCash = cumulativeCash + cashFlow;
+      while (
+        paidAdditional < targetAdditionalStores &&
+        availableCash - capexTotalPorLoja >= -investimentoInicial
+      ) {
+        availableCash -= capexTotalPorLoja;
         paidAdditional += 1;
         openSchedule.push(month + 1); // abre no mês seguinte ao pagamento
         containerCapex += params.container_per_store;
