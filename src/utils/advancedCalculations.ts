@@ -164,23 +164,28 @@ export function simulate(
   const cmvRate = getCmvRate(cenario);
   const repasseRate = getRepasseRate(cenario);
   
-  // Calcular número de lojas baseado no investimento
+  // Calcular capacidade de lojas baseado no investimento
   // Taxa de franquia (30k) + primeira loja (capex + container + geladeira) + lojas adicionais (mesmo valor cada)
   const baseStores = 1; // Sempre começa com 1 loja
   const firstStoreTotalCapex = capexPerStore + params.container_per_store + params.refrigerator_per_store;
   const availableForAdditionalStores = investimentoInicial - params.franchise_fee - firstStoreTotalCapex;
-  const additionalStores = Math.max(0, Math.floor(availableForAdditionalStores / firstStoreTotalCapex));
-  const stores = baseStores + additionalStores;
+  const maxAdditionalStores = Math.max(0, Math.floor(availableForAdditionalStores / firstStoreTotalCapex));
 
-  // Programação para pagar e abrir lojas adicionais o mais cedo possível
-  const additionalPaySchedule: number[] = [];
-  const additionalOpenSchedule: number[] = [];
-  for (let i = 0; i < additionalStores; i++) {
-    const payMonth = 3 + i * 2; // paga a loja adicional no mês 3, 5, 7...
-    const openMonth = payMonth + 1; // abre no mês seguinte
-    additionalPaySchedule.push(payMonth);
-    additionalOpenSchedule.push(openMonth);
-  }
+  const bestFixedAnnualRate = 0.15; // melhor renda fixa (~Selic efetiva)
+  const bestFixedValue = investimentoInicial * Math.pow(1 + bestFixedAnnualRate / 12, months);
+
+  const runSimulation = (additionalStores: number): AdvancedSimulationResult => {
+    const stores = baseStores + additionalStores;
+
+    // Programação para pagar e abrir lojas adicionais o mais cedo possível
+    const additionalPaySchedule: number[] = [];
+    const additionalOpenSchedule: number[] = [];
+    for (let i = 0; i < additionalStores; i++) {
+      const payMonth = 3 + i * 2; // paga a loja adicional no mês 3, 5, 7...
+      const openMonth = payMonth + 1; // abre no mês seguinte
+      additionalPaySchedule.push(payMonth);
+      additionalOpenSchedule.push(openMonth);
+    }
   
   // Os custos de operação (cooperativa, funcionário, transporte) são calculados diretamente baseado no perfil
   
@@ -351,6 +356,16 @@ export function simulate(
     cenario,
     perfilOperacao: perfilOperacao as 'proprio' | 'terceirizar'
   };
+
+  // Primeiro, simular com apenas 1 loja
+  const singleStoreResult = runSimulation(0);
+
+  // Se a renda fixa ganha e há capital para mais lojas, abrir todas as possíveis
+  if (maxAdditionalStores > 0 && singleStoreResult.finalCash < bestFixedValue) {
+    return runSimulation(maxAdditionalStores);
+  }
+
+  return singleStoreResult;
 }
 
 export function formatCurrency(value: number): string {
