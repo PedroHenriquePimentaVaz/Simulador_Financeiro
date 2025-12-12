@@ -715,23 +715,31 @@ export function addStoreToSimulation(
     // Recalcular receita considerando período de implementação, crescimento e cenário
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
-    if (i >= monthToAdd - 1) {
-      // Nova loja tem período de implementação de 1 mês
-      if (i === monthToAdd - 1) {
-        // Mês da adição: nova loja não gera receita (período implementação)
-        totalRevenue = currentResult.totalRevenue;
-        revenuePerStoreValue = currentResult.revenuePerStore;
-      } else {
-        // Mês seguinte: nova loja já opera e gera receita
-        // Calcular receita com crescimento mensal
-        const monthsSinceStart = month - 3;
-        revenuePerStoreValue = baseRevenuePerStore * Math.pow(growthFactor, monthsSinceStart);
-        totalRevenue = revenuePerStoreValue * newStores;
-      }
-    } else {
-      totalRevenue = currentResult.totalRevenue;
-      revenuePerStoreValue = currentResult.revenuePerStore;
+
+    const existingStores = currentResult.stores;
+    const existingRevenuePerStore = existingStores > 0
+      ? currentResult.totalRevenue / existingStores
+      : 0;
+
+    // Receita das lojas existentes (mantém crescimento padrão)
+    const monthsSinceStartExisting = month > 3 ? month - 3 : 0;
+    const existingRevenuePerStoreGrown = existingRevenuePerStore * Math.pow(growthFactor, monthsSinceStartExisting);
+    let revenueExisting = existingRevenuePerStoreGrown * existingStores;
+
+    // Receita da nova loja (sem receita no mês de implementação; rampa nos 2 primeiros meses operando)
+    const monthsSinceNewStoreStart = month - (monthToAdd); // mês de operação é monthToAdd (implementação foi monthToAdd-1)
+    let revenueNewStore = 0;
+    if (monthsSinceNewStoreStart >= 1) {
+      const growthNewStore = Math.pow(growthFactor, monthsSinceNewStoreStart - 1);
+      const baseNewStore = baseRevenuePerStore * growthNewStore;
+      const ramp =
+        monthsSinceNewStoreStart === 1 ? 0.7 :
+        monthsSinceNewStoreStart === 2 ? 0.85 : 1;
+      revenueNewStore = baseNewStore * ramp;
     }
+
+    totalRevenue = revenueExisting + revenueNewStore;
+    revenuePerStoreValue = newStores > 0 ? totalRevenue / newStores : 0;
     
     // Recalcular todas as variáveis com a nova receita
     const tax = totalRevenue * params.simples_rate_m2;
