@@ -279,12 +279,6 @@ export function simulate(
 
     // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
     if (month < months) {
-      // Regra extra para investimentos baixos (<70k): só comprar nova loja
-      // quando já houver pelo menos R$ 20.000 acumulados de lucro da operação.
-      const needsProfitUnlock = investimentoInicial < 70000;
-      const profitUnlockThreshold = 20000;
-
-      const minCashToAddStore = -(investimentoInicial - params.capex_per_store);
       let availableCash = cumulativeCash + cashFlow;
 
       // Caso especial: investimento de 55k abre 1 loja automática no mês 13 (paga no mês 12)
@@ -300,8 +294,6 @@ export function simulate(
 
       while (
         paidAdditional < targetAdditionalStores &&
-        availableCash >= minCashToAddStore &&
-        (!needsProfitUnlock || availableCash >= profitUnlockThreshold) &&
         availableCash - capexTotalPorLoja >= -investimentoInicial
       ) {
         availableCash -= capexTotalPorLoja;
@@ -694,8 +686,8 @@ export function canAddStore(
   month: number, 
   totalInvestment: number
 ): boolean {
-  const needsProfitUnlock = totalInvestment < 70000;
-  const profitUnlockThreshold = 20000;
+  const params = behonestParams as BeHonestParams;
+  const capexTotalPorLoja = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
 
   // Não pode adicionar nos meses 1, 2 (período de implementação) ou 3 (primeira loja começando)
   if (month < 4 || month > monthlyResults.length) {
@@ -704,13 +696,8 @@ export function canAddStore(
   
   const currentMonthResult = monthlyResults[month - 1];
   
-  // Para investimentos baixos (<70k), exige pelo menos R$ 20.000 acumulados positivos
-  if (needsProfitUnlock) {
-    return currentMonthResult.cumulativeCash >= profitUnlockThreshold;
-  }
-
-  // Regra anterior: saldo acumulado não pode ficar abaixo do investimento total menos 20k
-  const minimumCumulativeCash = -(totalInvestment - 20000);
+  // Pode adicionar se, após pagar o CAPEX completo, o saldo não ultrapassar o limite do investimento (ex.: 55k → pode quando chegar a -35k)
+  const minimumCumulativeCash = -(totalInvestment - capexTotalPorLoja);
   return currentMonthResult.cumulativeCash >= minimumCumulativeCash;
 }
 
