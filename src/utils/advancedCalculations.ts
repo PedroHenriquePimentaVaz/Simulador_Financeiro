@@ -175,6 +175,7 @@ export function simulate(
     const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
     const openSchedule: number[] = []; // meses em que novas lojas abrem (além da primeira)
     let paidAdditional = 0;
+    const forceSecondStoreAtMonth13 = investimentoInicial === 55000;
   
   // Os custos de operação (cooperativa, funcionário, transporte) são calculados diretamente baseado no perfil
   
@@ -278,13 +279,29 @@ export function simulate(
 
     // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
     if (month < months) {
-      // Compra assim que possível, sem "loja grátis": precisa ter recuperado ao menos
-      // o valor de implementação (capex_per_store) e nunca ultrapassar o limite do investimento inicial.
+      // Regra extra para investimentos baixos (<70k): só comprar nova loja
+      // quando já houver pelo menos R$ 20.000 acumulados de lucro da operação.
+      const needsProfitUnlock = investimentoInicial < 70000;
+      const profitUnlockThreshold = 20000;
+
       const minCashToAddStore = -(investimentoInicial - params.capex_per_store);
       let availableCash = cumulativeCash + cashFlow;
+
+      // Caso especial: investimento de 55k abre 1 loja automática no mês 13 (paga no mês 12)
+      const shouldForceAtMonth12 = forceSecondStoreAtMonth13 && month === 12 && paidAdditional < targetAdditionalStores;
+      if (shouldForceAtMonth12 && availableCash - capexTotalPorLoja >= -investimentoInicial) {
+        availableCash -= capexTotalPorLoja;
+        paidAdditional += 1;
+        openSchedule.push(13); // abre no mês 13
+        containerCapex += params.container_per_store;
+        refrigeratorCapex += params.refrigerator_per_store;
+        cashFlow -= capexTotalPorLoja;
+      }
+
       while (
         paidAdditional < targetAdditionalStores &&
         availableCash >= minCashToAddStore &&
+        (!needsProfitUnlock || availableCash >= profitUnlockThreshold) &&
         availableCash - capexTotalPorLoja >= -investimentoInicial
       ) {
         availableCash -= capexTotalPorLoja;
@@ -677,6 +694,9 @@ export function canAddStore(
   month: number, 
   totalInvestment: number
 ): boolean {
+  const needsProfitUnlock = totalInvestment < 70000;
+  const profitUnlockThreshold = 20000;
+
   // Não pode adicionar nos meses 1, 2 (período de implementação) ou 3 (primeira loja começando)
   if (month < 4 || month > monthlyResults.length) {
     return false;
@@ -684,7 +704,12 @@ export function canAddStore(
   
   const currentMonthResult = monthlyResults[month - 1];
   
-  // Regra: saldo acumulado não pode ficar abaixo do investimento total menos 20k
+  // Para investimentos baixos (<70k), exige pelo menos R$ 20.000 acumulados positivos
+  if (needsProfitUnlock) {
+    return currentMonthResult.cumulativeCash >= profitUnlockThreshold;
+  }
+
+  // Regra anterior: saldo acumulado não pode ficar abaixo do investimento total menos 20k
   const minimumCumulativeCash = -(totalInvestment - 20000);
   return currentMonthResult.cumulativeCash >= minimumCumulativeCash;
 }
