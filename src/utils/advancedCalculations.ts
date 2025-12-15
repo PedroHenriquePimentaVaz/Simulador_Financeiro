@@ -278,21 +278,24 @@ export function simulate(
     }
 
     // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
-    let forcedStoreThisMonth = false;
     if (month < months) {
       let availableCash = cumulativeCash + cashFlow;
 
       // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13
-      // Ignora verificação de limite do investimento, pois é uma regra especial para melhorar retorno
-      const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores;
+      // Força mesmo se targetAdditionalStores = 0, desde que ainda não tenha adicionado nenhuma loja
+      // A condição de caixa é mais flexível: permite forçar se após pagar o CAPEX não ultrapassar muito o limite
+      const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional === 0;
       if (shouldForceAtMonth12) {
-        availableCash -= capexTotalPorLoja;
-        paidAdditional += 1;
-        openSchedule.push(13); // abre no mês 13
-        containerCapex += params.container_per_store;
-        refrigeratorCapex += params.refrigerator_per_store;
-        cashFlow -= capexTotalPorLoja;
-        forcedStoreThisMonth = true;
+        const cashAfterCapex = availableCash - capexTotalPorLoja;
+        // Permite forçar se o caixa após CAPEX não ultrapassar o limite em mais de 5k (margem de segurança)
+        if (cashAfterCapex >= -investimentoInicial - 5000) {
+          availableCash -= capexTotalPorLoja;
+          paidAdditional += 1;
+          openSchedule.push(13); // abre no mês 13
+          containerCapex += params.container_per_store;
+          refrigeratorCapex += params.refrigerator_per_store;
+          cashFlow -= capexTotalPorLoja;
+        }
       }
 
       // Fora do caso especial, segue a lógica normal de adicionar lojas.
@@ -316,8 +319,7 @@ export function simulate(
     // Não precisamos deduzi-los novamente aqui
     
     // Garantir que o saldo não ultrapasse o limite do investimento inicial
-    // Exceto no caso especial de forçar loja no mês 12 para investimentos <70k
-    if (!forcedStoreThisMonth && cumulativeCash + cashFlow < -investimentoInicial) {
+    if (cumulativeCash + cashFlow < -investimentoInicial) {
       cashFlow = -investimentoInicial - cumulativeCash;
     }
     
