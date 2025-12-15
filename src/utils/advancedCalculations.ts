@@ -282,11 +282,11 @@ export function simulate(
       let availableCash = cumulativeCash + cashFlow;
 
       // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13
-      // Permite ultrapassar o limite em até 5% para garantir que a loja seja comprada
+      // Permite ultrapassar temporariamente o limite em até 10% para garantir a expansão
       const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores;
       if (shouldForceAtMonth12) {
-        const toleranceLimit = -investimentoInicial * 1.05; // permite até 5% além do investimento
-        if (availableCash - capexTotalPorLoja >= toleranceLimit) {
+        const maxAllowedDebt = -investimentoInicial * 1.1; // Permite até 10% a mais que o investimento
+        if (availableCash - capexTotalPorLoja >= maxAllowedDebt) {
           availableCash -= capexTotalPorLoja;
           paidAdditional += 1;
           openSchedule.push(13); // abre no mês 13
