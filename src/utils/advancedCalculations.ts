@@ -292,16 +292,19 @@ export function simulate(
         cashFlow -= capexTotalPorLoja;
       }
 
-      while (
-        paidAdditional < targetAdditionalStores &&
-        availableCash - capexTotalPorLoja >= -investimentoInicial
-      ) {
-        availableCash -= capexTotalPorLoja;
-        paidAdditional += 1;
-        openSchedule.push(month + 1); // abre no mês seguinte ao pagamento
-        containerCapex += params.container_per_store;
-        refrigeratorCapex += params.refrigerator_per_store;
-        cashFlow -= capexTotalPorLoja;
+      // Fora do caso especial de 55k, segue a lógica normal de adicionar lojas
+      if (!forceSecondStoreAtMonth13) {
+        while (
+          paidAdditional < targetAdditionalStores &&
+          availableCash - capexTotalPorLoja >= -investimentoInicial
+        ) {
+          availableCash -= capexTotalPorLoja;
+          paidAdditional += 1;
+          openSchedule.push(month + 1); // abre no mês seguinte ao pagamento
+          containerCapex += params.container_per_store;
+          refrigeratorCapex += params.refrigerator_per_store;
+          cashFlow -= capexTotalPorLoja;
+        }
       }
     }
     

@@ -43,7 +43,7 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Custos atualizados**: Custo de sistema removido; DRE exibe CMV, Perdas, Reposição, Royalties e Outros Repasses com seus nomes reais
 - **Crescimento limitado**: Receita por loja cresce até o 6º mês de operação (rampa 70%/85%/100%) e depois estabiliza, evitando projeções irreais
 - **Compra de novas lojas**: Adiciona loja extra sempre que, após pagar o CAPEX completo (CAPEX + container + geladeira), o saldo não ultrapassa o limite do investimento. Ex.: investimento de R$ 55.000 pode abrir outra loja ao chegar em -R$ 35.000 de saldo acumulado.
-- **Força loja aos 13 meses (R$55k)**: Para investimento de R$ 55.000, paga a segunda loja no mês 12 e abre no mês 13 automaticamente
+- **Força loja aos 13 meses (R$55k)**: Para investimento de R$ 55.000, paga a segunda loja no mês 12 e abre no mês 13 automaticamente; nenhuma outra adição automática ocorre antes disso
 - **Expansão consistente**: Ao adicionar novas lojas, o mês de implementação desconta apenas o CAPEX e mantém despesas operacionais das lojas já ativas
 - **Identidade Be Honest reforçada**: Hero e painel de resultados com gradientes e badges da marca
 
