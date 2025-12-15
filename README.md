@@ -47,6 +47,14 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Expansão consistente**: Ao adicionar novas lojas, o mês de implementação desconta apenas o CAPEX e mantém despesas operacionais das lojas já ativas
 - **Identidade Be Honest reforçada**: Hero e painel de resultados com gradientes e badges da marca
 
+## 🧪 Teste rápido de cenários (CLI)
+
+Rodar simulações para investimentos chave (55k, 69k, 70k, 120k) e ver payback, lojas finais, caixa final e lucro médio dos últimos 12 meses:
+
+```bash
+npm run sim:scenarios
+```
+
 ## 📊 Métricas Calculadas
 
 - Faturamento Total
@@ -229,12 +237,6 @@ src/
 - `npm run build` - Gera build de produção
 - `npm run preview` - Preview do build de produção
 - `npm run test:e2e` - Executa testes end-to-end com Playwright (UTM sem campanha, com campanha e fallback do webhook)
-- `npm run simulate:scenarios` - Executa simulações rápidas (55k, 69k, 70k, 120k) imprimindo lojas finais, saldo final, payback e ROI médio mensal
-- Exemplo de saída do `simulate:scenarios`:
-  - 55k → lojas: 2 | saldo final: ~155.355 | payback: 26 | ROI mensal: ~8,25%
-  - 69k → lojas: 2 | saldo final: ~160.693 | payback: 25 | ROI mensal: ~6,58%
-  - 70k → lojas: 2 | saldo final: ~191.965 | payback: 18 | ROI mensal: ~6,48%
-  - 120k → lojas: 3 | saldo final: ~318.372 | payback: 16 | ROI mensal: ~6,01%
 
 > Antes do primeiro uso, execute `npx playwright install --with-deps` para baixar os navegadores necessários.
 

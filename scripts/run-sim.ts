@@ -1,15 +1,36 @@
-import { simulate } from '../src/utils/advancedCalculations.ts';
+import { simulate } from '../src/utils/advancedCalculations';
 
-const cases = [55000, 69000, 70000, 120000];
+type Scenario = {
+  investment: number;
+  desiredIncome: number;
+  perfil: 'proprio' | 'terceirizar';
+  cenario: 'pessimista' | 'medio' | 'otimista';
+  months: number;
+};
 
-for (const investimento of cases) {
-  const result = simulate(2000, investimento, 'proprio', 60, 'medio');
+const scenarios: Scenario[] = [
+  { investment: 55000, desiredIncome: 2000, perfil: 'proprio', cenario: 'medio', months: 60 },
+  { investment: 69000, desiredIncome: 2000, perfil: 'proprio', cenario: 'medio', months: 60 },
+  { investment: 70000, desiredIncome: 2000, perfil: 'proprio', cenario: 'medio', months: 60 },
+  { investment: 120000, desiredIncome: 5000, perfil: 'proprio', cenario: 'medio', months: 60 }
+];
+
+function summarize(s: Scenario) {
+  const result = simulate(s.desiredIncome, s.investment, s.perfil, s.months, s.cenario);
   const last = result.monthlyResults[result.monthlyResults.length - 1];
-  console.log('----');
-  console.log(`Investimento: R$ ${investimento.toLocaleString('pt-BR')}`);
-  console.log(`Lojas finais: ${last.stores}`);
-  console.log(`Saldo final: ${last.cumulativeCash.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`);
-  console.log(`Payback: ${result.paybackPeriod || 'não alcançado'}`);
-  console.log(`ROI mensal médio: ${result.roi.toFixed(2)}%`);
+  const last12 = result.monthlyResults.slice(-12);
+  const avgNet12 = last12.reduce((sum, m) => sum + m.netProfit, 0) / last12.length;
+  return {
+    investment: s.investment,
+    cenario: s.cenario,
+    perfil: s.perfil,
+    payback: result.paybackPeriod,
+    storesFinal: last.stores,
+    finalCash: last.cumulativeCash,
+    avgNetLast12: avgNet12
+  };
 }
+
+const outputs = scenarios.map(summarize);
+console.table(outputs);
 
