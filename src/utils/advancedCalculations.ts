@@ -175,7 +175,7 @@ export function simulate(
     const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
     const openSchedule: number[] = []; // meses em que novas lojas abrem (além da primeira)
     let paidAdditional = 0;
-    const forceSecondStoreAtMonth13 = investimentoInicial === 55000;
+    const forceEarlyStoreUnder70k = investimentoInicial < 70000;
   
   // Os custos de operação (cooperativa, funcionário, transporte) são calculados diretamente baseado no perfil
   
@@ -281,8 +281,8 @@ export function simulate(
     if (month < months) {
       let availableCash = cumulativeCash + cashFlow;
 
-      // Caso especial: investimento de 55k abre 1 loja automática no mês 13 (paga no mês 12)
-      const shouldForceAtMonth12 = forceSecondStoreAtMonth13 && month === 12 && paidAdditional < targetAdditionalStores;
+      // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13 (se houver caixa dentro do limite do investimento)
+      const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores;
       if (shouldForceAtMonth12 && availableCash - capexTotalPorLoja >= -investimentoInicial) {
         availableCash -= capexTotalPorLoja;
         paidAdditional += 1;
@@ -292,9 +292,9 @@ export function simulate(
         cashFlow -= capexTotalPorLoja;
       }
 
-      // Fora do caso especial de 55k, segue a lógica normal de adicionar lojas.
-      // Para 55k, só libera auto-add a partir do mês 13 (depois da loja forçada).
-      if (!forceSecondStoreAtMonth13 || month >= 13) {
+      // Fora do caso especial, segue a lógica normal de adicionar lojas.
+      // Para investimentos <70k, só libera auto-add a partir do mês 13 (depois da loja forçada).
+      if (!forceEarlyStoreUnder70k || month >= 13) {
         while (
           paidAdditional < targetAdditionalStores &&
           availableCash - capexTotalPorLoja >= -investimentoInicial
