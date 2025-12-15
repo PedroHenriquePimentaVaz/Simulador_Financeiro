@@ -196,32 +196,33 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
     if (month > 2 && currentStores > 0) {
-      // Primeira loja sempre opera desde o mês 3
-      const firstStoreMonthsSinceStart = month - 3;
-      const cappedFirstStoreMonths = Math.min(firstStoreMonthsSinceStart, 6);
-      const firstStoreRevenue = revenuePerStore * Math.pow(growthFactor, cappedFirstStoreMonths);
+      // Calcular receita com crescimento mensal e ramp-up para lojas recém-abertas
+      const monthsSinceStart = month - 3; // Meses desde o início da operação da primeira loja
+      const cappedMonths = Math.min(monthsSinceStart, 6); // crescimento apenas até o 6º mês
+      const baseRevenuePerStore = revenuePerStore * Math.pow(growthFactor, cappedMonths);
       
-      // Calcular receita das lojas adicionais com rampa
-      let additionalStoresRevenue = 0;
-      const additionalStoresCount = currentStores - 1;
+      // Primeira loja sempre com receita completa (já passou do período de ramp-up)
+      let revenueFirstStore = baseRevenuePerStore;
       
-      if (additionalStoresCount > 0) {
+      // Calcular receita das lojas adicionais com ramp-up
+      let revenueAdditionalStores = 0;
+      const additionalStores = currentStores - 1;
+      if (additionalStores > 0) {
         for (const openMonth of openSchedule) {
           if (month >= openMonth) {
             const monthsSinceNewStoreStart = month - openMonth + 1; // +1 porque openMonth é quando abre
             const cappedNewStoreMonths = Math.min(Math.max(monthsSinceNewStoreStart - 1, 0), 6);
             const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
             const baseNewStore = revenuePerStore * growthNewStore;
-            
-            // Aplicar rampa: 70% no primeiro mês operando, 85% no segundo, 100% depois
+            // Ramp-up: 70% no 1º mês operando, 85% no 2º, 100% depois
             const ramp = monthsSinceNewStoreStart === 1 ? 0.7 :
                          monthsSinceNewStoreStart === 2 ? 0.85 : 1;
-            additionalStoresRevenue += baseNewStore * ramp;
+            revenueAdditionalStores += baseNewStore * ramp;
           }
         }
       }
       
-      totalRevenue = firstStoreRevenue + additionalStoresRevenue;
+      totalRevenue = revenueFirstStore + revenueAdditionalStores;
       revenuePerStoreValue = currentStores > 0 ? totalRevenue / currentStores : 0;
     }
     
@@ -737,8 +738,8 @@ export function addStoreToSimulation(
   if (!canAddStore(monthlyResults, monthToAdd, totalInvestment)) {
     const params = behonestParams as BeHonestParams;
     const capexTotalPorLoja = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
-    const minCashNeeded = -(totalInvestment - capexTotalPorLoja);
-    throw new Error(`Não é possível adicionar uma loja neste mês. O saldo acumulado precisa ser pelo menos R$ ${minCashNeeded.toLocaleString('pt-BR')} para não ultrapassar o limite do investimento após pagar o CAPEX.`);
+    const minimumCumulativeCash = -(totalInvestment - capexTotalPorLoja);
+    throw new Error(`Não é possível adicionar uma loja neste mês. O saldo acumulado precisa ser pelo menos R$ ${Math.abs(minimumCumulativeCash).toLocaleString('pt-BR')} para não ultrapassar o limite do investimento após pagar o CAPEX.`);
   }
   
   // Obter valores baseados no cenário
