@@ -292,8 +292,9 @@ export function simulate(
         cashFlow -= capexTotalPorLoja;
       }
 
-      // Fora do caso especial de 55k, segue a lógica normal de adicionar lojas
-      if (!forceSecondStoreAtMonth13) {
+      // Fora do caso especial de 55k, segue a lógica normal de adicionar lojas.
+      // Para 55k, só libera auto-add a partir do mês 13 (depois da loja forçada).
+      if (!forceSecondStoreAtMonth13 || month >= 13) {
         while (
           paidAdditional < targetAdditionalStores &&
           availableCash - capexTotalPorLoja >= -investimentoInicial
