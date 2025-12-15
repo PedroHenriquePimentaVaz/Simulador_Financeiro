@@ -196,34 +196,11 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
     if (month > 2 && currentStores > 0) {
-      // Calcular receita com crescimento mensal e ramp-up para lojas recém-abertas
-      const monthsSinceStart = month - 3; // Meses desde o início da operação da primeira loja
+      // Calcular receita com crescimento mensal (começando do mês 3)
+      const monthsSinceStart = month - 3; // Meses desde o início da operação
       const cappedMonths = Math.min(monthsSinceStart, 6); // crescimento apenas até o 6º mês
-      const baseRevenuePerStore = revenuePerStore * Math.pow(growthFactor, cappedMonths);
-      
-      // Primeira loja sempre com receita completa (já passou do período de ramp-up)
-      let revenueFirstStore = baseRevenuePerStore;
-      
-      // Calcular receita das lojas adicionais com ramp-up
-      let revenueAdditionalStores = 0;
-      const additionalStores = currentStores - 1;
-      if (additionalStores > 0) {
-        for (const openMonth of openSchedule) {
-          if (month >= openMonth) {
-            const monthsSinceNewStoreStart = month - openMonth + 1; // +1 porque openMonth é quando abre
-            const cappedNewStoreMonths = Math.min(Math.max(monthsSinceNewStoreStart - 1, 0), 6);
-            const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
-            const baseNewStore = revenuePerStore * growthNewStore;
-            // Ramp-up: 70% no 1º mês operando, 85% no 2º, 100% depois
-            const ramp = monthsSinceNewStoreStart === 1 ? 0.7 :
-                         monthsSinceNewStoreStart === 2 ? 0.85 : 1;
-            revenueAdditionalStores += baseNewStore * ramp;
-          }
-        }
-      }
-      
-      totalRevenue = revenueFirstStore + revenueAdditionalStores;
-      revenuePerStoreValue = currentStores > 0 ? totalRevenue / currentStores : 0;
+      revenuePerStoreValue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
+      totalRevenue = revenuePerStoreValue * currentStores;
     }
     
     // Imposto Simples
@@ -736,10 +713,7 @@ export function addStoreToSimulation(
   const { monthlyResults, totalInvestment, cenario, perfilOperacao } = simulationResult;
   
   if (!canAddStore(monthlyResults, monthToAdd, totalInvestment)) {
-    const params = behonestParams as BeHonestParams;
-    const capexTotalPorLoja = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
-    const minimumCumulativeCash = -(totalInvestment - capexTotalPorLoja);
-    throw new Error(`Não é possível adicionar uma loja neste mês. O saldo acumulado precisa ser pelo menos R$ ${Math.abs(minimumCumulativeCash).toLocaleString('pt-BR')} para não ultrapassar o limite do investimento após pagar o CAPEX.`);
+    throw new Error('Não é possível adicionar uma loja neste mês. Ainda não há lucro acumulado suficiente (R$ 20.000).');
   }
   
   // Obter valores baseados no cenário
