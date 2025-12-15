@@ -278,9 +278,13 @@ export function simulate(
 
     // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
     if (month < months) {
+      // Só compra nova loja quando o caixa acumulado tiver recuperado pelo menos
+      // o valor de implementação (20k), para evitar "loja grátis" em investimentos baixos.
+      const minCashToAddStore = -(investimentoInicial - params.capex_per_store);
       let availableCash = cumulativeCash + cashFlow;
       while (
         paidAdditional < targetAdditionalStores &&
+        availableCash >= minCashToAddStore &&
         availableCash - capexTotalPorLoja >= -investimentoInicial
       ) {
         availableCash -= capexTotalPorLoja;
