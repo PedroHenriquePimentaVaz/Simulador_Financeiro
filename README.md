@@ -46,7 +46,14 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Força loja aos 13 meses (<R$70k)**: Para investimentos abaixo de R$ 70.000, paga uma loja no mês 12 e abre no mês 13 automaticamente (se o caixa permitir sem ultrapassar o limite do investimento); a partir do mês 13 as adições automáticas seguem a regra padrão
 - **Expansão consistente**: Ao adicionar novas lojas, o mês de implementação desconta apenas o CAPEX e mantém despesas operacionais das lojas já ativas
 - **Identidade Be Honest reforçada**: Hero e painel de resultados com gradientes e badges da marca
-- **Runner de simulação**: `npm run run:sims` executa cenários rápidos (55k, 69k, 70k, 120k) e imprime lojas, payback, ROI mensal, lucro médio dos últimos 12 meses e saldo final em 5 anos
+
+## 🧪 Teste rápido de simulação (CLI)
+
+Para inspecionar cenários chave via linha de comando:
+```bash
+npx ts-node --esm --transpile-only scripts/run-sim.ts
+```
+Esse script imprime stores, saldo final, payback, ROI e lucro líquido médio dos últimos 12 meses para investimentos de 55k, 69k, 70k e 120k no cenário médio.
 
 ## 📊 Métricas Calculadas
 
