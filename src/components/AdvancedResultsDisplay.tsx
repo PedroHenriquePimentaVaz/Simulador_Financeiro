@@ -1385,6 +1385,20 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 ))}
               </tr>
               
+              {/* CAPEX */}
+              <tr>
+                <td><strong>CAPEX</strong></td>
+                {monthlyResults.map((result) => {
+                  const isImplementation = result.container > 0 || result.refrigerator > 0;
+                  const capexTotal = isImplementation
+                    ? capexPerStoreByScenario + result.container + result.refrigerator
+                    : 0;
+                  return (
+                    <td key={result.month}>{formatCurrency(-capexTotal)}</td>
+                  );
+                })}
+              </tr>
+              
               {/* Container */}
               <tr>
                 <td><strong>Container</strong></td>
