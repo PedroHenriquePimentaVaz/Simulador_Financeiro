@@ -1,4 +1,4 @@
-import behonestParams from '../../behonest_params.json' assert { type: 'json' };
+import behonestParams from '../../behonest_params.json';
 
 export interface BeHonestParams {
   simples_rate_m2: number;
@@ -281,15 +281,19 @@ export function simulate(
     if (month < months) {
       let availableCash = cumulativeCash + cashFlow;
 
-      // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13 (se houver caixa dentro do limite do investimento)
+      // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13
+      // Permite um pequeno excedente (até 10% do investimento) para garantir que a loja seja adicionada
       const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores;
-      if (shouldForceAtMonth12 && availableCash - capexTotalPorLoja >= -investimentoInicial) {
-        availableCash -= capexTotalPorLoja;
-        paidAdditional += 1;
-        openSchedule.push(13); // abre no mês 13
-        containerCapex += params.container_per_store;
-        refrigeratorCapex += params.refrigerator_per_store;
-        cashFlow -= capexTotalPorLoja;
+      if (shouldForceAtMonth12) {
+        const maxAllowedDebt = -investimentoInicial * 1.1; // permite até 10% de excedente
+        if (availableCash - capexTotalPorLoja >= maxAllowedDebt) {
+          availableCash -= capexTotalPorLoja;
+          paidAdditional += 1;
+          openSchedule.push(13); // abre no mês 13
+          containerCapex += params.container_per_store;
+          refrigeratorCapex += params.refrigerator_per_store;
+          cashFlow -= capexTotalPorLoja;
+        }
       }
 
       // Fora do caso especial, segue a lógica normal de adicionar lojas.
