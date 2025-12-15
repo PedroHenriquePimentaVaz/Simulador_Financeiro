@@ -278,22 +278,21 @@ export function simulate(
     }
 
     // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
+    let forcedStoreThisMonth = false;
     if (month < months) {
       let availableCash = cumulativeCash + cashFlow;
 
       // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13
-      // Permite ultrapassar temporariamente o limite em até 10% para garantir a expansão
+      // Ignora verificação de limite do investimento, pois é uma regra especial para melhorar retorno
       const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores;
       if (shouldForceAtMonth12) {
-        const maxAllowedDebt = -investimentoInicial * 1.1; // Permite até 10% a mais que o investimento
-        if (availableCash - capexTotalPorLoja >= maxAllowedDebt) {
-          availableCash -= capexTotalPorLoja;
-          paidAdditional += 1;
-          openSchedule.push(13); // abre no mês 13
-          containerCapex += params.container_per_store;
-          refrigeratorCapex += params.refrigerator_per_store;
-          cashFlow -= capexTotalPorLoja;
-        }
+        availableCash -= capexTotalPorLoja;
+        paidAdditional += 1;
+        openSchedule.push(13); // abre no mês 13
+        containerCapex += params.container_per_store;
+        refrigeratorCapex += params.refrigerator_per_store;
+        cashFlow -= capexTotalPorLoja;
+        forcedStoreThisMonth = true;
       }
 
       // Fora do caso especial, segue a lógica normal de adicionar lojas.
@@ -317,7 +316,8 @@ export function simulate(
     // Não precisamos deduzi-los novamente aqui
     
     // Garantir que o saldo não ultrapasse o limite do investimento inicial
-    if (cumulativeCash + cashFlow < -investimentoInicial) {
+    // Exceto no caso especial de forçar loja no mês 12 para investimentos <70k
+    if (!forcedStoreThisMonth && cumulativeCash + cashFlow < -investimentoInicial) {
       cashFlow = -investimentoInicial - cumulativeCash;
     }
     
