@@ -361,19 +361,19 @@ export function simulate(
       }
     }
     
-    // Calcular Rentabilidade Mensal Média
+    // Calcular Rentabilidade Anual Média
     const finalCash = monthlyResults[monthlyResults.length - 1].cumulativeCash;
     
-    // Calcular lucro líquido médio dos últimos 12 meses (ou todos se menos de 12)
-    const lastMonths = monthlyResults.slice(-12);
-    const avgMonthlyProfit = lastMonths.reduce((sum, month) => sum + month.netProfit, 0) / lastMonths.length;
-    const monthlyRentability = (avgMonthlyProfit / totalInvestment) * 100;
+    // Calcular lucro líquido total dos 60 meses e dividir por 5 para ter lucro anual médio
+    const totalNetProfit = monthlyResults.reduce((sum, month) => sum + month.netProfit, 0);
+    const avgAnnualProfit = totalNetProfit / 5; // 5 anos
+    const annualRentability = (avgAnnualProfit / totalInvestment) * 100;
     
     return {
       monthlyResults,
       totalInvestment,
       paybackPeriod,
-      roi: monthlyRentability, // Mantém nome 'roi' para compatibilidade, mas agora é rentabilidade mensal
+      roi: annualRentability, // Rentabilidade anual média (% ao ano)
       finalCash,
       cenario,
       perfilOperacao: perfilOperacao as 'proprio' | 'terceirizar'
@@ -871,16 +871,16 @@ export function addStoreToSimulation(
   
   const finalCash = newMonthlyResults[newMonthlyResults.length - 1].cumulativeCash;
   
-  // Calcular Rentabilidade Mensal Média
-  const lastMonths = newMonthlyResults.slice(-12);
-  const avgMonthlyProfit = lastMonths.reduce((sum, month) => sum + month.netProfit, 0) / lastMonths.length;
-  const monthlyRentability = (avgMonthlyProfit / newTotalInvestment) * 100;
+  // Calcular Rentabilidade Anual Média
+  const totalNetProfit = newMonthlyResults.reduce((sum, month) => sum + month.netProfit, 0);
+  const avgAnnualProfit = totalNetProfit / 5; // 5 anos
+  const annualRentability = (avgAnnualProfit / newTotalInvestment) * 100;
   
   return {
     monthlyResults: newMonthlyResults,
     totalInvestment: newTotalInvestment,
     paybackPeriod,
-    roi: monthlyRentability,
+    roi: annualRentability,
     finalCash,
     cenario,
     perfilOperacao
@@ -1028,16 +1028,16 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
   
   const finalCash = newMonthlyResults[newMonthlyResults.length - 1].cumulativeCash;
   
-  // Calcular Rentabilidade Mensal Média
-  const lastMonths = newMonthlyResults.slice(-12);
-  const avgMonthlyProfit = lastMonths.reduce((sum, month) => sum + month.netProfit, 0) / lastMonths.length;
-  const monthlyRentability = (avgMonthlyProfit / newTotalInvestment) * 100;
+  // Calcular Rentabilidade Anual Média
+  const totalNetProfit = newMonthlyResults.reduce((sum, month) => sum + month.netProfit, 0);
+  const avgAnnualProfit = totalNetProfit / 5; // 5 anos
+  const annualRentability = (avgAnnualProfit / newTotalInvestment) * 100;
   
   return {
     monthlyResults: newMonthlyResults,
     totalInvestment: newTotalInvestment,
     paybackPeriod,
-    roi: monthlyRentability,
+    roi: annualRentability,
     finalCash,
     cenario,
     perfilOperacao

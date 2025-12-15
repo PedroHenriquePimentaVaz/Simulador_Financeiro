@@ -629,9 +629,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         <div className="summary-card roi-card">
           <div className="card-icon">🎯</div>
           <div className="card-content">
-            <h4>Rentabilidade Mensal</h4>
+            <h4>Rentabilidade Anual</h4>
             <p className="summary-value positive">{formatPercentage(roi)}</p>
-            <span className="card-period">Média</span>
+            <span className="card-period">Média dos 5 Anos</span>
           </div>
         </div>
         
