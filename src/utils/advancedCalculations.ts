@@ -196,40 +196,35 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
     if (month > 2 && currentStores > 0) {
-      // Calcular receita base com crescimento mensal (começando do mês 3)
-      const monthsSinceStart = month - 3; // Meses desde o início da operação
-      const cappedMonths = Math.min(monthsSinceStart, 6); // crescimento apenas até o 6º mês
-      const baseRevenuePerStore = revenuePerStore * Math.pow(growthFactor, cappedMonths);
+      // Receita da primeira loja (começou no mês 3)
+      const monthsSinceFirstStore = month - 3;
+      const cappedFirstStoreMonths = Math.min(monthsSinceFirstStore, 6);
+      const firstStoreRevenue = revenuePerStore * Math.pow(growthFactor, cappedFirstStoreMonths);
       
-      // Aplicar rampa de receita para lojas recém-abertas (70% no 1º mês, 85% no 2º, 100% depois)
-      let revenueFromFirstStore = baseRevenuePerStore; // Primeira loja sempre em 100% após mês 3
+      // Receita das lojas adicionais (aplicar ramp-up)
+      let additionalStoresRevenue = 0;
+      const firstStoreCount = 1;
+      const additionalStoresCount = currentStores - firstStoreCount;
       
-      // Calcular receita das lojas adicionais com rampa
-      let revenueFromAdditionalStores = 0;
-      const additionalStores = currentStores - 1; // Exclui a primeira loja
-      
-      if (additionalStores > 0) {
-        openSchedule.forEach(openMonth => {
+      if (additionalStoresCount > 0) {
+        // Para cada loja adicional, calcular receita com ramp-up baseado em quando foi aberta
+        for (const openMonth of openSchedule) {
           if (month >= openMonth) {
-            const monthsSinceOpen = month - openMonth + 1; // +1 porque no mês de abertura já conta como mês 1 operando
-            const cappedNewStoreMonths = Math.min(Math.max(monthsSinceOpen - 1, 0), 6);
+            const monthsSinceNewStoreOpened = month - openMonth + 1; // +1 porque no mês de abertura já conta como mês 1 operando
+            const cappedNewStoreMonths = Math.min(Math.max(monthsSinceNewStoreOpened - 1, 0), 6);
             const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
-            const baseNewStore = revenuePerStore * growthNewStore;
+            const baseNewStoreRevenue = revenuePerStore * growthNewStore;
             
-            // Aplicar rampa: 0% no mês de implementação (já tratado), 70% no 1º mês operando, 85% no 2º, 100% depois
-            let ramp = 1.0;
-            if (monthsSinceOpen === 1) {
-              ramp = 0.7; // 70% no primeiro mês operando
-            } else if (monthsSinceOpen === 2) {
-              ramp = 0.85; // 85% no segundo mês operando
-            }
+            // Aplicar ramp-up: 70% no 1º mês, 85% no 2º mês, 100% do 3º em diante
+            const ramp = monthsSinceNewStoreOpened === 1 ? 0.7 :
+                        monthsSinceNewStoreOpened === 2 ? 0.85 : 1;
             
-            revenueFromAdditionalStores += baseNewStore * ramp;
+            additionalStoresRevenue += baseNewStoreRevenue * ramp;
           }
-        });
+        }
       }
       
-      totalRevenue = revenueFromFirstStore + revenueFromAdditionalStores;
+      totalRevenue = firstStoreRevenue + additionalStoresRevenue;
       revenuePerStoreValue = currentStores > 0 ? totalRevenue / currentStores : 0;
     }
     
@@ -744,8 +739,9 @@ export function addStoreToSimulation(
   
   if (!canAddStore(monthlyResults, monthToAdd, totalInvestment)) {
     const params = behonestParams as BeHonestParams;
-    const capexTotal = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
-    throw new Error(`Não é possível adicionar uma loja neste mês. O saldo acumulado precisa ser pelo menos R$ ${(totalInvestment - capexTotal).toLocaleString('pt-BR')} para não ultrapassar o limite do investimento após pagar o CAPEX.`);
+    const capexTotalPorLoja = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+    const minimumCumulativeCash = -(totalInvestment - capexTotalPorLoja);
+    throw new Error(`Não é possível adicionar uma loja neste mês. O saldo acumulado precisa ser pelo menos R$ ${Math.abs(minimumCumulativeCash).toLocaleString('pt-BR')} para não ultrapassar o limite do investimento após pagar o CAPEX.`);
   }
   
   // Obter valores baseados no cenário
