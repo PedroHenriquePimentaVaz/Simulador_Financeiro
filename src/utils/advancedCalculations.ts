@@ -196,35 +196,29 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
     if (month > 2 && currentStores > 0) {
-      // Receita da primeira loja (começou no mês 3)
-      const monthsSinceFirstStore = month - 3;
-      const cappedFirstStoreMonths = Math.min(monthsSinceFirstStore, 6);
-      const firstStoreRevenue = revenuePerStore * Math.pow(growthFactor, cappedFirstStoreMonths);
+      // Receita da primeira loja (sempre operando desde o mês 3)
+      const monthsSinceStart = month - 3; // Meses desde o início da operação
+      const cappedMonths = Math.min(monthsSinceStart, 6); // crescimento apenas até o 6º mês
+      const baseRevenuePerStore = revenuePerStore * Math.pow(growthFactor, cappedMonths);
+      let revenueFirstStore = baseRevenuePerStore;
       
-      // Receita das lojas adicionais (aplicar ramp-up)
-      let additionalStoresRevenue = 0;
-      const firstStoreCount = 1;
-      const additionalStoresCount = currentStores - firstStoreCount;
-      
-      if (additionalStoresCount > 0) {
-        // Para cada loja adicional, calcular receita com ramp-up baseado em quando foi aberta
-        for (const openMonth of openSchedule) {
-          if (month >= openMonth) {
-            const monthsSinceNewStoreOpened = month - openMonth + 1; // +1 porque no mês de abertura já conta como mês 1 operando
-            const cappedNewStoreMonths = Math.min(Math.max(monthsSinceNewStoreOpened - 1, 0), 6);
-            const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
-            const baseNewStoreRevenue = revenuePerStore * growthNewStore;
-            
-            // Aplicar ramp-up: 70% no 1º mês, 85% no 2º mês, 100% do 3º em diante
-            const ramp = monthsSinceNewStoreOpened === 1 ? 0.7 :
-                        monthsSinceNewStoreOpened === 2 ? 0.85 : 1;
-            
-            additionalStoresRevenue += baseNewStoreRevenue * ramp;
-          }
+      // Receita das lojas adicionais (aplicar rampa de receita)
+      let revenueAdditionalStores = 0;
+      const openedAdditionals = openSchedule.filter(openMonth => month >= openMonth);
+      for (const openMonth of openedAdditionals) {
+        const monthsSinceNewStoreStart = month - openMonth;
+        if (monthsSinceNewStoreStart >= 1) {
+          const cappedNewStoreMonths = Math.min(Math.max(monthsSinceNewStoreStart - 1, 0), 6);
+          const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
+          const baseNewStore = revenuePerStore * growthNewStore;
+          const ramp =
+            monthsSinceNewStoreStart === 1 ? 0.7 :
+            monthsSinceNewStoreStart === 2 ? 0.85 : 1;
+          revenueAdditionalStores += baseNewStore * ramp;
         }
       }
       
-      totalRevenue = firstStoreRevenue + additionalStoresRevenue;
+      totalRevenue = revenueFirstStore + revenueAdditionalStores;
       revenuePerStoreValue = currentStores > 0 ? totalRevenue / currentStores : 0;
     }
     
