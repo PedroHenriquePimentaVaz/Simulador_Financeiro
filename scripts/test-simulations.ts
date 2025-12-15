@@ -1,143 +1,160 @@
-import { simulate } from '../src/utils/advancedCalculations.ts';
-import behonestParams from '../behonest_params.json' assert { type: 'json' };
+import { simulate, formatCurrency } from '../src/utils/advancedCalculations.js';
 
 interface TestCase {
   name: string;
-  investment: number;
-  expectedStores: number;
-  expectedForcedStoreMonth?: number;
-  minFinalCash?: number;
+  investimento: number;
+  lucroDesejado: number;
+  perfilOperacao: 'proprio' | 'terceirizar';
+  cenario: 'pessimista' | 'medio' | 'otimista';
+  expectedStores?: number;
+  expectedMonth13Store?: boolean;
 }
 
 const testCases: TestCase[] = [
   {
     name: 'Investimento R$ 55.000 (deve forçar loja no mês 13)',
-    investment: 55000,
+    investimento: 55000,
+    lucroDesejado: 2000,
+    perfilOperacao: 'proprio',
+    cenario: 'medio',
     expectedStores: 2,
-    expectedForcedStoreMonth: 13,
-    minFinalCash: -55000 // Não pode ultrapassar o investimento
+    expectedMonth13Store: true
   },
   {
     name: 'Investimento R$ 69.000 (deve forçar loja no mês 13)',
-    investment: 69000,
+    investimento: 69000,
+    lucroDesejado: 2000,
+    perfilOperacao: 'proprio',
+    cenario: 'medio',
     expectedStores: 2,
-    expectedForcedStoreMonth: 13,
-    minFinalCash: -69000
+    expectedMonth13Store: true
   },
   {
-    name: 'Investimento R$ 70.000 (não força, mas pode adicionar)',
-    investment: 70000,
-    expectedStores: 2, // Pode ter 2 lojas se o caixa permitir
-    minFinalCash: -70000
+    name: 'Investimento R$ 70.000 (não deve forçar, apenas auto-add)',
+    investimento: 70000,
+    lucroDesejado: 2000,
+    perfilOperacao: 'proprio',
+    cenario: 'medio',
+    expectedStores: 2
   },
   {
-    name: 'Investimento R$ 120.000 (pode ter múltiplas lojas)',
-    investment: 120000,
-    expectedStores: 3, // Taxa 30k + 3 lojas (20k cada) = 90k, sobra 30k
-    minFinalCash: -120000
+    name: 'Investimento R$ 120.000 (auto-add normal)',
+    investimento: 120000,
+    lucroDesejado: 2000,
+    perfilOperacao: 'proprio',
+    cenario: 'medio',
+    expectedStores: 3
   }
 ];
 
-console.log('🧪 Iniciando testes de simulação...\n');
-console.log('='.repeat(80));
+function runTests() {
+  console.log('🧪 Iniciando testes de simulação...\n');
+  console.log('='.repeat(80));
 
-let passedTests = 0;
-let failedTests = 0;
+  let passed = 0;
+  let failed = 0;
 
-for (const testCase of testCases) {
-  console.log(`\n📊 Teste: ${testCase.name}`);
-  console.log('-'.repeat(80));
-  
-  try {
-    // Testar cenário médio
-    const result = simulate(
-      2000, // lucro desejado
-      testCase.investment,
-      'proprio', // perfil operação
-      60, // 60 meses
-      'medio' // cenário médio
-    );
-    
-    const finalStores = result.monthlyResults[result.monthlyResults.length - 1].stores;
-    const finalCash = result.finalCash;
-    
-    // Verificar número de lojas
-    const storesMatch = finalStores >= testCase.expectedStores;
-    if (!storesMatch) {
-      console.log(`❌ FALHOU: Esperava pelo menos ${testCase.expectedStores} loja(s), mas tem ${finalStores}`);
-      failedTests++;
-    } else {
-      console.log(`✅ Lojas: ${finalStores} (esperado: ≥${testCase.expectedStores})`);
-      passedTests++;
-    }
-    
-    // Verificar loja forçada no mês 13 (se aplicável)
-    if (testCase.expectedForcedStoreMonth) {
-      const month13Result = result.monthlyResults.find(r => r.month === 13);
-      if (month13Result && month13Result.stores >= 2) {
-        console.log(`✅ Loja forçada no mês 13: ${month13Result.stores} loja(s)`);
-        passedTests++;
-      } else {
-        console.log(`❌ FALHOU: Esperava loja forçada no mês 13, mas tem ${month13Result?.stores || 0} loja(s)`);
-        failedTests++;
+  for (const testCase of testCases) {
+    console.log(`\n📊 Teste: ${testCase.name}`);
+    console.log('-'.repeat(80));
+
+    try {
+      const result = simulate(
+        testCase.lucroDesejado,
+        testCase.investimento,
+        testCase.perfilOperacao,
+        60,
+        testCase.cenario
+      );
+
+      const finalMonth = result.monthlyResults[result.monthlyResults.length - 1];
+      const month13 = result.monthlyResults[12]; // Mês 13 (índice 12)
+
+      console.log(`✅ Investimento: ${formatCurrency(testCase.investimento)}`);
+      console.log(`   Cenário: ${testCase.cenario}`);
+      console.log(`   Perfil: ${testCase.perfilOperacao}`);
+      console.log(`   Lojas finais: ${finalMonth.stores}`);
+      console.log(`   Saldo final: ${formatCurrency(result.finalCash)}`);
+      console.log(`   Payback: ${result.paybackPeriod > 0 ? `Mês ${result.paybackPeriod}` : 'Não alcançado'}`);
+      console.log(`   ROI mensal: ${result.roi.toFixed(2)}%`);
+
+      // Verificar número de lojas esperado
+      if (testCase.expectedStores) {
+        if (finalMonth.stores === testCase.expectedStores) {
+          console.log(`   ✅ Número de lojas correto: ${finalMonth.stores}`);
+        } else {
+          console.log(`   ❌ Número de lojas incorreto: esperado ${testCase.expectedStores}, obtido ${finalMonth.stores}`);
+          failed++;
+          continue;
+        }
       }
-    }
-    
-    // Verificar saldo mínimo
-    if (testCase.minFinalCash !== undefined) {
-      const minCashOk = finalCash >= testCase.minFinalCash;
-      if (!minCashOk) {
-        console.log(`❌ FALHOU: Saldo final (${finalCash.toFixed(2)}) ultrapassou o limite (${testCase.minFinalCash})`);
-        failedTests++;
-      } else {
-        console.log(`✅ Saldo final: R$ ${finalCash.toFixed(2)} (limite: ${testCase.minFinalCash})`);
-        passedTests++;
+
+      // Verificar se loja foi adicionada no mês 13 para investimentos < 70k
+      if (testCase.expectedMonth13Store) {
+        const month12 = result.monthlyResults[11]; // Mês 12 (índice 11)
+        const month13Stores = month13.stores;
+        const month12Stores = month12.stores;
+
+        if (month13Stores > month12Stores) {
+          console.log(`   ✅ Loja adicionada no mês 13: ${month12Stores} → ${month13Stores}`);
+        } else {
+          console.log(`   ❌ Loja NÃO foi adicionada no mês 13: ${month12Stores} → ${month13Stores}`);
+          failed++;
+          continue;
+        }
       }
+
+      // Verificar se saldo nunca ultrapassa o investimento inicial
+      const minCash = Math.min(...result.monthlyResults.map(m => m.cumulativeCash));
+      if (minCash >= -testCase.investimento) {
+        console.log(`   ✅ Saldo mínimo respeitado: ${formatCurrency(minCash)} (limite: ${formatCurrency(-testCase.investimento)})`);
+      } else {
+        console.log(`   ❌ Saldo mínimo violado: ${formatCurrency(minCash)} (limite: ${formatCurrency(-testCase.investimento)})`);
+        failed++;
+        continue;
+      }
+
+      // Verificar se receita começa apenas no mês 3
+      const month1 = result.monthlyResults[0];
+      const month2 = result.monthlyResults[1];
+      const month3 = result.monthlyResults[2];
+
+      if (month1.totalRevenue === 0 && month2.totalRevenue === 0 && month3.totalRevenue > 0) {
+        console.log(`   ✅ Receita inicia corretamente no mês 3`);
+      } else {
+        console.log(`   ⚠️  Receita: Mês 1=${formatCurrency(month1.totalRevenue)}, Mês 2=${formatCurrency(month2.totalRevenue)}, Mês 3=${formatCurrency(month3.totalRevenue)}`);
+      }
+
+      // Verificar se manutenção e utilities são 0 no mês 1
+      if (month1.maintenance === 0 && month1.utilities === 0) {
+        console.log(`   ✅ Manutenção e utilities zerados no mês 1`);
+      } else {
+        console.log(`   ⚠️  Manutenção/Utilities mês 1: ${formatCurrency(month1.maintenance)} / ${formatCurrency(month1.utilities)}`);
+      }
+
+      passed++;
+      console.log(`   ✅ Teste PASSOU`);
+
+    } catch (error) {
+      console.error(`   ❌ Erro ao executar teste:`, error);
+      failed++;
     }
-    
-    // Verificar se em algum momento o saldo ultrapassou o limite
-    const maxNegativeCash = Math.min(...result.monthlyResults.map(r => r.cumulativeCash));
-    if (maxNegativeCash < -testCase.investment) {
-      console.log(`❌ FALHOU: Saldo mínimo (${maxNegativeCash.toFixed(2)}) ultrapassou o investimento (${-testCase.investment})`);
-      failedTests++;
-    } else {
-      console.log(`✅ Saldo nunca ultrapassou o investimento inicial`);
-      passedTests++;
-    }
-    
-    // Mostrar alguns meses chave
-    const month2 = result.monthlyResults.find(r => r.month === 2);
-    const month12 = result.monthlyResults.find(r => r.month === 12);
-    const month13 = result.monthlyResults.find(r => r.month === 13);
-    const month60 = result.monthlyResults[result.monthlyResults.length - 1];
-    
-    console.log(`\n📅 Meses chave:`);
-    console.log(`   Mês 2: ${month2?.stores || 0} loja(s), Saldo: R$ ${month2?.cumulativeCash.toFixed(2) || '0.00'}`);
-    if (month12) {
-      console.log(`   Mês 12: ${month12.stores} loja(s), Saldo: R$ ${month12.cumulativeCash.toFixed(2)}`);
-    }
-    if (month13) {
-      console.log(`   Mês 13: ${month13.stores} loja(s), Saldo: R$ ${month13.cumulativeCash.toFixed(2)}`);
-    }
-    console.log(`   Mês 60: ${month60.stores} loja(s), Saldo: R$ ${month60.cumulativeCash.toFixed(2)}`);
-    
-  } catch (error) {
-    console.log(`❌ ERRO: ${error instanceof Error ? error.message : String(error)}`);
-    failedTests++;
+  }
+
+  console.log('\n' + '='.repeat(80));
+  console.log(`\n📈 Resumo dos Testes:`);
+  console.log(`   ✅ Passou: ${passed}`);
+  console.log(`   ❌ Falhou: ${failed}`);
+  console.log(`   📊 Total: ${testCases.length}\n`);
+
+  if (failed === 0) {
+    console.log('🎉 Todos os testes passaram!\n');
+    process.exit(0);
+  } else {
+    console.log('⚠️  Alguns testes falharam. Revise os resultados acima.\n');
+    process.exit(1);
   }
 }
 
-console.log('\n' + '='.repeat(80));
-console.log(`\n📈 Resumo dos Testes:`);
-console.log(`   ✅ Passou: ${passedTests}`);
-console.log(`   ❌ Falhou: ${failedTests}`);
-console.log(`   📊 Total: ${passedTests + failedTests}\n`);
-
-if (failedTests === 0) {
-  console.log('🎉 Todos os testes passaram!');
-  process.exit(0);
-} else {
-  console.log('⚠️  Alguns testes falharam. Revise os resultados acima.');
-  process.exit(1);
-}
+runTests();
 
