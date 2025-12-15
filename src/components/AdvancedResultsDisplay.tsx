@@ -527,11 +527,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       : 0;
 
     return {
-      mes: result.month,
-      fluxoCaixa: result.cumulativeCash,
-      fluxoCaixaPositivo: result.cumulativeCash >= 0 ? result.cumulativeCash : null,
-      fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null,
-      isFirstMonth: result.month === 1,
+    mes: result.month,
+    fluxoCaixa: result.cumulativeCash,
+    fluxoCaixaPositivo: result.cumulativeCash >= 0 ? result.cumulativeCash : null,
+    fluxoCaixaNegativo: result.cumulativeCash < 0 ? result.cumulativeCash : null,
+    isFirstMonth: result.month === 1,
       isSecondMonth: result.month === 2,
       implementationCost,
       implementationIndex
@@ -1195,11 +1195,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 formatter={(value, name, props) => {
                   if (name === 'Saldo Acumulado (Positivo)' || name === 'Saldo Acumulado (Negativo)') {
                     let note = '';
-                  if (props.payload.mes === 1) {
-                    note = ' (Taxa de Franquia: -R$ 30.000)';
+                    if (props.payload.mes === 1) {
+                      note = ' (Taxa de Franquia: -R$ 30.000)';
                   } else if (props.payload.implementationCost && props.payload.implementationCost > 0 && props.payload.implementationIndex) {
                     note = ` (⚠️ Implementação Loja #${props.payload.implementationIndex}: -${formatCurrency(props.payload.implementationCost)})`;
-                  }
+                    }
                     return [formatCurrency(value as number) + note, 'Saldo Acumulado'];
                   }
                   return [formatCurrency(value as number), name];
@@ -1441,23 +1441,23 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                   const implementationCost = implementationInfo?.cost ?? 0;
                   const implementationIndex = implementationInfo?.index ?? null;
                   return (
-                    <td 
-                      key={result.month} 
-                      className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
-                      style={{ position: 'relative' }}
-                    >
-                      <div>{formatCurrency(result.cumulativeCash)}</div>
-                      {result.month === 1 && (
-                        <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
-                          ⚠️ Taxa de Franquia: -R$ 30.000
-                        </div>
-                      )}
+                  <td 
+                    key={result.month} 
+                    className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
+                    style={{ position: 'relative' }}
+                  >
+                    <div>{formatCurrency(result.cumulativeCash)}</div>
+                    {result.month === 1 && (
+                      <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
+                        ⚠️ Taxa de Franquia: -R$ 30.000
+                      </div>
+                    )}
                       {implementationCost > 0 && implementationIndex && (
-                        <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
+                      <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
                           ⚠️ Implementação Loja #{implementationIndex}: -{formatCurrency(implementationCost)}
-                        </div>
-                      )}
-                    </td>
+                      </div>
+                    )}
+                  </td>
                   );
                 })}
               </tr>

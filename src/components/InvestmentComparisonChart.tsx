@@ -76,7 +76,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   const perStoreValue = finalStores > 0 ? franchiseValue / finalStores : 0;
   const shortfall = Math.max(bestFixedValue - franchiseValue, 0);
   const suggestedExtraStores = perStoreValue > 0 ? Math.ceil(shortfall / perStoreValue) : 0;
-  
+
   // const franchiseProfit = franchiseValue - initialInvestment;
   // const franchiseROI = (franchiseProfit / initialInvestment) * 100;
 
@@ -209,14 +209,14 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
         <div style={{ fontSize: '14px', lineHeight: '1.6', color: '#2c3e50' }}>
           {franchiseValue >= bestFixedValue ? (
             <>
-              <p>
+          <p>
                 <strong>Vantagem da Franquia:</strong> A franquia Be Honest supera os investimentos em renda fixa no período analisado.
-              </p>
-              <p>
-                <strong>Diferença no período de {currentPeriod.label}:</strong> A franquia gera 
+          </p>
+          <p>
+            <strong>Diferença no período de {currentPeriod.label}:</strong> A franquia gera 
                 R$ {(franchiseValue - bestFixedValue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} 
-                a mais que o melhor investimento em renda fixa.
-              </p>
+            a mais que o melhor investimento em renda fixa.
+          </p>
             </>
           ) : (
             <>

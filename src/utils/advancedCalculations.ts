@@ -281,42 +281,22 @@ export function simulate(
     if (month < months) {
       let availableCash = cumulativeCash + cashFlow;
 
-      // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13
-      // Permite forçar se o saldo acumulado já recuperou pelo menos R$ 15k do investimento inicial
-      // (ou seja, se cumulativeCash >= -(investimentoInicial - 15000))
-      // E se após pagar o CAPEX não ultrapassar muito o limite (permite até 5% acima do investimento inicial)
-      const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores && targetAdditionalStores > 0;
-      if (shouldForceAtMonth12) {
-        const minRecoveryForForce = -(investimentoInicial - 15000); // Precisa ter recuperado pelo menos 15k (threshold mais flexível)
-        const cashAfterCapex = availableCash - capexTotalPorLoja;
-        // Permite forçar se já recuperou pelo menos 15k E não ultrapassa muito o limite (permite até 5% acima)
-        if (cumulativeCash >= minRecoveryForForce && cashAfterCapex >= -investimentoInicial * 1.05) {
-          availableCash -= capexTotalPorLoja;
-          paidAdditional += 1;
-          openSchedule.push(13); // abre no mês 13
-          containerCapex += params.container_per_store;
-          refrigeratorCapex += params.refrigerator_per_store;
-          cashFlow -= capexTotalPorLoja;
-        }
+      // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13 (se houver caixa dentro do limite do investimento)
+      const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores;
+      if (shouldForceAtMonth12 && availableCash - capexTotalPorLoja >= -investimentoInicial) {
+        availableCash -= capexTotalPorLoja;
+        paidAdditional += 1;
+        openSchedule.push(13); // abre no mês 13
+        containerCapex += params.container_per_store;
+        refrigeratorCapex += params.refrigerator_per_store;
+        cashFlow -= capexTotalPorLoja;
       }
 
       // Fora do caso especial, segue a lógica normal de adicionar lojas.
       // Para investimentos <70k, só libera auto-add a partir do mês 13 (depois da loja forçada).
-      // Para investimentos >=70k, só adiciona quando o caixa já recuperou pelo menos o CAPEX.
-      // IMPORTANTE: Só permite adicionar lojas a partir do mês 3 (quando a primeira loja começa a gerar receita)
-      if ((!forceEarlyStoreUnder70k || month >= 13) && month >= 3) {
-        // Para investimentos >=70k, exige que o caixa já tenha recuperado o CAPEX antes de adicionar
-        // Isso significa que o saldo acumulado deve estar acima de -(investimentoInicial - capexTotalPorLoja)
-        // Para investimentos <70k após mês 13, pode adicionar se não ultrapassar limite
-        const minCashForAdd = forceEarlyStoreUnder70k 
-          ? -investimentoInicial // Para <70k após mês 13, pode adicionar se não ultrapassar limite
-          : -(investimentoInicial - capexTotalPorLoja); // Para >=70k, precisa ter recuperado o CAPEX
-        
-        // Só adiciona se o caixa atual já recuperou o mínimo necessário
-        // E se após pagar o CAPEX não ultrapassar o limite do investimento
+      if (!forceEarlyStoreUnder70k || month >= 13) {
         while (
           paidAdditional < targetAdditionalStores &&
-          cumulativeCash >= minCashForAdd && // Usa cumulativeCash (antes do cashFlow deste mês) para verificar recuperação
           availableCash - capexTotalPorLoja >= -investimentoInicial
         ) {
           availableCash -= capexTotalPorLoja;
@@ -402,14 +382,9 @@ export function simulate(
 
   const maxAutoAdditional = Math.min(maxAdditionalStores, 9); // limitar número de lojas extras para evitar valores irreais
 
-  // Para investimentos < 70k, sempre tenta pelo menos 1 loja extra (forçada no mês 13)
-  const forceEarlyStoreUnder70k = investimentoInicial < 70000;
-  const minAdditionalStores = forceEarlyStoreUnder70k ? 1 : 0;
-
   // Testar incrementalmente e parar assim que superar renda fixa
-  let chosen = runSimulation(minAdditionalStores);
-  const startN = Math.max(minAdditionalStores + 1, 1);
-  for (let n = startN; n <= maxAutoAdditional && chosen.finalCash < bestFixedValue; n++) {
+  let chosen = runSimulation(0);
+  for (let n = 1; n <= maxAutoAdditional && chosen.finalCash < bestFixedValue; n++) {
     const candidate = runSimulation(n);
     chosen = candidate;
     if (candidate.finalCash >= bestFixedValue) break;

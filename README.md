@@ -47,14 +47,6 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Expansão consistente**: Ao adicionar novas lojas, o mês de implementação desconta apenas o CAPEX e mantém despesas operacionais das lojas já ativas
 - **Identidade Be Honest reforçada**: Hero e painel de resultados com gradientes e badges da marca
 
-## 🧪 Testes rápidos de cenários
-
-Rodar simulações rápidas (60 meses, perfil próprio, cenário médio) para investimentos de exemplo:
-```bash
-npm run sim:scenarios
-```
-O script imprime lojas finais, payback, ROI mensal, lucro líquido do último mês e saldo final.
-
 ## 📊 Métricas Calculadas
 
 - Faturamento Total
