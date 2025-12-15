@@ -3,6 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { AdvancedSimulationResult, formatCurrency, formatPercentage, canAddStore, addStoreToSimulation } from '../utils/advancedCalculations';
 import jsPDF from 'jspdf';
 import InvestmentComparisonChart from './InvestmentComparisonChart';
+import behonestParams from '../../behonest_params.json';
 
 interface AdvancedResultsDisplayProps {
   results: AdvancedSimulationResult;
@@ -519,12 +520,36 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       : 20000;
 
   let implementationCounter = 0;
+  const capexPerStoreTotal = capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store;
+  
   const chartData = monthlyResults.map(result => {
     const isImplementation = result.container > 0 || result.refrigerator > 0;
-    const implementationIndex = isImplementation ? ++implementationCounter : null;
-    const implementationCost = isImplementation
-      ? capexPerStoreByScenario + result.container + result.refrigerator
-      : 0;
+    // Calcular quantas lojas foram implementadas neste mês
+    let storesCount = 0;
+    let implementationCost = 0;
+    let implementationIndexes: number[] = [];
+    
+    if (isImplementation) {
+      // Calcular quantas lojas foram implementadas baseado no número de containers e geladeiras
+      // Cada loja tem 1 container e 1 geladeira
+      const containerCount = result.container > 0 ? Math.round(result.container / behonestParams.container_per_store) : 0;
+      const refrigeratorCount = result.refrigerator > 0 ? Math.round(result.refrigerator / behonestParams.refrigerator_per_store) : 0;
+      // Usar o maior valor entre containers e geladeiras (devem ser iguais, mas usar o maior por segurança)
+      storesCount = Math.max(containerCount, refrigeratorCount);
+      // Garantir pelo menos 1 loja se houver container ou refrigerator
+      if (storesCount === 0 && (result.container > 0 || result.refrigerator > 0)) {
+        storesCount = 1;
+      }
+      
+      // Criar índices para cada loja implementada
+      for (let i = 0; i < storesCount; i++) {
+        implementationCounter++;
+        implementationIndexes.push(implementationCounter);
+      }
+      
+      // Calcular o CAPEX total deste mês
+      implementationCost = storesCount * capexPerStoreTotal;
+    }
 
     return {
     mes: result.month,
@@ -534,10 +559,22 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     isFirstMonth: result.month === 1,
       isSecondMonth: result.month === 2,
       implementationCost,
-      implementationIndex
+      implementationIndexes,
+      storesCount
     };
   });
-  const implementationByMonth = new Map(chartData.map(c => [c.mes, { cost: c.implementationCost, index: c.implementationIndex }]));
+  
+  // Criar mapa com todas as implementações por mês
+  const implementationByMonth = new Map<number, { cost: number; indexes: number[]; storesCount: number }>();
+  chartData.forEach(c => {
+    if (c.storesCount > 0) {
+      implementationByMonth.set(c.mes, { 
+        cost: c.implementationCost, 
+        indexes: c.implementationIndexes,
+        storesCount: c.storesCount
+      });
+    }
+  });
 
   const lastMonth = monthlyResults[monthlyResults.length - 1];
   const scenarioLabel = currentResults.cenario === 'otimista'
@@ -1194,13 +1231,18 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               <Tooltip 
                 formatter={(value, name, props) => {
                   if (name === 'Saldo Acumulado (Positivo)' || name === 'Saldo Acumulado (Negativo)') {
-                    let note = '';
+                    let notes: string[] = [];
                     if (props.payload.mes === 1) {
-                      note = ' (Taxa de Franquia: -R$ 30.000)';
-                  } else if (props.payload.implementationCost && props.payload.implementationCost > 0 && props.payload.implementationIndex) {
-                    note = ` (⚠️ Implementação Loja #${props.payload.implementationIndex}: -${formatCurrency(props.payload.implementationCost)})`;
+                      notes.push('Taxa de Franquia: -R$ 30.000');
                     }
-                    return [formatCurrency(value as number) + note, 'Saldo Acumulado'];
+                    if (props.payload.implementationIndexes && props.payload.implementationIndexes.length > 0) {
+                      const capexPerStoreTotal = capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store;
+                      props.payload.implementationIndexes.forEach((index: number) => {
+                        notes.push(`Implementação Loja #${index}: -${formatCurrency(capexPerStoreTotal)}`);
+                      });
+                    }
+                    const noteStr = notes.length > 0 ? ' (' + notes.join(', ') + ')' : '';
+                    return [formatCurrency(value as number) + noteStr, 'Saldo Acumulado'];
                   }
                   return [formatCurrency(value as number), name];
                 }}
@@ -1452,8 +1494,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 <td><strong>Saldo Acumulado</strong></td>
                 {monthlyResults.map((result) => {
                   const implementationInfo = implementationByMonth.get(result.month);
-                  const implementationCost = implementationInfo?.cost ?? 0;
-                  const implementationIndex = implementationInfo?.index ?? null;
+                  const implementationIndexes = implementationInfo?.indexes ?? [];
+                  const capexPerStoreTotal = capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store;
+                  
                   return (
                   <td 
                     key={result.month} 
@@ -1466,11 +1509,11 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                         ⚠️ Taxa de Franquia: -R$ 30.000
                       </div>
                     )}
-                      {implementationCost > 0 && implementationIndex && (
-                      <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
-                          ⚠️ Implementação Loja #{implementationIndex}: -{formatCurrency(implementationCost)}
-                      </div>
-                    )}
+                      {implementationIndexes.map((index, idx) => (
+                        <div key={idx} style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
+                          ⚠️ Implementação Loja #{index}: -{formatCurrency(capexPerStoreTotal)}
+                        </div>
+                      ))}
                   </td>
                   );
                 })}
