@@ -361,13 +361,15 @@ export function simulate(
       }
     }
     
-    // Calcular Rentabilidade Anual Média
+    // Calcular Rentabilidade Anual (CAGR - Compound Annual Growth Rate)
     const finalCash = monthlyResults[monthlyResults.length - 1].cumulativeCash;
     
-    // Calcular lucro líquido total dos 60 meses e dividir por 5 para ter lucro anual médio
-    const totalNetProfit = monthlyResults.reduce((sum, month) => sum + month.netProfit, 0);
-    const avgAnnualProfit = totalNetProfit / 5; // 5 anos
-    const annualRentability = (avgAnnualProfit / totalInvestment) * 100;
+    // Valor final total = investimento inicial + saldo final acumulado
+    const finalValue = totalInvestment + finalCash;
+    // CAGR = [(Valor Final / Valor Inicial)^(1/n) - 1] × 100
+    // onde n = número de anos (5 anos)
+    const years = 5;
+    const annualRentability = (Math.pow(finalValue / totalInvestment, 1 / years) - 1) * 100;
     
     return {
       monthlyResults,
@@ -871,10 +873,10 @@ export function addStoreToSimulation(
   
   const finalCash = newMonthlyResults[newMonthlyResults.length - 1].cumulativeCash;
   
-  // Calcular Rentabilidade Anual Média
-  const totalNetProfit = newMonthlyResults.reduce((sum, month) => sum + month.netProfit, 0);
-  const avgAnnualProfit = totalNetProfit / 5; // 5 anos
-  const annualRentability = (avgAnnualProfit / newTotalInvestment) * 100;
+  // Calcular Rentabilidade Anual (CAGR - Compound Annual Growth Rate)
+  const finalValue = newTotalInvestment + finalCash;
+  const years = 5;
+  const annualRentability = (Math.pow(finalValue / newTotalInvestment, 1 / years) - 1) * 100;
   
   return {
     monthlyResults: newMonthlyResults,
@@ -1028,10 +1030,10 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
   
   const finalCash = newMonthlyResults[newMonthlyResults.length - 1].cumulativeCash;
   
-  // Calcular Rentabilidade Anual Média
-  const totalNetProfit = newMonthlyResults.reduce((sum, month) => sum + month.netProfit, 0);
-  const avgAnnualProfit = totalNetProfit / 5; // 5 anos
-  const annualRentability = (avgAnnualProfit / newTotalInvestment) * 100;
+  // Calcular Rentabilidade Anual (CAGR - Compound Annual Growth Rate)
+  const finalValue = newTotalInvestment + finalCash;
+  const years = 5;
+  const annualRentability = (Math.pow(finalValue / newTotalInvestment, 1 / years) - 1) * 100;
   
   return {
     monthlyResults: newMonthlyResults,
