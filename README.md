@@ -47,12 +47,10 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Expansão consistente**: Ao adicionar novas lojas, o mês de implementação desconta apenas o CAPEX e mantém despesas operacionais das lojas já ativas
 - **Identidade Be Honest reforçada**: Hero e painel de resultados com gradientes e badges da marca
 
-## 🧪 Teste rápido de cenários (CLI)
-
-Rodar simulações para investimentos chave (55k, 69k, 70k, 120k) e ver payback, lojas finais, caixa final e lucro médio dos últimos 12 meses:
+## 🧪 Testes manuais rápidos
 
 ```bash
-npm run sim:scenarios
+npx tsx scripts/run-sim.ts
 ```
 
 ## 📊 Métricas Calculadas
