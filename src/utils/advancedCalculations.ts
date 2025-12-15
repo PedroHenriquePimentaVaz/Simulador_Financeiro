@@ -282,17 +282,19 @@ export function simulate(
       let availableCash = cumulativeCash + cashFlow;
 
       // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13
-      // Força independentemente de targetAdditionalStores, desde que ainda não tenha sido paga
-      // Permite ultrapassar até 5% do investimento inicial para melhorar primeira impressão
-      const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional === 0;
-      const maxAllowedDebt = -investimentoInicial * 1.05; // Permite até 5% a mais de dívida
-      if (shouldForceAtMonth12 && availableCash - capexTotalPorLoja >= maxAllowedDebt) {
-        availableCash -= capexTotalPorLoja;
-        paidAdditional += 1;
-        openSchedule.push(13); // abre no mês 13
-        containerCapex += params.container_per_store;
-        refrigeratorCapex += params.refrigerator_per_store;
-        cashFlow -= capexTotalPorLoja;
+      // Permite ultrapassar ligeiramente o limite, pois a proteção abaixo ajustará o cashFlow
+      const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores;
+      if (shouldForceAtMonth12) {
+        // Força a compra mesmo que ultrapasse um pouco o limite (proteção ajustará depois)
+        const postCapexCash = availableCash - capexTotalPorLoja;
+        if (postCapexCash >= -investimentoInicial * 1.05) { // Permite até 5% de ultrapassagem
+          availableCash -= capexTotalPorLoja;
+          paidAdditional += 1;
+          openSchedule.push(13); // abre no mês 13
+          containerCapex += params.container_per_store;
+          refrigeratorCapex += params.refrigerator_per_store;
+          cashFlow -= capexTotalPorLoja;
+        }
       }
 
       // Fora do caso especial, segue a lógica normal de adicionar lojas.
