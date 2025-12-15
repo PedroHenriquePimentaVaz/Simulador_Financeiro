@@ -109,7 +109,7 @@ function getRevenuePerStore(cenario: 'pessimista' | 'medio' | 'otimista'): numbe
 
 function getCapexPerStore(cenario: 'pessimista' | 'medio' | 'otimista'): number {
   switch(cenario) {
-    case 'pessimista': return 1500; // Baixo
+    case 'pessimista': return 20000; // Mantém patamar base de implementação
     case 'medio': return 20000; // Médio
     case 'otimista': return 30000; // Alto
   }
@@ -276,9 +276,8 @@ export function simulate(
       cashFlow -= firstStoreCapex;
     }
 
-    // Reinvestir/comprar novas lojas somente após início da operação (a partir do mês 3)
-    // e sem ultrapassar o investimento inicial
-    if (month >= 3 && month < months) {
+    // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
+    if (month < months) {
       let availableCash = cumulativeCash + cashFlow;
       while (
         paidAdditional < targetAdditionalStores &&
