@@ -278,13 +278,17 @@ export function simulate(
 
     // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
     if (month < months) {
-      // Só compra nova loja quando o caixa acumulado tiver recuperado pelo menos
-      // o valor de implementação (20k), para evitar "loja grátis" em investimentos baixos.
+      // Regra extra para investimentos baixos (<70k): só comprar nova loja
+      // quando já houver pelo menos R$ 20.000 acumulados de lucro da operação.
+      const needsProfitUnlock = investimentoInicial < 70000;
+      const profitUnlockThreshold = 20000;
+
       const minCashToAddStore = -(investimentoInicial - params.capex_per_store);
       let availableCash = cumulativeCash + cashFlow;
       while (
         paidAdditional < targetAdditionalStores &&
         availableCash >= minCashToAddStore &&
+        (!needsProfitUnlock || availableCash >= profitUnlockThreshold) &&
         availableCash - capexTotalPorLoja >= -investimentoInicial
       ) {
         availableCash -= capexTotalPorLoja;
@@ -677,6 +681,9 @@ export function canAddStore(
   month: number, 
   totalInvestment: number
 ): boolean {
+  const needsProfitUnlock = totalInvestment < 70000;
+  const profitUnlockThreshold = 20000;
+
   // Não pode adicionar nos meses 1, 2 (período de implementação) ou 3 (primeira loja começando)
   if (month < 4 || month > monthlyResults.length) {
     return false;
@@ -684,10 +691,13 @@ export function canAddStore(
   
   const currentMonthResult = monthlyResults[month - 1];
   
-  // Pode adicionar uma loja quando o lucro acumulado chegar a R$ 20.000
-  // Isso significa que o saldo acumulado deve ser pelo menos -R$ (investimento_total - 20000)
+  // Para investimentos baixos (<70k), exige pelo menos R$ 20.000 acumulados positivos
+  if (needsProfitUnlock) {
+    return currentMonthResult.cumulativeCash >= profitUnlockThreshold;
+  }
+
+  // Regra anterior: saldo acumulado não pode ficar abaixo do investimento total menos 20k
   const minimumCumulativeCash = -(totalInvestment - 20000);
-  
   return currentMonthResult.cumulativeCash >= minimumCumulativeCash;
 }
 
