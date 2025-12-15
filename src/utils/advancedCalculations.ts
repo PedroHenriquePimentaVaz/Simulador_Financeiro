@@ -165,8 +165,17 @@ export function simulate(
   const repasseRate = getRepasseRate(cenario);
   
   // Calcular capacidade de lojas baseado no investimento
-  // Taxa de franquia (30k) + primeira loja (capex + container + geladeira) + lojas adicionais (mesmo valor cada)
-  const maxAdditionalStores = 2; // Limite de lojas extras (total máximo 3 lojas)
+  const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
+  const franchiseFee = params.franchise_fee;
+  const firstStoreCost = capexTotalPorLoja;
+  
+  // Para investimentos >= 110k, calcular quantas lojas cabem; para menores, limite de 2 extras
+  let maxAdditionalStores = 2; // Limite padrão (total máximo 3 lojas)
+  if (investimentoInicial >= 110000) {
+    const availableForStores = investimentoInicial - franchiseFee - firstStoreCost;
+    const maxStoresByInvestment = Math.floor(availableForStores / capexTotalPorLoja);
+    maxAdditionalStores = Math.max(2, maxStoresByInvestment); // Mínimo 2, máximo baseado no investimento
+  }
 
   const bestFixedAnnualRate = 0.15; // melhor renda fixa (~Selic efetiva)
   const bestFixedValue = investimentoInicial * Math.pow(1 + bestFixedAnnualRate / 12, months);
@@ -382,14 +391,34 @@ export function simulate(
     };
   };
 
-  const maxAutoAdditional = Math.min(maxAdditionalStores, 9); // limitar número de lojas extras para evitar valores irreais
+  // Para investimentos >= 110k, usar o limite calculado; para menores, limitar a 9 para evitar valores irreais
+  const maxAutoAdditional = investimentoInicial >= 110000 
+    ? maxAdditionalStores 
+    : Math.min(maxAdditionalStores, 9);
 
   // Testar incrementalmente e parar assim que superar renda fixa
+  // Para investimentos >= 110k, continuar adicionando até superar renda fixa ou atingir o limite
   let chosen = runSimulation(0);
-  for (let n = 1; n <= maxAutoAdditional && chosen.finalCash < bestFixedValue; n++) {
-    const candidate = runSimulation(n);
-    chosen = candidate;
-    if (candidate.finalCash >= bestFixedValue) break;
+  if (investimentoInicial >= 110000) {
+    // Para investimentos grandes, testar todas as possibilidades até superar renda fixa
+    for (let n = 1; n <= maxAutoAdditional; n++) {
+      const candidate = runSimulation(n);
+      if (candidate.finalCash >= bestFixedValue) {
+        chosen = candidate;
+        break;
+      }
+      // Continua com o melhor resultado até agora
+      if (candidate.finalCash > chosen.finalCash) {
+        chosen = candidate;
+      }
+    }
+  } else {
+    // Para investimentos menores, manter lógica original
+    for (let n = 1; n <= maxAutoAdditional && chosen.finalCash < bestFixedValue; n++) {
+      const candidate = runSimulation(n);
+      chosen = candidate;
+      if (candidate.finalCash >= bestFixedValue) break;
+    }
   }
 
   return chosen;
