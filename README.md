@@ -42,8 +42,7 @@ Ver detalhes em [BUILD_SUCCESS.md](BUILD_SUCCESS.md)
 - **Comparação orientativa**: Se a franquia ficar abaixo dos investimentos de renda fixa, o gráfico sugere quantas lojas extras projetar para superar o melhor rendimento; taxas usadas: SELIC ~15% a.a., CDB ~13,3% a.a. líquido (110% CDI), LCI/LCA ~14,3% a.a. (95% CDI isento), Poupança ~8,2% a.a.
 - **Custos atualizados**: Custo de sistema removido; DRE exibe CMV, Perdas, Reposição, Royalties e Outros Repasses com seus nomes reais
 - **Crescimento limitado**: Receita por loja cresce até o 6º mês de operação (rampa 70%/85%/100%) e depois estabiliza, evitando projeções irreais
-- **Compra de novas lojas**: Só adiciona loja extra quando o caixa já recuperou pelo menos os R$ 20k de implementação, evitando “loja grátis” em investimentos baixos; custo completo (CAPEX + container + geladeira) é abatido no mês do pagamento
-- **Proteção para baixo investimento**: Se o investimento inicial for menor que R$ 70.000, a segunda loja só é liberada depois de acumular pelo menos R$ 20.000 de caixa positivo na operação da primeira
+- **Compra de novas lojas**: Compra extra assim que o caixa recupera pelo menos o CAPEX da loja (20k) e nunca ultrapassa o limite do investimento; custo completo (CAPEX + container + geladeira) é abatido no mês do pagamento
 - **Expansão consistente**: Ao adicionar novas lojas, o mês de implementação desconta apenas o CAPEX e mantém despesas operacionais das lojas já ativas
 - **Identidade Be Honest reforçada**: Hero e painel de resultados com gradientes e badges da marca
 
