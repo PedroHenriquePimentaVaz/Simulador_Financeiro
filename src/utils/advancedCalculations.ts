@@ -282,11 +282,15 @@ export function simulate(
       let availableCash = cumulativeCash + cashFlow;
 
       // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13
-      // Permite até 5% de margem além do limite para garantir que a loja seja adicionada
-      const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores;
+      // Força pelo menos 1 loja adicional, mesmo que targetAdditionalStores seja 0
+      const minStoresForUnder70k = forceEarlyStoreUnder70k ? 1 : 0;
+      const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < Math.max(targetAdditionalStores, minStoresForUnder70k);
       if (shouldForceAtMonth12) {
-        const margin = investimentoInicial * 0.05; // 5% de margem
-        if (availableCash - capexTotalPorLoja >= -(investimentoInicial + margin)) {
+        // Para investimentos < 70k, força a compra mesmo que ultrapasse um pouco o limite
+        // (até 5% de tolerância para garantir que a loja seja adicionada)
+        const cashAfterCapex = availableCash - capexTotalPorLoja;
+        const toleranceLimit = -investimentoInicial * 1.05; // 5% de tolerância
+        if (cashAfterCapex >= toleranceLimit) {
           availableCash -= capexTotalPorLoja;
           paidAdditional += 1;
           openSchedule.push(13); // abre no mês 13
@@ -386,9 +390,12 @@ export function simulate(
 
   const maxAutoAdditional = Math.min(maxAdditionalStores, 9); // limitar número de lojas extras para evitar valores irreais
 
+  // Para investimentos < 70k, sempre começa com pelo menos 1 loja adicional (forçada no mês 13)
+  const minAdditionalForUnder70k = investimentoInicial < 70000 ? 1 : 0;
+  
   // Testar incrementalmente e parar assim que superar renda fixa
-  let chosen = runSimulation(0);
-  for (let n = 1; n <= maxAutoAdditional && chosen.finalCash < bestFixedValue; n++) {
+  let chosen = runSimulation(Math.max(0, minAdditionalForUnder70k));
+  for (let n = Math.max(1, minAdditionalForUnder70k + 1); n <= maxAutoAdditional && chosen.finalCash < bestFixedValue; n++) {
     const candidate = runSimulation(n);
     chosen = candidate;
     if (candidate.finalCash >= bestFixedValue) break;
