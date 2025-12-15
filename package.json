@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test:e2e": "playwright test",
-    "test:scenarios": "tsx scripts/test-scenarios.ts"
+    "test:simulations": "tsx scripts/test-simulations.ts"
   },
   "dependencies": {
     "@types/jspdf": "^1.3.3",
