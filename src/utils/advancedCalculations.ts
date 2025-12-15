@@ -1,4 +1,6 @@
-import behonestParams from '../../behonest_params.json';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const behonestParams = require('../../behonest_params.json');
 
 export interface BeHonestParams {
   simples_rate_m2: number;

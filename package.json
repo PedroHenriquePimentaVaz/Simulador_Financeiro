@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "run:sims": "node --loader ts-node/esm --experimental-specifier-resolution=node scripts/run-sim.ts"
   },
   "dependencies": {
     "@types/jspdf": "^1.3.3",
@@ -24,6 +25,7 @@
     "@types/react-dom": "^18.2.17",
     "@playwright/test": "^1.45.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
   }
