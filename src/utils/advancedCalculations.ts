@@ -276,8 +276,9 @@ export function simulate(
       cashFlow -= firstStoreCapex;
     }
 
-    // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
-    if (month < months) {
+    // Reinvestir/comprar novas lojas somente após início da operação (a partir do mês 3)
+    // e sem ultrapassar o investimento inicial
+    if (month >= 3 && month < months) {
       let availableCash = cumulativeCash + cashFlow;
       while (
         paidAdditional < targetAdditionalStores &&
