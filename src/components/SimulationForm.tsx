@@ -714,14 +714,15 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       </div>
 
       <div className="form-group">
-        <label className="form-label">Você pretende operar o negócio ou terceirizar a operação? *</label>
+        <label className="form-label">Quanto tempo você estaria disposto a investir no negócio? *</label>
         <select 
           className="form-select" 
-          value={formData.perfilOperacao || 'proprio'}
+          value={formData.perfilOperacao || 'gestao'}
           onChange={(e) => handleInputChange('perfilOperacao', e.target.value)}
         >
-          <option value="proprio">Operação própria</option>
-          <option value="terceirizar">Operação terceirizada</option>
+          <option value="integral">0 até 2 horas diárias</option>
+          <option value="gestao">2 a 4 horas diárias</option>
+          <option value="terceirizar">Mais de 4 horas diárias</option>
         </select>
       </div>
 
@@ -783,15 +784,9 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
             </div>
           </div>
 
-          {(() => {
-            const scenarioAdjustment = formData.cenario === 'otimista' ? 1.15 : formData.cenario === 'pessimista' ? 0.85 : 1;
-            const adjustedIncome = viabilityAnalysis.maxRealisticMonthlyIncome * scenarioAdjustment;
-            return (
-              <div style={{ marginBottom: '15px', color: '#2c3e50', fontSize: '15px' }}>
-                <strong style={{ color: '#1a252f' }}>Lucro mensal realista:</strong> R$ {adjustedIncome.toLocaleString('pt-BR')}
-              </div>
-            );
-          })()}
+          <div style={{ marginBottom: '15px', color: '#2c3e50', fontSize: '15px' }}>
+            <strong style={{ color: '#1a252f' }}>Lucro mensal realista:</strong> R$ {viabilityAnalysis.maxRealisticMonthlyIncome.toLocaleString('pt-BR')}
+          </div>
 
           {viabilityAnalysis.recommendations.length > 0 && (
             <div style={{ color: '#2c3e50' }}>
