@@ -17,28 +17,32 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   franchiseResults, 
   initialInvestment 
 }) => {
+  // Valores de renda fixa atualizados (verificar periodicamente)
+  // Fonte: Taxas efetivas anuais baseadas em mercado brasileiro
+  // Última atualização: 2025
+  // Nota: CDB considera 110% CDI com desconto de IR; LCI/LCA considera 95% CDI isento de IR
   const investmentOptions: InvestmentOption[] = [
     {
       name: 'SELIC (Taxa Atual)',
-      annualRate: 15.0, // ~15% efetivo a.a.
+      annualRate: 15.0, // ~15% efetivo a.a. | ROI 5 anos: ~101%
       color: '#e74c3c',
       description: 'Taxa básica de juros do Brasil'
     },
     {
       name: 'CDB',
-      annualRate: 13.3, // ~110% CDI líquido IR (~13,3% a.a.)
+      annualRate: 13.3, // ~110% CDI líquido IR (~13,3% a.a.) | ROI 5 anos: ~95%
       color: '#f39c12',
       description: 'Certificado de Depósito Bancário'
     },
     {
       name: 'Poupança',
-      annualRate: 8.2, // ~8,2% a.a. efetivo
+      annualRate: 8.2, // ~8,2% a.a. efetivo | ROI 5 anos: ~48%
       color: '#27ae60',
       description: 'Caderneta de poupança tradicional'
     },
     {
       name: 'LCI/LCA',
-      annualRate: 14.3, // ~95% CDI isento IR (~14,3% a.a.)
+      annualRate: 14.3, // ~95% CDI isento IR (~14,3% a.a.) | ROI 5 anos: ~99%
       color: '#9b59b6',
       description: 'Isento de IR para pessoa física'
     }

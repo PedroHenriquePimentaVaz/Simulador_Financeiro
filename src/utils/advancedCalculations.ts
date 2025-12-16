@@ -177,7 +177,9 @@ export function simulate(
     maxAdditionalStores = Math.max(2, maxStoresByInvestment); // Mínimo 2, máximo baseado no investimento
   }
 
-  const bestFixedAnnualRate = 0.15; // melhor renda fixa (~Selic efetiva)
+  // Melhor renda fixa: SELIC (~15% a.a. efetivo) - atualizado 2025
+  // Nota: Este valor deve ser atualizado periodicamente conforme mudanças na taxa SELIC
+  const bestFixedAnnualRate = 0.15; // 15% a.a. efetivo (SELIC)
   const bestFixedValue = investimentoInicial * Math.pow(1 + bestFixedAnnualRate / 12, months);
 
   const runSimulation = (targetAdditionalStores: number): AdvancedSimulationResult => {
@@ -185,6 +187,7 @@ export function simulate(
     const openSchedule: number[] = []; // meses em que novas lojas abrem (além da primeira)
     let paidAdditional = 0;
     const forceEarlyStoreUnder70k = investimentoInicial < 70000;
+    let lastStoreImplementationMonth = 2; // Mês 2 é quando a primeira loja é implementada
   
   // Os custos de operação (cooperativa, funcionário, transporte) são calculados diretamente baseado no perfil
   
@@ -286,34 +289,46 @@ export function simulate(
       cashFlow -= firstStoreCapex;
     }
 
-    // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas (até 3 no total)
+    // Reinvestir/comprar novas lojas assim que possível, respeitando limite de lojas e intervalo mínimo de 2 meses
     if (month < months) {
       let availableCash = cumulativeCash + cashFlow;
+      const minMonthsBetweenStores = 2; // Intervalo mínimo de 2 meses entre implementações
 
       // Caso especial: para investimentos abaixo de 70k, força compra no mês 12 e abertura no mês 13 (se houver caixa dentro do limite do investimento)
       const shouldForceAtMonth12 = forceEarlyStoreUnder70k && month === 12 && paidAdditional < targetAdditionalStores;
       if (shouldForceAtMonth12 && availableCash - capexTotalPorLoja >= -investimentoInicial) {
+        // Verificar intervalo mínimo (mês 12 - mês 2 = 10 meses, então está OK)
         availableCash -= capexTotalPorLoja;
         paidAdditional += 1;
         openSchedule.push(13); // abre no mês 13
         containerCapex += params.container_per_store;
         refrigeratorCapex += params.refrigerator_per_store;
         cashFlow -= capexTotalPorLoja;
+        lastStoreImplementationMonth = month; // Atualizar último mês de implementação
       }
 
       // Fora do caso especial, segue a lógica normal de adicionar lojas.
       // Para investimentos <70k, só libera auto-add a partir do mês 13 (depois da loja forçada).
       if (!forceEarlyStoreUnder70k || month >= 13) {
-        while (
-          paidAdditional < targetAdditionalStores &&
-          availableCash - capexTotalPorLoja >= -investimentoInicial
-        ) {
-          availableCash -= capexTotalPorLoja;
-          paidAdditional += 1;
-          openSchedule.push(month + 1); // abre no mês seguinte ao pagamento
-          containerCapex += params.container_per_store;
-          refrigeratorCapex += params.refrigerator_per_store;
-          cashFlow -= capexTotalPorLoja;
+        // Verificar se já se passaram pelo menos 2 meses desde a última implementação
+        const monthsSinceLastImplementation = month - lastStoreImplementationMonth;
+        const canAddStoreNow = monthsSinceLastImplementation >= minMonthsBetweenStores;
+        
+        if (canAddStoreNow) {
+          while (
+            paidAdditional < targetAdditionalStores &&
+            availableCash - capexTotalPorLoja >= -investimentoInicial
+          ) {
+            availableCash -= capexTotalPorLoja;
+            paidAdditional += 1;
+            openSchedule.push(month + 1); // abre no mês seguinte ao pagamento
+            containerCapex += params.container_per_store;
+            refrigeratorCapex += params.refrigerator_per_store;
+            cashFlow -= capexTotalPorLoja;
+            lastStoreImplementationMonth = month; // Atualizar último mês de implementação
+            // Após adicionar uma loja, sair do loop para garantir intervalo mínimo
+            break;
+          }
         }
       }
     }
@@ -723,6 +738,7 @@ export function canAddStore(
 ): boolean {
   const params = behonestParams as BeHonestParams;
   const capexTotalPorLoja = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+  const minMonthsBetweenStores = 2; // Intervalo mínimo de 2 meses entre implementações
 
   // Não pode adicionar nos meses 1, 2 (período de implementação) ou 3 (primeira loja começando)
   if (month < 4 || month > monthlyResults.length) {
@@ -733,7 +749,28 @@ export function canAddStore(
   
   // Pode adicionar se, após pagar o CAPEX completo, o saldo não ultrapassar o limite do investimento (ex.: 55k → pode quando chegar a -35k)
   const minimumCumulativeCash = -(totalInvestment - capexTotalPorLoja);
-  return currentMonthResult.cumulativeCash >= minimumCumulativeCash;
+  if (currentMonthResult.cumulativeCash < minimumCumulativeCash) {
+    return false;
+  }
+  
+  // Verificar intervalo mínimo de 2 meses desde a última implementação
+  // A primeira loja é implementada no mês 2
+  let lastImplementationMonth = 2;
+  
+  // Procurar por implementações anteriores (verificando quando o número de lojas aumentou)
+  for (let i = 2; i < month - 1; i++) {
+    const prevResult = monthlyResults[i - 1];
+    const currentResult = monthlyResults[i];
+    // Se o número de lojas aumentou ou há CAPEX (container ou refrigerator), houve uma implementação
+    if (currentResult.stores > prevResult.stores || 
+        currentResult.container > 0 || 
+        currentResult.refrigerator > 0) {
+      lastImplementationMonth = i + 1; // +1 porque o índice do array é month - 1
+    }
+  }
+  
+  const monthsSinceLastImplementation = month - lastImplementationMonth;
+  return monthsSinceLastImplementation >= minMonthsBetweenStores;
 }
 
 // Função para adicionar uma loja a partir de um mês específico
@@ -744,7 +781,32 @@ export function addStoreToSimulation(
   const { monthlyResults, totalInvestment, cenario, perfilOperacao } = simulationResult;
   
   if (!canAddStore(monthlyResults, monthToAdd, totalInvestment)) {
-    throw new Error('Não é possível adicionar uma loja neste mês. Ainda não há lucro acumulado suficiente (R$ 20.000).');
+    // Verificar qual é o motivo da falha
+    const params = behonestParams as BeHonestParams;
+    const capexTotalPorLoja = params.capex_per_store + params.container_per_store + params.refrigerator_per_store;
+    const currentMonthResult = monthlyResults[monthToAdd - 1];
+    const minimumCumulativeCash = -(totalInvestment - capexTotalPorLoja);
+    const minMonthsBetweenStores = 2;
+    
+    let lastImplementationMonth = 2;
+    for (let i = 2; i < monthToAdd - 1; i++) {
+      const prevResult = monthlyResults[i - 1];
+      const currentResult = monthlyResults[i];
+      if (currentResult.stores > prevResult.stores || 
+          currentResult.container > 0 || 
+          currentResult.refrigerator > 0) {
+        lastImplementationMonth = i + 1;
+      }
+    }
+    const monthsSinceLastImplementation = monthToAdd - lastImplementationMonth;
+    
+    if (currentMonthResult.cumulativeCash < minimumCumulativeCash) {
+      throw new Error('Não é possível adicionar uma loja neste mês. Ainda não há lucro acumulado suficiente.');
+    } else if (monthsSinceLastImplementation < minMonthsBetweenStores) {
+      throw new Error(`Não é possível adicionar uma loja neste mês. É necessário aguardar pelo menos ${minMonthsBetweenStores} meses entre implementações. Última implementação foi no mês ${lastImplementationMonth}.`);
+    } else {
+      throw new Error('Não é possível adicionar uma loja neste mês.');
+    }
   }
   
   // Obter valores baseados no cenário
