@@ -65,7 +65,7 @@ export interface AdvancedSimulationResult {
   roi: number;
   finalCash: number;
   cenario: 'pessimista' | 'medio' | 'otimista';
-  perfilOperacao: 'proprio' | 'terceirizar';
+  perfilOperacao: 'integral' | 'gestao' | 'terceirizar' | 'proprio';
 }
 
 export function validateFormData(lucroDesejado: number, investimentoInicial: number): boolean {
@@ -432,7 +432,7 @@ export function simulate(
       roi: annualRentability, // Rentabilidade anual média (% ao ano)
       finalCash,
       cenario,
-      perfilOperacao: perfilOperacao as 'proprio' | 'terceirizar'
+      perfilOperacao: perfilOperacao as 'integral' | 'gestao' | 'terceirizar' | 'proprio'
     };
   };
 
