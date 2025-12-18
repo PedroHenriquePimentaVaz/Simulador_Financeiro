@@ -170,11 +170,12 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       const analysis = analyzeInvestmentViability(
         formData.investimentoInicial,
         formData.lucroDesejado,
-        formData.perfilOperacao || 'gestao'
+        formData.perfilOperacao || 'gestao',
+        (formData.cenario || 'medio') as 'pessimista' | 'medio' | 'otimista'
       );
       setViabilityAnalysis(analysis);
     }
-  }, [formData.investimentoInicial, formData.lucroDesejado, formData.perfilOperacao]);
+  }, [formData.investimentoInicial, formData.lucroDesejado, formData.perfilOperacao, formData.cenario]);
 
   const handleInputChange = (field: keyof SimulationData, value: number | string) => {
     setFormData(prev => {

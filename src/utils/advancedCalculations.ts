@@ -156,13 +156,46 @@ export function simulate(
 ): AdvancedSimulationResult {
   const params = behonestParams as BeHonestParams;
   
-  // Obter valores baseados no cenário
-  const revenuePerStore = getRevenuePerStore(cenario);
-  const capexPerStore = getCapexPerStore(cenario);
-  const growthFactor = getGrowthFactor(cenario);
-  const lossRate = getLossRate(cenario);
-  const cmvRate = getCmvRate(cenario);
-  const repasseRate = getRepasseRate(cenario);
+  // Lógica: valor base sempre médio, depois aplica ajustes INDEPENDENTES e ADITIVOS
+  // Perfil de operação:
+  //   - 0-2h: -7,5%
+  //   - 2-4h: 0%
+  //   - Mais de 4h: +7,5%
+  // Cenário:
+  //   - Pessimista: -7,5%
+  //   - Médio: 0%
+  //   - Otimista: +7,5%
+  
+  // Determinar ajuste baseado em cenário e perfil (são independentes e aditivos)
+  let adjustment = 0;
+  
+  // Ajuste do perfil de operação
+  if (perfilOperacao === 'integral') {
+    adjustment -= 0.075; // 0-2h: -7,5%
+  } else if (perfilOperacao === 'terceirizar') {
+    adjustment += 0.075; // Mais de 4h: +7,5%
+  }
+  // gestao (2-4h) não altera nada (0%)
+  
+  // Ajuste do cenário
+  if (cenario === 'pessimista') {
+    adjustment -= 0.075; // -7,5%
+  } else if (cenario === 'otimista') {
+    adjustment += 0.075; // +7,5%
+  }
+  // medio não altera nada (0%)
+  
+  // Sempre usar cenário médio como base
+  const baseCenario: 'pessimista' | 'medio' | 'otimista' = 'medio';
+  let revenuePerStore = getRevenuePerStore(baseCenario);
+  const capexPerStore = getCapexPerStore(baseCenario);
+  const growthFactor = getGrowthFactor(baseCenario);
+  const lossRate = getLossRate(baseCenario);
+  const cmvRate = getCmvRate(baseCenario);
+  const repasseRate = getRepasseRate(baseCenario);
+  
+  // Aplicar ajuste na receita
+  revenuePerStore = revenuePerStore * (1 + adjustment);
   
   // Calcular capacidade de lojas baseado no investimento
   const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
@@ -242,11 +275,13 @@ export function simulate(
     const accounting = params.accounting_fixed;
     
     // Custos de operação baseados no perfil e número de lojas
+    // Todos os perfis são operação própria (sem cooperativa, apenas transporte)
+    // 'terceirizar' (mais de 4h) não significa terceirização, mas sim mais dedicação = cenário otimista
     let cooperativa = 0;
     let funcionario = 0;
     let transporte = 0;
     
-    if (perfilOperacao === 'proprio') {
+    if (perfilOperacao === 'proprio' || perfilOperacao === 'integral' || perfilOperacao === 'gestao' || perfilOperacao === 'terceirizar') {
       // Operação própria: até 15 lojas apenas reembolso de transporte
       if (currentStores <= 15) {
         transporte = params.transporte_reembolso * currentStores;
@@ -256,11 +291,6 @@ export function simulate(
         const funcionariosNecessarios = Math.floor((currentStores - 15) / 15) + 1;
         funcionario = funcionariosNecessarios * params.funcionario_cost;
       }
-    } else if (perfilOperacao === 'terceirizar') {
-      // Contratação de terceiros: cooperativa por loja + funcionários (1 a cada 15 lojas)
-      cooperativa = params.cooperativa_per_store * currentStores;
-      const funcionariosNecessarios = Math.ceil(currentStores / 15);
-      funcionario = funcionariosNecessarios * params.funcionario_cost;
     }
     
     // Custos fixos mensais (sem multiplicador, pois já aplicamos os custos específicos acima)
@@ -477,11 +507,44 @@ export function analyzeInvestmentViability(
   let expectedMonthsToTarget: number | null = null;
   let maxRealisticMonthlyIncome = 0;
 
-  // Obter valores baseados no cenário
-  const capexPerStore = getCapexPerStore(cenario) + params.container_per_store + params.refrigerator_per_store; // CAPEX por loja (inclui container e geladeira)
-  const revenuePerStore = getRevenuePerStore(cenario);
-  const lossRate = getLossRate(cenario);
-  const cmvRate = getCmvRate(cenario);
+  // Lógica: valor base sempre médio, depois aplica ajustes INDEPENDENTES e ADITIVOS
+  // Perfil de operação:
+  //   - 0-2h: -7,5%
+  //   - 2-4h: 0%
+  //   - Mais de 4h: +7,5%
+  // Cenário:
+  //   - Pessimista: -7,5%
+  //   - Médio: 0%
+  //   - Otimista: +7,5%
+  
+  // Determinar ajuste baseado em cenário e perfil (são independentes e aditivos)
+  let adjustment = 0;
+  
+  // Ajuste do perfil de operação
+  if (perfilOperacao === 'integral') {
+    adjustment -= 0.075; // 0-2h: -7,5%
+  } else if (perfilOperacao === 'terceirizar') {
+    adjustment += 0.075; // Mais de 4h: +7,5%
+  }
+  // gestao (2-4h) não altera nada (0%)
+  
+  // Ajuste do cenário
+  if (cenario === 'pessimista') {
+    adjustment -= 0.075; // -7,5%
+  } else if (cenario === 'otimista') {
+    adjustment += 0.075; // +7,5%
+  }
+  // medio não altera nada (0%)
+  
+  // Sempre usar cenário médio como base
+  const baseCenario: 'pessimista' | 'medio' | 'otimista' = 'medio';
+  const capexPerStore = getCapexPerStore(baseCenario) + params.container_per_store + params.refrigerator_per_store;
+  let revenuePerStore = getRevenuePerStore(baseCenario);
+  const lossRate = getLossRate(baseCenario);
+  const cmvRate = getCmvRate(baseCenario);
+  
+  // Aplicar ajuste na receita
+  revenuePerStore = revenuePerStore * (1 + adjustment);
   
   // Calcular quantas lojas iniciais o investimento permite (usando CAPEX do próprio cenário)
   const franchiseFee = params.franchise_fee; // Taxa de franquia
@@ -513,7 +576,7 @@ export function analyzeInvestmentViability(
   
   // Custos fixos aproximados por loja (sem cooperativa/funcionário/transporte que variam)
   const fixedCostsPerStore = params.system_fee_per_store + params.amlabs_per_store;
-  const repasseRate = getRepasseRate(cenario); // Usar repasse baseado no cenário
+  const repasseRate = getRepasseRate(baseCenario); // Usar repasse baseado no cenário médio
   
   // Calcular outros custos sobre a receita total (como na função simulate)
   const reposicao = revenuePerMonth * params.reposicao_rate;
@@ -524,10 +587,11 @@ export function analyzeInvestmentViability(
   const otherCosts = reposicao + royalties + otherRepasses + cardFee + marketing;
   
   // Ajustar custos baseado no perfil de operação
+  // Todos os perfis são operação própria (sem cooperativa, apenas transporte)
+  // 'terceirizar' (mais de 4h) não significa terceirização, mas sim mais dedicação = cenário otimista
   let additionalCostsPerStore = 0;
-  if (perfilOperacao === 'terceirizar') {
-    additionalCostsPerStore = params.cooperativa_per_store + (params.funcionario_cost / 15); // Aproximação: 1 funcionário para 15 lojas
-  } else if (perfilOperacao === 'proprio') {
+  if (perfilOperacao === 'proprio' || perfilOperacao === 'integral' || perfilOperacao === 'gestao' || perfilOperacao === 'terceirizar') {
+    // Operação própria: apenas transporte (sem cooperativa)
     if (totalStores > 15) {
       additionalCostsPerStore = (params.funcionario_cost * Math.floor((totalStores - 15) / 15) + 1) / totalStores;
     }
@@ -562,20 +626,18 @@ export function analyzeInvestmentViability(
 
   // Análise do perfil de operação
   if (perfilOperacao === 'terceirizar') {
-    score -= 5;
-    recommendations.push(`Operação terceirizada requer mais supervisão inicial`);
-  } else if (perfilOperacao === 'proprio') {
+    score += 5;
+    recommendations.push(`Maior dedicação (mais de 4h) maximiza o potencial de crescimento`);
+  } else if (perfilOperacao === 'proprio' || perfilOperacao === 'integral' || perfilOperacao === 'gestao') {
     score += 5;
     recommendations.push(`Operação própria maximiza o potencial de crescimento`);
   }
   
-  // Análise do cenário
-  if (cenario === 'pessimista') {
-    score -= 10;
-    recommendations.push(`Cenário pessimista: resultados podem ser 15% abaixo da média`);
-  } else if (cenario === 'otimista') {
+  // Análise do ajuste aplicado (sem adicionar recomendação)
+  if (adjustment > 0) {
     score += 10;
-    recommendations.push(`Cenário otimista: resultados podem ser 15% acima da média`);
+  } else if (adjustment < 0) {
+    score -= 10;
   }
 
   // Limitar score máximo a 95
@@ -676,9 +738,9 @@ export function analyzeInvestmentViabilityWithResults(
 
   // Análise do perfil de operação
   if (perfilOperacao === 'terceirizar') {
-    score -= 5;
-    recommendations.push(`Operação terceirizada requer mais supervisão inicial`);
-  } else if (perfilOperacao === 'proprio') {
+    score += 5;
+    recommendations.push(`Maior dedicação (mais de 4h) maximiza o potencial de crescimento`);
+  } else if (perfilOperacao === 'proprio' || perfilOperacao === 'integral' || perfilOperacao === 'gestao') {
     score += 5;
     recommendations.push(`Operação própria maximiza o potencial de crescimento`);
   }
@@ -809,13 +871,35 @@ export function addStoreToSimulation(
     }
   }
   
-  // Obter valores baseados no cenário
-  const baseRevenuePerStore = getRevenuePerStore(cenario);
-  const capexPerStore = getCapexPerStore(cenario);
-  const growthFactor = getGrowthFactor(cenario);
-  const lossRate = getLossRate(cenario);
-  const cmvRate = getCmvRate(cenario);
-  const repasseRate = getRepasseRate(cenario);
+  // Lógica: valor base sempre médio, depois aplica ajustes INDEPENDENTES e ADITIVOS
+  // Determinar ajuste baseado em cenário e perfil (são independentes e aditivos)
+  let adjustment = 0;
+  
+  // Ajuste do perfil de operação
+  if (perfilOperacao === 'integral') {
+    adjustment -= 0.075; // 0-2h: -7,5%
+  } else if (perfilOperacao === 'terceirizar') {
+    adjustment += 0.075; // Mais de 4h: +7,5%
+  }
+  
+  // Ajuste do cenário
+  if (cenario === 'pessimista') {
+    adjustment -= 0.075; // -7,5%
+  } else if (cenario === 'otimista') {
+    adjustment += 0.075; // +7,5%
+  }
+  
+  // Sempre usar cenário médio como base
+  const baseCenario: 'pessimista' | 'medio' | 'otimista' = 'medio';
+  let baseRevenuePerStore = getRevenuePerStore(baseCenario);
+  const capexPerStore = getCapexPerStore(baseCenario);
+  const growthFactor = getGrowthFactor(baseCenario);
+  const lossRate = getLossRate(baseCenario);
+  const cmvRate = getCmvRate(baseCenario);
+  const repasseRate = getRepasseRate(baseCenario);
+  
+  // Aplicar ajuste na receita
+  baseRevenuePerStore = baseRevenuePerStore * (1 + adjustment);
   
   // O investimento total não muda, pois a nova loja é paga com o lucro acumulado
   const newTotalInvestment = totalInvestment;
@@ -887,7 +971,7 @@ export function addStoreToSimulation(
     let funcionario = 0;
     let transporte = 0;
     
-    if (perfilOperacao === 'proprio') {
+    if (perfilOperacao === 'proprio' || perfilOperacao === 'integral' || perfilOperacao === 'gestao' || perfilOperacao === 'terceirizar') {
       if (operatingStores <= 15) {
         transporte = params.transporte_reembolso * operatingStores;
       } else {
@@ -895,10 +979,6 @@ export function addStoreToSimulation(
         const funcionariosNecessarios = Math.floor((operatingStores - 15) / 15) + 1;
         funcionario = funcionariosNecessarios * params.funcionario_cost;
       }
-    } else if (perfilOperacao === 'terceirizar') {
-      cooperativa = params.cooperativa_per_store * operatingStores;
-      const funcionariosNecessarios = Math.ceil(operatingStores / 15);
-      funcionario = funcionariosNecessarios * params.funcionario_cost;
     }
     
     const fixedCosts = amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
@@ -984,12 +1064,34 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
   const params = behonestParams as BeHonestParams;
   const { cenario, perfilOperacao } = results;
   
-  // Obter valores baseados no cenário
-  const revenuePerStore = getRevenuePerStore(cenario);
-  const growthFactor = getGrowthFactor(cenario);
-  const lossRate = getLossRate(cenario);
-  const cmvRate = getCmvRate(cenario);
-  const repasseRate = getRepasseRate(cenario);
+  // Lógica: valor base sempre médio, depois aplica ajustes INDEPENDENTES e ADITIVOS
+  // Determinar ajuste baseado em cenário e perfil (são independentes e aditivos)
+  let adjustment = 0;
+  
+  // Ajuste do perfil de operação
+  if (perfilOperacao === 'integral') {
+    adjustment -= 0.075; // 0-2h: -7,5%
+  } else if (perfilOperacao === 'terceirizar') {
+    adjustment += 0.075; // Mais de 4h: +7,5%
+  }
+  
+  // Ajuste do cenário
+  if (cenario === 'pessimista') {
+    adjustment -= 0.075; // -7,5%
+  } else if (cenario === 'otimista') {
+    adjustment += 0.075; // +7,5%
+  }
+  
+  // Sempre usar cenário médio como base
+  const baseCenario: 'pessimista' | 'medio' | 'otimista' = 'medio';
+  let revenuePerStore = getRevenuePerStore(baseCenario);
+  const growthFactor = getGrowthFactor(baseCenario);
+  const lossRate = getLossRate(baseCenario);
+  const cmvRate = getCmvRate(baseCenario);
+  const repasseRate = getRepasseRate(baseCenario);
+  
+  // Aplicar ajuste na receita
+  revenuePerStore = revenuePerStore * (1 + adjustment);
   
   // Verificar se é possível remover a loja
   if (monthToRemove < 4) {
@@ -1047,7 +1149,7 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
       let funcionario = 0;
       let transporte = 0;
       
-      if (perfilOperacao === 'proprio') {
+      if (perfilOperacao === 'proprio' || perfilOperacao === 'integral' || perfilOperacao === 'gestao' || perfilOperacao === 'terceirizar') {
         if (newStores <= 15) {
           transporte = params.transporte_reembolso * newStores;
         } else {
@@ -1055,10 +1157,6 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
           const funcionariosNecessarios = Math.floor((newStores - 15) / 15) + 1;
           funcionario = funcionariosNecessarios * params.funcionario_cost;
         }
-      } else if (perfilOperacao === 'terceirizar') {
-        cooperativa = params.cooperativa_per_store * newStores;
-        const funcionariosNecessarios = Math.ceil(newStores / 15);
-        funcionario = funcionariosNecessarios * params.funcionario_cost;
       }
       
       const fixedCosts = amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
