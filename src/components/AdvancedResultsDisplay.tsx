@@ -1427,6 +1427,29 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 ))}
               </tr>
               
+              {/* Investimento */}
+              <tr>
+                <td><strong>Investimento</strong></td>
+                {monthlyResults.map((result) => {
+                  let investmentTotal = 0;
+                  
+                  // Taxa de franquia no mês 1
+                  if (result.month === 1) {
+                    investmentTotal += behonestParams.franchise_fee;
+                  }
+                  
+                  // Custo de implementação de loja (nos meses com implementação)
+                  const isImplementation = result.container > 0 || result.refrigerator > 0;
+                  if (isImplementation) {
+                    investmentTotal += capexPerStoreByScenario + result.container + result.refrigerator;
+                  }
+                  
+                  return (
+                    <td key={result.month}>{formatCurrency(-investmentTotal)}</td>
+                  );
+                })}
+              </tr>
+              
               {/* CAPEX */}
               <tr>
                 <td><strong>CAPEX</strong></td>
