@@ -741,6 +741,57 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
         />
       </div>
 
+      <div className="charts-section">
+        <div className="chart-container">
+          <h4>Fluxo de Caixa Acumulado</h4>
+          <ResponsiveContainer width="100%" height={isMobile ? 300 : 350}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="mes" />
+              <YAxis />
+              <Tooltip 
+                formatter={(value, name, props) => {
+                  if (name === 'Saldo Acumulado (Positivo)' || name === 'Saldo Acumulado (Negativo)') {
+                    let notes: string[] = [];
+                    if (props.payload.mes === 1) {
+                      notes.push('Taxa de Franquia: -R$ 30.000');
+                    }
+                    if (props.payload.implementationIndexes && props.payload.implementationIndexes.length > 0) {
+                      const capexPerStoreTotal = capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store;
+                      props.payload.implementationIndexes.forEach((index: number) => {
+                        notes.push(`Implementação Loja #${index}: -${formatCurrency(capexPerStoreTotal)}`);
+                      });
+                    }
+                    const noteStr = notes.length > 0 ? ' (' + notes.join(', ') + ')' : '';
+                    return [formatCurrency(value as number) + noteStr, 'Saldo Acumulado'];
+                  }
+                  return [formatCurrency(value as number), name];
+                }}
+                labelFormatter={(label) => `Mês ${label}`}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="fluxoCaixaPositivo" 
+                stroke="#4caf50" 
+                strokeWidth={3}
+                name="Saldo Acumulado (Positivo)"
+                dot={{ fill: '#4caf50', stroke: 'white', strokeWidth: 2, r: 4 }}
+                connectNulls={false}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="fluxoCaixaNegativo" 
+                stroke="#f44336" 
+                strokeWidth={3}
+                name="Saldo Acumulado (Negativo)"
+                dot={{ fill: '#f44336', stroke: 'white', strokeWidth: 2, r: 4 }}
+                connectNulls={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       <div className="detailed-breakdown">
         <h4>Último Mês (Mês {lastMonth.month}) - Percentuais sobre Receita Bruta</h4>
         <div style={{ 
@@ -1271,57 +1322,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           </div>
         </div>
       )}
-
-      <div className="charts-section">
-        <div className="chart-container">
-          <h4>Fluxo de Caixa Acumulado</h4>
-          <ResponsiveContainer width="100%" height={isMobile ? 300 : 350}>
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="mes" />
-              <YAxis />
-              <Tooltip 
-                formatter={(value, name, props) => {
-                  if (name === 'Saldo Acumulado (Positivo)' || name === 'Saldo Acumulado (Negativo)') {
-                    let notes: string[] = [];
-                    if (props.payload.mes === 1) {
-                      notes.push('Taxa de Franquia: -R$ 30.000');
-                    }
-                    if (props.payload.implementationIndexes && props.payload.implementationIndexes.length > 0) {
-                      const capexPerStoreTotal = capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store;
-                      props.payload.implementationIndexes.forEach((index: number) => {
-                        notes.push(`Implementação Loja #${index}: -${formatCurrency(capexPerStoreTotal)}`);
-                      });
-                    }
-                    const noteStr = notes.length > 0 ? ' (' + notes.join(', ') + ')' : '';
-                    return [formatCurrency(value as number) + noteStr, 'Saldo Acumulado'];
-                  }
-                  return [formatCurrency(value as number), name];
-                }}
-                labelFormatter={(label) => `Mês ${label}`}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="fluxoCaixaPositivo" 
-                stroke="#4caf50" 
-                strokeWidth={3}
-                name="Saldo Acumulado (Positivo)"
-                dot={{ fill: '#4caf50', stroke: 'white', strokeWidth: 2, r: 4 }}
-                connectNulls={false}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="fluxoCaixaNegativo" 
-                stroke="#f44336" 
-                strokeWidth={3}
-                name="Saldo Acumulado (Negativo)"
-                dot={{ fill: '#f44336', stroke: 'white', strokeWidth: 2, r: 4 }}
-                connectNulls={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
 
       <div className="monthly-table">
         <div style={{ 
