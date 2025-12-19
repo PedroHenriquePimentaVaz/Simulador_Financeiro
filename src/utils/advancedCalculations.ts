@@ -244,7 +244,16 @@ export function simulate(
       // Calcular receita com crescimento mensal (começando do mês 3)
       const monthsSinceStart = month - 3; // Meses desde o início da operação
       const cappedMonths = Math.min(monthsSinceStart, 6); // crescimento apenas até o 6º mês
-      revenuePerStoreValue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
+      let baseRevenuePerStore = revenuePerStore * Math.pow(growthFactor, cappedMonths);
+      
+      // Ramp-up da primeira loja: 70% mês 3, 85% mês 4, 100% mês 5+
+      // Aplicar apenas para a primeira loja (quando currentStores === 1 e month <= 5)
+      if (currentStores === 1 && month <= 5) {
+        const rampUpFactor = month === 3 ? 0.7 : month === 4 ? 0.85 : 1.0;
+        baseRevenuePerStore = baseRevenuePerStore * rampUpFactor;
+      }
+      
+      revenuePerStoreValue = baseRevenuePerStore;
       totalRevenue = revenuePerStoreValue * currentStores;
     }
     

@@ -514,7 +514,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
   };
 
   const capexPerStoreByScenario = currentResults.cenario === 'pessimista'
-    ? 1500
+    ? 20000
     : currentResults.cenario === 'otimista'
       ? 30000
       : 20000;
