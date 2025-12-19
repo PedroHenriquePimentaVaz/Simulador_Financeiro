@@ -158,7 +158,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     doc.text('Saldo Final:', margin + 5, boxY + 29);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(255, 152, 0);
-    doc.text(formatCurrency(finalCash), margin + 5, boxY + 35);
+    doc.text(formatCurrency(totalInvestment + finalCash), margin + 5, boxY + 35);
     
     // Coluna direita
     doc.setFont('helvetica', 'normal');
@@ -656,8 +656,8 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
           <div className="card-icon">📈</div>
           <div className="card-content">
             <h4>Saldo Final</h4>
-            <p className={`summary-value ${finalCash >= 0 ? 'positive' : 'negative'}`}>
-              {formatCurrency(finalCash)}
+            <p className={`summary-value ${(totalInvestment + finalCash) >= totalInvestment ? 'positive' : 'negative'}`}>
+              {formatCurrency(totalInvestment + finalCash)}
             </p>
             <span className="card-period">5 Anos</span>
           </div>
