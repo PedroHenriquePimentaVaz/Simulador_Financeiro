@@ -241,55 +241,42 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
     if (month > 2 && currentStores > 0) {
-      // Calcular receita com ramp-up e crescimento mensal
-      // Primeira loja: mês 3 = 70%, mês 4 = 85%, mês 5+ = 100%
-      // Lojas adicionais: seguem mesma lógica de ramp-up
-      const monthsSinceStart = month - 3; // Meses desde o início da operação da primeira loja
+      // Calcular receita total somando receita de cada loja individualmente
+      let totalRevenueCalculated = 0;
       
-      // Aplicar ramp-up primeiro (70%, 85%, 100%)
-      let rampMultiplier = 1.0;
-      if (monthsSinceStart === 0) {
-        rampMultiplier = 0.7; // 1º mês operando: 70%
-      } else if (monthsSinceStart === 1) {
-        rampMultiplier = 0.85; // 2º mês operando: 85%
+      // Primeira loja (sempre começa no mês 3)
+      if (currentStores >= 1) {
+        const monthsSinceFirstStoreStart = month - 3; // Meses desde o início da primeira loja (mês 3 = 0)
+        if (monthsSinceFirstStoreStart >= 0) {
+          const cappedMonths = Math.min(monthsSinceFirstStoreStart, 6); // crescimento apenas até o 6º mês
+          let firstStoreRevenue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
+          
+          // Aplicar ramp-up: primeiro mês operando (mês 3) = 70%, segundo (mês 4) = 85%, terceiro+ (mês 5+) = 100%
+          const rampUp = monthsSinceFirstStoreStart === 0 ? 0.7 : 
+                         monthsSinceFirstStoreStart === 1 ? 0.85 : 1;
+          firstStoreRevenue = firstStoreRevenue * rampUp;
+          totalRevenueCalculated += firstStoreRevenue;
+        }
       }
-      // A partir do 3º mês (monthsSinceStart >= 2): 100%
       
-      // Aplicar crescimento mensal (apenas após o ramp-up completo, e limitado a 6 meses)
-      // O crescimento começa a contar após o período de ramp-up (a partir do mês 5)
-      const monthsForGrowth = Math.max(0, monthsSinceStart - 2); // Começa a crescer após ramp-up
-      const cappedMonths = Math.min(monthsForGrowth, 6); // crescimento apenas até o 6º mês após ramp-up
-      const baseRevenue = revenuePerStore * rampMultiplier * Math.pow(growthFactor, cappedMonths);
-      
-      // Para lojas adicionais, calcular receita individualmente
-      let totalRevenueFirstStore = baseRevenue; // Primeira loja com ramp-up e crescimento
-      let totalRevenueAdditional = 0;
-      
-      // Calcular receita das lojas adicionais (se houver)
-      const additionalStores = currentStores - 1;
-      if (additionalStores > 0) {
-        for (const openMonth of openSchedule) {
-          if (month >= openMonth) {
-            const monthsSinceNewStoreStart = month - openMonth;
-            if (monthsSinceNewStoreStart >= 1) {
-              // Aplicar ramp-up primeiro
-              const ramp =
-                monthsSinceNewStoreStart === 1 ? 0.7 :
-                monthsSinceNewStoreStart === 2 ? 0.85 : 1;
-              
-              // Aplicar crescimento após ramp-up
-              const monthsForGrowthNew = Math.max(0, monthsSinceNewStoreStart - 2);
-              const cappedNewStoreMonths = Math.min(monthsForGrowthNew, 6);
-              const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
-              const baseNewStore = revenuePerStore * ramp * growthNewStore;
-              
-              totalRevenueAdditional += baseNewStore;
-            }
+      // Lojas adicionais (cada uma com seu próprio ciclo de ramp-up)
+      for (const openMonth of openSchedule) {
+        if (month >= openMonth) {
+          const monthsSinceStoreStart = month - openMonth; // Meses desde o início desta loja
+          if (monthsSinceStoreStart >= 0) {
+            const cappedMonths = Math.min(monthsSinceStoreStart, 6);
+            let storeRevenue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
+            
+            // Aplicar ramp-up: primeiro mês = 70%, segundo = 85%, terceiro+ = 100%
+            const rampUp = monthsSinceStoreStart === 0 ? 0.7 :
+                           monthsSinceStoreStart === 1 ? 0.85 : 1;
+            storeRevenue = storeRevenue * rampUp;
+            totalRevenueCalculated += storeRevenue;
           }
         }
       }
       
-      totalRevenue = totalRevenueFirstStore + totalRevenueAdditional;
+      totalRevenue = totalRevenueCalculated;
       revenuePerStoreValue = currentStores > 0 ? totalRevenue / currentStores : 0;
     }
     
