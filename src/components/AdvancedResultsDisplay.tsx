@@ -1506,8 +1506,27 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                     investmentTotal += capexPerStoreByScenario + result.container + result.refrigerator;
                   }
                   
+                  const implementationInfo = implementationByMonth.get(result.month);
+                  const implementationIndexes = implementationInfo?.indexes ?? [];
+                  const capexPerStoreTotal = capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store;
+                  
                   return (
-                    <td key={result.month}>{formatCurrency(-investmentTotal)}</td>
+                    <td 
+                      key={result.month}
+                      style={{ position: 'relative' }}
+                    >
+                      <div>{formatCurrency(-investmentTotal)}</div>
+                      {result.month === 1 && (
+                        <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
+                          ⚠️ Taxa de Franquia: -R$ 30.000
+                        </div>
+                      )}
+                      {implementationIndexes.map((index, idx) => (
+                        <div key={idx} style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
+                          ⚠️ Implementação Loja #{index}: -{formatCurrency(capexPerStoreTotal)}
+                        </div>
+                      ))}
+                    </td>
                   );
                 })}
               </tr>
@@ -1516,28 +1535,13 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
               <tr>
                 <td><strong>Saldo Acumulado</strong></td>
                 {monthlyResults.map((result) => {
-                  const implementationInfo = implementationByMonth.get(result.month);
-                  const implementationIndexes = implementationInfo?.indexes ?? [];
-                  const capexPerStoreTotal = capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store;
-                  
                   return (
-                  <td 
-                    key={result.month} 
-                    className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
-                    style={{ position: 'relative' }}
-                  >
-                    <div>{formatCurrency(result.cumulativeCash)}</div>
-                    {result.month === 1 && (
-                      <div style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
-                        ⚠️ Taxa de Franquia: -R$ 30.000
-                      </div>
-                    )}
-                      {implementationIndexes.map((index, idx) => (
-                        <div key={idx} style={{ fontSize: '10px', color: '#ff9800', fontWeight: '600', marginTop: '2px' }}>
-                          ⚠️ Implementação Loja #{index}: -{formatCurrency(capexPerStoreTotal)}
-                        </div>
-                      ))}
-                  </td>
+                    <td 
+                      key={result.month} 
+                      className={result.cumulativeCash >= 0 ? 'positive' : 'negative'}
+                    >
+                      {formatCurrency(result.cumulativeCash)}
+                    </td>
                   );
                 })}
               </tr>
