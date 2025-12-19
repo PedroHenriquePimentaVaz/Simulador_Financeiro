@@ -109,7 +109,7 @@ function getRevenuePerStore(cenario: 'pessimista' | 'medio' | 'otimista'): numbe
 
 function getCapexPerStore(cenario: 'pessimista' | 'medio' | 'otimista'): number {
   switch(cenario) {
-    case 'pessimista': return 20000; // Mantém patamar base de implementação
+    case 'pessimista': return 1500; // Cenário pessimista: menor investimento
     case 'medio': return 20000; // Médio
     case 'otimista': return 30000; // Alto
   }
@@ -213,6 +213,7 @@ export function simulate(
   // Melhor renda fixa: SELIC (~15% a.a. efetivo) - atualizado 2025
   // Nota: Este valor deve ser atualizado periodicamente conforme mudanças na taxa SELIC
   const bestFixedAnnualRate = 0.15; // 15% a.a. efetivo (SELIC)
+  // Valor final da renda fixa = investimento inicial com juros compostos
   const bestFixedValue = investimentoInicial * Math.pow(1 + bestFixedAnnualRate / 12, months);
 
   const runSimulation = (targetAdditionalStores: number): AdvancedSimulationResult => {
@@ -241,43 +242,25 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
     if (month > 2 && currentStores > 0) {
-      // Calcular receita total somando receita de cada loja individualmente
-      let totalRevenueCalculated = 0;
+      // Calcular receita com ramp-up e crescimento mensal
+      // Ramp-up: mês 3 = 70%, mês 4 = 85%, mês 5+ = 100%
+      const monthsSinceStart = month - 3; // Meses desde o início da operação (mês 3 = 0)
       
-      // Primeira loja (sempre começa no mês 3)
-      if (currentStores >= 1) {
-        const monthsSinceFirstStoreStart = month - 3; // Meses desde o início da primeira loja (mês 3 = 0)
-        if (monthsSinceFirstStoreStart >= 0) {
-          const cappedMonths = Math.min(monthsSinceFirstStoreStart, 6); // crescimento apenas até o 6º mês
-          let firstStoreRevenue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
-          
-          // Aplicar ramp-up: primeiro mês operando (mês 3) = 70%, segundo (mês 4) = 85%, terceiro+ (mês 5+) = 100%
-          const rampUp = monthsSinceFirstStoreStart === 0 ? 0.7 : 
-                         monthsSinceFirstStoreStart === 1 ? 0.85 : 1;
-          firstStoreRevenue = firstStoreRevenue * rampUp;
-          totalRevenueCalculated += firstStoreRevenue;
-        }
+      // Aplicar ramp-up apenas nos primeiros 2 meses de operação
+      let rampMultiplier = 1.0;
+      if (monthsSinceStart === 0) {
+        rampMultiplier = 0.7; // Mês 3: 70%
+      } else if (monthsSinceStart === 1) {
+        rampMultiplier = 0.85; // Mês 4: 85%
       }
+      // Mês 5+ (monthsSinceStart >= 2): rampMultiplier = 1.0 (100%)
       
-      // Lojas adicionais (cada uma com seu próprio ciclo de ramp-up)
-      for (const openMonth of openSchedule) {
-        if (month >= openMonth) {
-          const monthsSinceStoreStart = month - openMonth; // Meses desde o início desta loja
-          if (monthsSinceStoreStart >= 0) {
-            const cappedMonths = Math.min(monthsSinceStoreStart, 6);
-            let storeRevenue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
-            
-            // Aplicar ramp-up: primeiro mês = 70%, segundo = 85%, terceiro+ = 100%
-            const rampUp = monthsSinceStoreStart === 0 ? 0.7 :
-                           monthsSinceStoreStart === 1 ? 0.85 : 1;
-            storeRevenue = storeRevenue * rampUp;
-            totalRevenueCalculated += storeRevenue;
-          }
-        }
-      }
+      // Aplicar crescimento mensal (limitado a 6 meses)
+      const cappedMonths = Math.min(Math.max(monthsSinceStart - 2, 0), 6); // crescimento a partir do mês 5
+      const growthMultiplier = Math.pow(growthFactor, cappedMonths);
       
-      totalRevenue = totalRevenueCalculated;
-      revenuePerStoreValue = currentStores > 0 ? totalRevenue / currentStores : 0;
+      revenuePerStoreValue = revenuePerStore * rampMultiplier * growthMultiplier;
+      totalRevenue = revenuePerStoreValue * currentStores;
     }
     
     // Imposto Simples
@@ -475,12 +458,15 @@ export function simulate(
 
   // Testar incrementalmente e parar assim que superar renda fixa
   // Para investimentos >= 110k, continuar adicionando até superar renda fixa ou atingir o limite
+  // Comparação: valor total final da franquia (investimentoInicial + finalCash) vs bestFixedValue
   let chosen = runSimulation(0);
   if (investimentoInicial >= 110000) {
     // Para investimentos grandes, testar todas as possibilidades até superar renda fixa
     for (let n = 1; n <= maxAutoAdditional; n++) {
       const candidate = runSimulation(n);
-      if (candidate.finalCash >= bestFixedValue) {
+      // Comparar valor total final: investimentoInicial + finalCash vs bestFixedValue
+      const franchiseTotalValue = investimentoInicial + candidate.finalCash;
+      if (franchiseTotalValue >= bestFixedValue) {
         chosen = candidate;
         break;
       }
@@ -491,10 +477,11 @@ export function simulate(
     }
   } else {
     // Para investimentos menores, manter lógica original
-    for (let n = 1; n <= maxAutoAdditional && chosen.finalCash < bestFixedValue; n++) {
+    for (let n = 1; n <= maxAutoAdditional; n++) {
       const candidate = runSimulation(n);
+      const franchiseTotalValue = investimentoInicial + candidate.finalCash;
       chosen = candidate;
-      if (candidate.finalCash >= bestFixedValue) break;
+      if (franchiseTotalValue >= bestFixedValue) break;
     }
   }
 
