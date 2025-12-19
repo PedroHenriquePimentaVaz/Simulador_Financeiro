@@ -566,41 +566,57 @@ export function analyzeInvestmentViability(
   }
 
   // Calcular estimativa de lucro mensal por loja baseado no cenário
-  // Receita - Imposto - CMV - Perdas - Custos fixos aproximados
-  const revenuePerMonth = revenuePerStore;
-  const tax = revenuePerMonth * params.simples_rate_m2;
-  const netRevenue = revenuePerMonth - tax;
+  // Usar receita após 6 meses de crescimento (estado estável)
+  const growthFactor = getGrowthFactor(baseCenario);
+  const revenuePerStoreAfterGrowth = revenuePerStore * Math.pow(growthFactor, 6); // Receita por loja após 6 meses
+  const totalRevenue = revenuePerStoreAfterGrowth * totalStores; // Receita total de todas as lojas
+  
+  const tax = totalRevenue * params.simples_rate_m2;
+  const netRevenue = totalRevenue - tax;
   const cmv = netRevenue * cmvRate;
   const losses = netRevenue * lossRate;
-  const grossProfit = netRevenue - cmv - losses;
+  const grossProfit = netRevenue - cmv - losses; // Lucro bruto total
   
-  // Custos fixos aproximados por loja (sem cooperativa/funcionário/transporte que variam)
-  const fixedCostsPerStore = params.system_fee_per_store + params.amlabs_per_store;
   const repasseRate = getRepasseRate(baseCenario); // Usar repasse baseado no cenário médio
   
   // Calcular outros custos sobre a receita total (como na função simulate)
-  const reposicao = revenuePerMonth * params.reposicao_rate;
-  const royalties = revenuePerMonth * params.royalties_rate;
-  const otherRepasses = revenuePerMonth * repasseRate;
-  const cardFee = revenuePerMonth * params.card_fee_rate;
-  const marketing = revenuePerMonth * params.marketing_rate;
-  const otherCosts = reposicao + royalties + otherRepasses + cardFee + marketing;
+  const reposicao = totalRevenue * params.reposicao_rate;
+  const royalties = totalRevenue * params.royalties_rate;
+  const otherRepasses = totalRevenue * repasseRate;
+  const cardFee = totalRevenue * params.card_fee_rate;
+  const marketing = totalRevenue * params.marketing_rate;
   
-  // Ajustar custos baseado no perfil de operação
-  // Todos os perfis são operação própria (sem cooperativa, apenas transporte)
-  // 'terceirizar' (mais de 4h) não significa terceirização, mas sim mais dedicação = cenário otimista
-  let additionalCostsPerStore = 0;
+  // Calcular custos fixos da mesma forma que na simulação real
+  const amlabs = totalStores * params.amlabs_per_store;
+  const maintenance = params.maintenance_fixed;
+  const utilities = params.utilities_fixed;
+  const accounting = params.accounting_fixed;
+  
+  // Custos de operação baseados no perfil e número de lojas (igual à simulação)
+  let cooperativa = 0;
+  let funcionario = 0;
+  let transporte = 0;
+  
   if (perfilOperacao === 'proprio' || perfilOperacao === 'integral' || perfilOperacao === 'gestao' || perfilOperacao === 'terceirizar') {
-    // Operação própria: apenas transporte (sem cooperativa)
-    if (totalStores > 15) {
-      additionalCostsPerStore = (params.funcionario_cost * Math.floor((totalStores - 15) / 15) + 1) / totalStores;
+    if (totalStores <= 15) {
+      transporte = params.transporte_reembolso * totalStores;
+    } else {
+      transporte = params.transporte_reembolso * totalStores;
+      const funcionariosNecessarios = Math.floor((totalStores - 15) / 15) + 1;
+      funcionario = funcionariosNecessarios * params.funcionario_cost;
     }
-    additionalCostsPerStore += params.transporte_reembolso;
   }
   
-  const estimatedMonthlyProfitPerStore = Math.max(0, grossProfit - otherCosts - fixedCostsPerStore - additionalCostsPerStore - (params.maintenance_fixed + params.utilities_fixed + params.accounting_fixed) / totalStores);
+  const fixedCosts = amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
   
-  maxRealisticMonthlyIncome = totalStores * estimatedMonthlyProfitPerStore;
+  // Lucro líquido total (igual à simulação: operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts)
+  const totalNetProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts;
+  
+  // Lucro mensal realista total
+  maxRealisticMonthlyIncome = Math.max(0, totalNetProfit);
+  
+  // Lucro por loja (para cálculos de expansão)
+  const estimatedMonthlyProfitPerStore = totalStores > 0 ? maxRealisticMonthlyIncome / totalStores : 0;
 
   // Análise de viabilidade baseada no lucro desejado
   if (lucroDesejado > maxRealisticMonthlyIncome * 1.5) {
@@ -615,7 +631,9 @@ export function analyzeInvestmentViability(
     recommendations.push(`Você precisará adicionar mais lojas para alcançar essa meta`);
     
     // Calcular quantas lojas adicionais são necessárias
-    const additionalStoresNeeded = Math.ceil((lucroDesejado - maxRealisticMonthlyIncome) / estimatedMonthlyProfitPerStore);
+    const additionalStoresNeeded = estimatedMonthlyProfitPerStore > 0 
+      ? Math.ceil((lucroDesejado - maxRealisticMonthlyIncome) / estimatedMonthlyProfitPerStore)
+      : 0;
     const additionalInvestmentNeeded = additionalStoresNeeded * capexPerStore;
     
     recommendations.push(`Investimento adicional necessário: R$ ${additionalInvestmentNeeded.toLocaleString('pt-BR')} para ${additionalStoresNeeded} lojas`);
