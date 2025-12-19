@@ -513,8 +513,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     doc.save(`Be_Honest_Simulacao_Completa_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
+  // Usar os mesmos valores da função getCapexPerStore
   const capexPerStoreByScenario = currentResults.cenario === 'pessimista'
-    ? 1500
+    ? 20000
     : currentResults.cenario === 'otimista'
       ? 30000
       : 20000;
@@ -1432,8 +1433,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 <td><strong>CAPEX</strong></td>
                 {monthlyResults.map((result) => {
                   const isImplementation = result.container > 0 || result.refrigerator > 0;
+                  // Usar sempre os valores fixos dos parâmetros para garantir consistência
                   const capexTotal = isImplementation
-                    ? capexPerStoreByScenario + result.container + result.refrigerator
+                    ? capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store
                     : 0;
                   return (
                     <td key={result.month}>{formatCurrency(-capexTotal)}</td>
@@ -1501,9 +1503,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                   }
                   
                   // Custo de implementação de loja (nos meses com implementação)
+                  // Usar sempre os valores fixos dos parâmetros, não os valores do resultado (que podem variar)
                   const isImplementation = result.container > 0 || result.refrigerator > 0;
                   if (isImplementation) {
-                    investmentTotal += capexPerStoreByScenario + result.container + result.refrigerator;
+                    investmentTotal += capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store;
                   }
                   
                   const implementationInfo = implementationByMonth.get(result.month);
