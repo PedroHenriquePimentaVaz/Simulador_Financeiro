@@ -241,11 +241,42 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
     if (month > 2 && currentStores > 0) {
-      // Calcular receita com crescimento mensal (começando do mês 3)
-      const monthsSinceStart = month - 3; // Meses desde o início da operação
-      const cappedMonths = Math.min(monthsSinceStart, 6); // crescimento apenas até o 6º mês
-      revenuePerStoreValue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
-      totalRevenue = revenuePerStoreValue * currentStores;
+      // Receita da primeira loja (começa no mês 3 com 100%)
+      const firstStoreMonthsSinceStart = month - 3; // Meses desde o início da operação da primeira loja
+      const cappedFirstStoreMonths = Math.min(firstStoreMonthsSinceStart, 6); // crescimento apenas até o 6º mês
+      const firstStoreRevenue = revenuePerStore * Math.pow(growthFactor, cappedFirstStoreMonths);
+      
+      // Receita das lojas adicionais (com ramp-up: 0% no mês de implementação, 70% no 1º mês operando, 85% no 2º, 100% do 3º em diante)
+      let additionalStoresRevenue = 0;
+      const additionalStoresCount = currentStores - 1; // Número de lojas adicionais
+      
+      if (additionalStoresCount > 0) {
+        openSchedule.forEach(openMonth => {
+          if (month >= openMonth) {
+            // Meses desde que a loja adicional começou a operar
+            const monthsSinceNewStoreStart = month - openMonth;
+            
+            if (monthsSinceNewStoreStart >= 1) {
+              // Aplicar crescimento (limitado a 6 meses)
+              const cappedNewStoreMonths = Math.min(Math.max(monthsSinceNewStoreStart - 1, 0), 6);
+              const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
+              const baseNewStore = revenuePerStore * growthNewStore;
+              
+              // Aplicar ramp-up
+              const ramp =
+                monthsSinceNewStoreStart === 1 ? 0.7 :  // 70% no 1º mês operando
+                monthsSinceNewStoreStart === 2 ? 0.85 : // 85% no 2º mês operando
+                1; // 100% do 3º mês em diante
+              
+              additionalStoresRevenue += baseNewStore * ramp;
+            }
+            // Se monthsSinceNewStoreStart === 0, a loja ainda não começou a operar (mês de implementação = 0% receita)
+          }
+        });
+      }
+      
+      totalRevenue = firstStoreRevenue + additionalStoresRevenue;
+      revenuePerStoreValue = currentStores > 0 ? totalRevenue / currentStores : 0;
     }
     
     // Imposto Simples
