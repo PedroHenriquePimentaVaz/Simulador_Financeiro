@@ -109,7 +109,7 @@ function getRevenuePerStore(cenario: 'pessimista' | 'medio' | 'otimista'): numbe
 
 function getCapexPerStore(cenario: 'pessimista' | 'medio' | 'otimista'): number {
   switch(cenario) {
-    case 'pessimista': return 1500; // Baixo
+    case 'pessimista': return 1500; // Baixo: apenas taxa mínima
     case 'medio': return 20000; // Médio
     case 'otimista': return 30000; // Alto
   }
@@ -241,38 +241,52 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
     if (month > 2 && currentStores > 0) {
-      // Calcular receita da primeira loja (começa no mês 3)
-      const monthsSinceFirstStoreStart = month - 3; // Mês 3 = 0, mês 4 = 1, etc.
-      let firstStoreRevenue = 0;
-      if (monthsSinceFirstStoreStart >= 0) {
-        const cappedFirstStoreMonths = Math.min(Math.max(monthsSinceFirstStoreStart - 1, 0), 6);
-        const growthFirstStore = Math.pow(growthFactor, cappedFirstStoreMonths);
-        const baseFirstStore = revenuePerStore * growthFirstStore;
-        const rampFirstStore =
-          monthsSinceFirstStoreStart === 0 ? 0.7 :  // Mês 3: 70%
-          monthsSinceFirstStoreStart === 1 ? 0.85 : // Mês 4: 85%
-          1; // Mês 5+: 100%
-        firstStoreRevenue = baseFirstStore * rampFirstStore;
+      // Calcular receita para cada loja considerando ramp-up e crescimento
+      let totalRevenueCalculated = 0;
+      
+      // Receita da primeira loja (sempre começa no mês 3)
+      if (month >= 3) {
+        const monthsSinceFirstStoreStart = month - 3; // Meses desde o início da primeira loja (mês 3 = 0, mês 4 = 1, etc)
+        const cappedMonths = Math.min(monthsSinceFirstStoreStart, 6); // crescimento apenas até o 6º mês
+        let firstStoreRevenue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
+        
+        // Aplicar ramp-up para primeira loja
+        // Mês 3 (monthsSinceFirstStoreStart === 0): 70% (primeiro mês operando)
+        // Mês 4 (monthsSinceFirstStoreStart === 1): 85% (segundo mês operando)
+        // Mês 5+ (monthsSinceFirstStoreStart >= 2): 100% (terceiro mês operando em diante)
+        if (monthsSinceFirstStoreStart === 0) {
+          firstStoreRevenue *= 0.7; // Mês 3 = 70%
+        } else if (monthsSinceFirstStoreStart === 1) {
+          firstStoreRevenue *= 0.85; // Mês 4 = 85%
+        }
+        // Mês 5+ = 100% (já aplicado)
+        
+        totalRevenueCalculated += firstStoreRevenue;
       }
       
-      // Calcular receita de lojas adicionais (se houver)
-      let additionalStoresRevenue = 0;
+      // Receita das lojas adicionais (cada uma com seu próprio ramp-up)
       for (const openMonth of openSchedule) {
         if (month >= openMonth) {
-          const monthsSinceNewStoreStart = month - openMonth;
-          if (monthsSinceNewStoreStart >= 1) {
-            const cappedNewStoreMonths = Math.min(Math.max(monthsSinceNewStoreStart - 1, 0), 6);
-            const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
-            const baseNewStore = revenuePerStore * growthNewStore;
-            const ramp =
-              monthsSinceNewStoreStart === 1 ? 0.7 :
-              monthsSinceNewStoreStart === 2 ? 0.85 : 1;
-            additionalStoresRevenue += baseNewStore * ramp;
+          const monthsSinceStoreStart = month - openMonth; // Meses desde que esta loja começou a operar
+          const cappedMonths = Math.min(monthsSinceStoreStart, 6); // crescimento apenas até o 6º mês
+          let storeRevenue = revenuePerStore * Math.pow(growthFactor, cappedMonths);
+          
+          // Aplicar ramp-up para lojas adicionais
+          // Primeiro mês operando (monthsSinceStoreStart === 0): 70%
+          // Segundo mês operando (monthsSinceStoreStart === 1): 85%
+          // Terceiro mês+ (monthsSinceStoreStart >= 2): 100%
+          if (monthsSinceStoreStart === 0) {
+            storeRevenue *= 0.7; // Primeiro mês = 70%
+          } else if (monthsSinceStoreStart === 1) {
+            storeRevenue *= 0.85; // Segundo mês = 85%
           }
+          // Terceiro mês+ = 100% (já aplicado)
+          
+          totalRevenueCalculated += storeRevenue;
         }
       }
       
-      totalRevenue = firstStoreRevenue + additionalStoresRevenue;
+      totalRevenue = totalRevenueCalculated;
       revenuePerStoreValue = currentStores > 0 ? totalRevenue / currentStores : 0;
     }
     
