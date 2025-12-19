@@ -517,34 +517,9 @@ export function analyzeInvestmentViability(
   //   - Médio: 0%
   //   - Otimista: +7,5%
   
-  // Determinar ajuste baseado em cenário e perfil (são independentes e aditivos)
-  let adjustment = 0;
-  
-  // Ajuste do perfil de operação
-  if (perfilOperacao === 'integral') {
-    adjustment -= 0.075; // 0-2h: -7,5%
-  } else if (perfilOperacao === 'terceirizar') {
-    adjustment += 0.075; // Mais de 4h: +7,5%
-  }
-  // gestao (2-4h) não altera nada (0%)
-  
-  // Ajuste do cenário
-  if (cenario === 'pessimista') {
-    adjustment -= 0.075; // -7,5%
-  } else if (cenario === 'otimista') {
-    adjustment += 0.075; // +7,5%
-  }
-  // medio não altera nada (0%)
-  
-  // Sempre usar cenário médio como base
+  // Sempre usar cenário médio como base para calcular CAPEX
   const baseCenario: 'pessimista' | 'medio' | 'otimista' = 'medio';
   const capexPerStore = getCapexPerStore(baseCenario) + params.container_per_store + params.refrigerator_per_store;
-  let revenuePerStore = getRevenuePerStore(baseCenario);
-  const lossRate = getLossRate(baseCenario);
-  const cmvRate = getCmvRate(baseCenario);
-  
-  // Aplicar ajuste na receita
-  revenuePerStore = revenuePerStore * (1 + adjustment);
   
   // Calcular quantas lojas iniciais o investimento permite (usando CAPEX do próprio cenário)
   const franchiseFee = params.franchise_fee; // Taxa de franquia
@@ -565,58 +540,26 @@ export function analyzeInvestmentViability(
     return { isViable, score, message, recommendations, expectedMonthsToTarget, maxRealisticMonthlyIncome };
   }
 
-  // Calcular estimativa de lucro mensal por loja baseado no cenário
-  // Usar receita após 6 meses de crescimento (estado estável)
-  const growthFactor = getGrowthFactor(baseCenario);
-  const revenuePerStoreAfterGrowth = revenuePerStore * Math.pow(growthFactor, 6); // Receita por loja após 6 meses
-  const totalRevenue = revenuePerStoreAfterGrowth * totalStores; // Receita total de todas as lojas
+  // Executar simulação completa para pegar os últimos 5 meses da DRE
+  const simulationResult = simulate(
+    lucroDesejado,
+    investimentoInicial,
+    perfilOperacao,
+    60, // 60 meses
+    cenario
+  );
   
-  const tax = totalRevenue * params.simples_rate_m2;
-  const netRevenue = totalRevenue - tax;
-  const cmv = netRevenue * cmvRate;
-  const losses = netRevenue * lossRate;
-  const grossProfit = netRevenue - cmv - losses; // Lucro bruto total
+  // Pegar os últimos 5 meses (meses 56-60) e calcular média do lucro líquido
+  const last5Months = simulationResult.monthlyResults.slice(-5); // Últimos 5 meses
+  const totalNetProfitLast5Months = last5Months.reduce((sum, month) => sum + month.netProfit, 0);
+  const averageNetProfit = last5Months.length > 0 ? totalNetProfitLast5Months / last5Months.length : 0;
   
-  const repasseRate = getRepasseRate(baseCenario); // Usar repasse baseado no cenário médio
+  // Lucro mensal realista = média dos últimos 5 meses
+  maxRealisticMonthlyIncome = Math.max(0, averageNetProfit);
   
-  // Calcular outros custos sobre a receita total (como na função simulate)
-  const reposicao = totalRevenue * params.reposicao_rate;
-  const royalties = totalRevenue * params.royalties_rate;
-  const otherRepasses = totalRevenue * repasseRate;
-  const cardFee = totalRevenue * params.card_fee_rate;
-  const marketing = totalRevenue * params.marketing_rate;
-  
-  // Calcular custos fixos da mesma forma que na simulação real
-  const amlabs = totalStores * params.amlabs_per_store;
-  const maintenance = params.maintenance_fixed;
-  const utilities = params.utilities_fixed;
-  const accounting = params.accounting_fixed;
-  
-  // Custos de operação baseados no perfil e número de lojas (igual à simulação)
-  let cooperativa = 0;
-  let funcionario = 0;
-  let transporte = 0;
-  
-  if (perfilOperacao === 'proprio' || perfilOperacao === 'integral' || perfilOperacao === 'gestao' || perfilOperacao === 'terceirizar') {
-    if (totalStores <= 15) {
-      transporte = params.transporte_reembolso * totalStores;
-    } else {
-      transporte = params.transporte_reembolso * totalStores;
-      const funcionariosNecessarios = Math.floor((totalStores - 15) / 15) + 1;
-      funcionario = funcionariosNecessarios * params.funcionario_cost;
-    }
-  }
-  
-  const fixedCosts = amlabs + maintenance + utilities + accounting + cooperativa + funcionario + transporte;
-  
-  // Lucro líquido total (igual à simulação: operatingProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts)
-  const totalNetProfit = grossProfit - reposicao - royalties - otherRepasses - cardFee - marketing - fixedCosts;
-  
-  // Lucro mensal realista total
-  maxRealisticMonthlyIncome = Math.max(0, totalNetProfit);
-  
-  // Lucro por loja (para cálculos de expansão)
-  const estimatedMonthlyProfitPerStore = totalStores > 0 ? maxRealisticMonthlyIncome / totalStores : 0;
+  // Lucro por loja (para cálculos de expansão) - usar número de lojas do último mês
+  const lastMonthStores = last5Months.length > 0 ? last5Months[last5Months.length - 1].stores : totalStores;
+  const estimatedMonthlyProfitPerStore = lastMonthStores > 0 ? maxRealisticMonthlyIncome / lastMonthStores : 0;
 
   // Análise de viabilidade baseada no lucro desejado
   if (lucroDesejado > maxRealisticMonthlyIncome * 1.5) {
@@ -651,10 +594,10 @@ export function analyzeInvestmentViability(
     recommendations.push(`Operação própria maximiza o potencial de crescimento`);
   }
   
-  // Análise do ajuste aplicado (sem adicionar recomendação)
-  if (adjustment > 0) {
+  // Análise do cenário e perfil (ajustes já aplicados na simulação)
+  if (cenario === 'otimista' || perfilOperacao === 'terceirizar') {
     score += 10;
-  } else if (adjustment < 0) {
+  } else if (cenario === 'pessimista' || perfilOperacao === 'integral') {
     score -= 10;
   }
 
