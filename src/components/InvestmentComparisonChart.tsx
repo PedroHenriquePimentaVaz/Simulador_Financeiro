@@ -56,11 +56,16 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   };
 
   const getFranchiseValueAtPeriod = (months: number): number => {
-    // Usa o saldo acumulado da simulação; não soma novamente o investimento inicial
+    // Para comparar com investimentos em renda fixa, precisa retornar o valor total
+    // (investimento inicial + saldo acumulado), não apenas o saldo acumulado
+    let cumulativeCash: number;
     if (months >= franchiseResults.monthlyResults.length) {
-      return franchiseResults.finalCash;
+      cumulativeCash = franchiseResults.finalCash;
+    } else {
+      cumulativeCash = franchiseResults.monthlyResults[months - 1].cumulativeCash;
     }
-    return franchiseResults.monthlyResults[months - 1].cumulativeCash;
+    // Valor total = investimento inicial + saldo acumulado
+    return initialInvestment + cumulativeCash;
   };
 
   const franchiseValue = getFranchiseValueAtPeriod(currentPeriod.months);
