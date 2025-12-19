@@ -513,9 +513,8 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
     doc.save(`Be_Honest_Simulacao_Completa_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
-  // Usar os mesmos valores da função getCapexPerStore
   const capexPerStoreByScenario = currentResults.cenario === 'pessimista'
-    ? 20000
+    ? 1500
     : currentResults.cenario === 'otimista'
       ? 30000
       : 20000;
@@ -743,7 +742,7 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       </div>
 
       <div className="detailed-breakdown">
-        <h4>Último Mês (Mês {lastMonth.month})</h4>
+        <h4>Último Mês (Mês {lastMonth.month}) - Percentuais sobre Receita Bruta</h4>
         <div style={{ 
           display: 'flex', 
           flexDirection: 'column',
@@ -766,7 +765,8 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#2e7d32', fontSize: '14px', marginBottom: '5px' }}>Receita Bruta</div>
-            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(lastMonth.totalRevenue)}</div>
+            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px', marginBottom: '3px' }}>100,0%</div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Total de vendas realizadas no período</div>
           </div>
 
           {/* Imposto - Vermelho */}
@@ -782,7 +782,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Imposto</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.tax)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.tax / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Imposto Simples Nacional sobre vendas</div>
           </div>
 
           {/* Receita Líquida - Verde */}
@@ -798,7 +801,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#2e7d32', fontSize: '14px', marginBottom: '5px' }}>Receita Líquida</div>
-            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(lastMonth.netRevenue)}</div>
+            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.netRevenue / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Receita após dedução de impostos</div>
           </div>
 
           {/* CMV - Vermelho */}
@@ -814,7 +820,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>CMV</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.cmv)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.cmv / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Custo da Mercadoria Vendida</div>
           </div>
 
           {/* Perdas - Vermelho */}
@@ -830,7 +839,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Perdas</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.losses)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.losses / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Perdas por validade e avarias</div>
           </div>
 
           {/* Lucro Bruto - Azul */}
@@ -846,7 +858,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#1565c0', fontSize: '14px', marginBottom: '5px' }}>Lucro Bruto</div>
-            <div style={{ fontWeight: '700', color: '#0d47a1', fontSize: '16px' }}>{formatCurrency(lastMonth.grossProfit)}</div>
+            <div style={{ fontWeight: '700', color: '#0d47a1', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.grossProfit / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Receita líquida menos CMV e perdas</div>
           </div>
 
           {/* Reposição - Vermelho */}
@@ -862,7 +877,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Reposição</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.reposicao)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.reposicao / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Custo de reposição de estoque</div>
           </div>
 
           {/* Royalties - Vermelho */}
@@ -878,7 +896,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Royalties</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.royalties)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.royalties / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Taxa de royalties da franquia</div>
           </div>
 
           {/* Outros Repasses - Vermelho */}
@@ -894,7 +915,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Outros Repasses</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.otherRepasses)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.otherRepasses / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Outros repasses e taxas da franquia</div>
           </div>
 
           {/* Taxa Cartão - Vermelho */}
@@ -910,7 +934,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Taxa Cartão</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.cardFee)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.cardFee / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Taxa de máquina de cartão</div>
           </div>
 
           {/* Marketing - Vermelho */}
@@ -926,7 +953,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Marketing</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.marketing)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.marketing / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Investimento em marketing e publicidade</div>
           </div>
 
           {/* AMLABS - Vermelho */}
@@ -942,7 +972,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>AMLABS</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.amlabs)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.amlabs / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Taxa mensal do sistema AMLABS por loja</div>
           </div>
 
           {/* Container - Vermelho */}
@@ -958,7 +991,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Container</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.container)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.container / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Investimento em container (CAPEX)</div>
           </div>
 
           {/* Geladeira - Vermelho */}
@@ -974,7 +1010,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Geladeira</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.refrigerator)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.refrigerator / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Investimento em geladeira (CAPEX)</div>
           </div>
 
           {/* Manutenção - Vermelho */}
@@ -990,7 +1029,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Manutenção</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.maintenance)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.maintenance / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Custo mensal de manutenção</div>
           </div>
 
           {/* CD/Água/Luz/Internet - Vermelho */}
@@ -1006,7 +1048,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>CD/Água/Luz/Internet</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.utilities)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.utilities / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Custos de utilidades e internet</div>
           </div>
 
           {/* Contabilidade - Vermelho */}
@@ -1022,7 +1067,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#c62828', fontSize: '14px', marginBottom: '5px' }}>Contabilidade</div>
-            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px' }}>{formatCurrency(-lastMonth.accounting)}</div>
+            <div style={{ fontWeight: '700', color: '#d32f2f', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.accounting / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Custo mensal de serviços contábeis</div>
           </div>
 
           {/* Lucro Líquido - Verde */}
@@ -1038,7 +1086,10 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
             textAlign: 'center'
           }}>
             <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '14px', marginBottom: '5px' }}>Lucro Líquido</div>
-            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px' }}>{formatCurrency(lastMonth.netProfit)}</div>
+            <div style={{ fontWeight: '700', color: '#1b5e20', fontSize: '16px', marginBottom: '3px' }}>
+              {lastMonth.totalRevenue > 0 ? ((lastMonth.netProfit / lastMonth.totalRevenue) * 100).toFixed(2) : '0,00'}%
+            </div>
+            <div style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>Lucro final após todas as despesas</div>
           </div>
         </div>
       </div>
@@ -1433,9 +1484,8 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                 <td><strong>CAPEX</strong></td>
                 {monthlyResults.map((result) => {
                   const isImplementation = result.container > 0 || result.refrigerator > 0;
-                  // Usar sempre os valores fixos dos parâmetros para garantir consistência
                   const capexTotal = isImplementation
-                    ? capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store
+                    ? capexPerStoreByScenario + result.container + result.refrigerator
                     : 0;
                   return (
                     <td key={result.month}>{formatCurrency(-capexTotal)}</td>
@@ -1503,10 +1553,9 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
                   }
                   
                   // Custo de implementação de loja (nos meses com implementação)
-                  // Usar sempre os valores fixos dos parâmetros, não os valores do resultado (que podem variar)
                   const isImplementation = result.container > 0 || result.refrigerator > 0;
                   if (isImplementation) {
-                    investmentTotal += capexPerStoreByScenario + behonestParams.container_per_store + behonestParams.refrigerator_per_store;
+                    investmentTotal += capexPerStoreByScenario + result.container + result.refrigerator;
                   }
                   
                   const implementationInfo = implementationByMonth.get(result.month);
