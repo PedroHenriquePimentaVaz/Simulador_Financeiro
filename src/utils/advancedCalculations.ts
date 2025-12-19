@@ -241,41 +241,55 @@ export function simulate(
     let totalRevenue = 0;
     let revenuePerStoreValue = 0;
     if (month > 2 && currentStores > 0) {
-      // Receita da primeira loja (começa no mês 3 com 100%)
-      const firstStoreMonthsSinceStart = month - 3; // Meses desde o início da operação da primeira loja
-      const cappedFirstStoreMonths = Math.min(firstStoreMonthsSinceStart, 6); // crescimento apenas até o 6º mês
-      const firstStoreRevenue = revenuePerStore * Math.pow(growthFactor, cappedFirstStoreMonths);
+      // Calcular receita com ramp-up e crescimento mensal
+      // Primeira loja: mês 3 = 70%, mês 4 = 85%, mês 5+ = 100%
+      // Lojas adicionais: seguem mesma lógica de ramp-up
+      const monthsSinceStart = month - 3; // Meses desde o início da operação da primeira loja
       
-      // Receita das lojas adicionais (com ramp-up: 0% no mês de implementação, 70% no 1º mês operando, 85% no 2º, 100% do 3º em diante)
-      let additionalStoresRevenue = 0;
-      const additionalStoresCount = currentStores - 1; // Número de lojas adicionais
+      // Aplicar ramp-up primeiro (70%, 85%, 100%)
+      let rampMultiplier = 1.0;
+      if (monthsSinceStart === 0) {
+        rampMultiplier = 0.7; // 1º mês operando: 70%
+      } else if (monthsSinceStart === 1) {
+        rampMultiplier = 0.85; // 2º mês operando: 85%
+      }
+      // A partir do 3º mês (monthsSinceStart >= 2): 100%
       
-      if (additionalStoresCount > 0) {
-        openSchedule.forEach(openMonth => {
+      // Aplicar crescimento mensal (apenas após o ramp-up completo, e limitado a 6 meses)
+      // O crescimento começa a contar após o período de ramp-up (a partir do mês 5)
+      const monthsForGrowth = Math.max(0, monthsSinceStart - 2); // Começa a crescer após ramp-up
+      const cappedMonths = Math.min(monthsForGrowth, 6); // crescimento apenas até o 6º mês após ramp-up
+      const baseRevenue = revenuePerStore * rampMultiplier * Math.pow(growthFactor, cappedMonths);
+      
+      // Para lojas adicionais, calcular receita individualmente
+      let totalRevenueFirstStore = baseRevenue; // Primeira loja com ramp-up e crescimento
+      let totalRevenueAdditional = 0;
+      
+      // Calcular receita das lojas adicionais (se houver)
+      const additionalStores = currentStores - 1;
+      if (additionalStores > 0) {
+        for (const openMonth of openSchedule) {
           if (month >= openMonth) {
-            // Meses desde que a loja adicional começou a operar
             const monthsSinceNewStoreStart = month - openMonth;
-            
             if (monthsSinceNewStoreStart >= 1) {
-              // Aplicar crescimento (limitado a 6 meses)
-              const cappedNewStoreMonths = Math.min(Math.max(monthsSinceNewStoreStart - 1, 0), 6);
-              const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
-              const baseNewStore = revenuePerStore * growthNewStore;
-              
-              // Aplicar ramp-up
+              // Aplicar ramp-up primeiro
               const ramp =
-                monthsSinceNewStoreStart === 1 ? 0.7 :  // 70% no 1º mês operando
-                monthsSinceNewStoreStart === 2 ? 0.85 : // 85% no 2º mês operando
-                1; // 100% do 3º mês em diante
+                monthsSinceNewStoreStart === 1 ? 0.7 :
+                monthsSinceNewStoreStart === 2 ? 0.85 : 1;
               
-              additionalStoresRevenue += baseNewStore * ramp;
+              // Aplicar crescimento após ramp-up
+              const monthsForGrowthNew = Math.max(0, monthsSinceNewStoreStart - 2);
+              const cappedNewStoreMonths = Math.min(monthsForGrowthNew, 6);
+              const growthNewStore = Math.pow(growthFactor, cappedNewStoreMonths);
+              const baseNewStore = revenuePerStore * ramp * growthNewStore;
+              
+              totalRevenueAdditional += baseNewStore;
             }
-            // Se monthsSinceNewStoreStart === 0, a loja ainda não começou a operar (mês de implementação = 0% receita)
           }
-        });
+        }
       }
       
-      totalRevenue = firstStoreRevenue + additionalStoresRevenue;
+      totalRevenue = totalRevenueFirstStore + totalRevenueAdditional;
       revenuePerStoreValue = currentStores > 0 ? totalRevenue / currentStores : 0;
     }
     
