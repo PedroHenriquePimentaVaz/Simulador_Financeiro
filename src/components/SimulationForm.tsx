@@ -298,7 +298,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const locale = navigator.language;
     const pageTitle = document.title;
-
+    
     // Enviar dados para o webhook (incluindo UTM)
     try {
       // Capturar parâmetros UTM diretamente da URL no momento do submit
@@ -439,11 +439,11 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
 
         try {
           const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(webhookData),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookData),
             signal: controller.signal,
           });
           clearTimeout(timeout);
