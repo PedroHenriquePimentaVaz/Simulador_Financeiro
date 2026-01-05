@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AdvancedSimulationResult } from '../utils/advancedCalculations';
 
 interface InvestmentComparisonChartProps {
@@ -17,38 +17,42 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   franchiseResults, 
   initialInvestment 
 }) => {
-  // Valores de renda fixa atualizados (verificar periodicamente)
-  // Fonte: Taxas efetivas anuais baseadas em mercado brasileiro
-  // Última atualização: 2025
-  // Nota: CDB considera 110% CDI com desconto de IR; LCI/LCA considera 95% CDI isento de IR
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(60);
+
+  const periodOptions = [
+    { months: 12, label: '1 Ano' },
+    { months: 36, label: '3 Anos' },
+    { months: 60, label: '5 Anos' }
+  ];
+
+  const currentPeriod = periodOptions.find(p => p.months === selectedPeriod) || periodOptions[2];
+
   const investmentOptions: InvestmentOption[] = [
     {
       name: 'SELIC (Taxa Atual)',
-      annualRate: 15.0, // ~15% efetivo a.a. | ROI 5 anos: ~101%
+      annualRate: 15.0,
       color: '#e74c3c',
       description: 'Taxa básica de juros do Brasil'
     },
     {
       name: 'CDB',
-      annualRate: 13.3, // ~110% CDI líquido IR (~13,3% a.a.) | ROI 5 anos: ~95%
+      annualRate: 13.3,
       color: '#f39c12',
       description: 'Certificado de Depósito Bancário'
     },
     {
       name: 'Poupança',
-      annualRate: 8.2, // ~8,2% a.a. efetivo | ROI 5 anos: ~48%
+      annualRate: 8.2,
       color: '#27ae60',
       description: 'Caderneta de poupança tradicional'
     },
     {
       name: 'LCI/LCA',
-      annualRate: 14.3, // ~95% CDI isento IR (~14,3% a.a.) | ROI 5 anos: ~99%
+      annualRate: 14.3,
       color: '#9b59b6',
       description: 'Isento de IR para pessoa física'
     }
   ];
-
-  const currentPeriod = { months: 60, label: '5 Anos' };
 
   const calculateCompoundInterest = (principal: number, annualRate: number, months: number): number => {
     const monthlyRate = annualRate / 100 / 12;
@@ -56,11 +60,12 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   };
 
   const getFranchiseValueAtPeriod = (months: number): number => {
-    // Usa apenas o saldo acumulado da DRE (finalCash), sem somar o investimento inicial
+    if (months <= 0) return 0;
     if (months >= franchiseResults.monthlyResults.length) {
       return franchiseResults.finalCash;
     }
-    return franchiseResults.monthlyResults[months - 1].cumulativeCash;
+    const monthIndex = Math.min(months - 1, franchiseResults.monthlyResults.length - 1);
+    return franchiseResults.monthlyResults[monthIndex].cumulativeCash;
   };
 
   const franchiseValue = getFranchiseValueAtPeriod(currentPeriod.months);
@@ -75,9 +80,11 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
   });
   const bestInvestment = comparisonData.reduce((prev, curr) => curr.value > prev.value ? curr : prev, comparisonData[0]);
   const bestFixedValue = bestInvestment.value;
-  const finalMonth = franchiseResults.monthlyResults[franchiseResults.monthlyResults.length - 1];
-  const finalStores = finalMonth ? Math.max(finalMonth.stores, 1) : 1;
-  const perStoreValue = finalStores > 0 ? franchiseValue / finalStores : 0;
+  
+  const periodMonthIndex = Math.min(currentPeriod.months - 1, franchiseResults.monthlyResults.length - 1);
+  const periodMonth = franchiseResults.monthlyResults[periodMonthIndex];
+  const periodStores = periodMonth ? Math.max(periodMonth.stores, 1) : 1;
+  const perStoreValue = periodStores > 0 ? franchiseValue / periodStores : 0;
   const shortfall = Math.max(bestFixedValue - franchiseValue, 0);
   const suggestedExtraStores = perStoreValue > 0 ? Math.ceil(shortfall / perStoreValue) : 0;
 
@@ -93,6 +100,46 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
       borderRadius: '12px',
       marginBottom: '20px'
     }}>
+      {/* Period Selector */}
+      <div style={{ 
+        marginBottom: '25px', 
+        display: 'flex', 
+        justifyContent: 'center',
+        gap: '10px',
+        flexWrap: 'wrap'
+      }}>
+        {periodOptions.map((period) => (
+          <button
+            key={period.months}
+            onClick={() => setSelectedPeriod(period.months)}
+            style={{
+              padding: '12px 24px',
+              backgroundColor: selectedPeriod === period.months ? '#001c54' : '#ffffff',
+              color: selectedPeriod === period.months ? '#ffffff' : '#001c54',
+              border: `2px solid #001c54`,
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: '600',
+              transition: 'all 0.3s ease',
+              boxShadow: selectedPeriod === period.months ? '0 4px 12px rgba(0, 28, 84, 0.3)' : 'none'
+            }}
+            onMouseOver={(e) => {
+              if (selectedPeriod !== period.months) {
+                e.currentTarget.style.backgroundColor = '#f0f4ff';
+              }
+            }}
+            onMouseOut={(e) => {
+              if (selectedPeriod !== period.months) {
+                e.currentTarget.style.backgroundColor = '#ffffff';
+              }
+            }}
+          >
+            {period.label}
+          </button>
+        ))}
+      </div>
+
       {/* Visual Bar Chart */}
       <div>
         <h3 style={{ 
@@ -101,7 +148,7 @@ const InvestmentComparisonChart: React.FC<InvestmentComparisonChartProps> = ({
           color: '#2c3e50',
           fontSize: '18px'
         }}>
-          Comparação Visual de Retorno - 5 Anos
+          Comparação Visual de Retorno - {currentPeriod.label}
         </h3>
         
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>

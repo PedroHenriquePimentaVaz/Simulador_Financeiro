@@ -171,9 +171,9 @@ export function simulate(
   
   // Ajuste do perfil de operação
   if (perfilOperacao === 'integral') {
-    adjustment -= 0.075; // 0-2h: -7,5%
+    adjustment -= 0.075; // 0-2h: -7,5% (menos dedicação = menos receita)
   } else if (perfilOperacao === 'terceirizar') {
-    adjustment += 0.075; // Mais de 4h: +7,5%
+    adjustment += 0.075; // Mais de 4h: +7,5% (mais dedicação = mais receita)
   }
   // gestao (2-4h) não altera nada (0%)
   
@@ -450,28 +450,14 @@ export function simulate(
     ? maxAdditionalStores 
     : Math.min(maxAdditionalStores, 9);
 
-  // Testar incrementalmente e parar assim que superar renda fixa
-  // Para investimentos >= 110k, continuar adicionando até superar renda fixa ou atingir o limite
+  // Testar todas as possibilidades e escolher sempre o melhor resultado (maior finalCash)
+  // Isso garante que cenários otimistas não parem prematuramente
   let chosen = runSimulation(0);
-  if (investimentoInicial >= 110000) {
-    // Para investimentos grandes, testar todas as possibilidades até superar renda fixa
-    for (let n = 1; n <= maxAutoAdditional; n++) {
-      const candidate = runSimulation(n);
-      if (candidate.finalCash >= bestFixedValue) {
-        chosen = candidate;
-        break;
-      }
-      // Continua com o melhor resultado até agora
-      if (candidate.finalCash > chosen.finalCash) {
-        chosen = candidate;
-      }
-    }
-  } else {
-    // Para investimentos menores, manter lógica original
-    for (let n = 1; n <= maxAutoAdditional && chosen.finalCash < bestFixedValue; n++) {
-      const candidate = runSimulation(n);
+  for (let n = 1; n <= maxAutoAdditional; n++) {
+    const candidate = runSimulation(n);
+    // Sempre escolher o melhor resultado (maior finalCash)
+    if (candidate.finalCash > chosen.finalCash) {
       chosen = candidate;
-      if (candidate.finalCash >= bestFixedValue) break;
     }
   }
 
