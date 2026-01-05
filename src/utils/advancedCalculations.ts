@@ -234,11 +234,6 @@ export function simulate(
     maxAdditionalStores = Math.max(2, maxStoresByInvestment); // Mínimo 2, máximo baseado no investimento
   }
 
-  // Melhor renda fixa: SELIC (~15% a.a. efetivo) - atualizado 2025
-  // Nota: Este valor deve ser atualizado periodicamente conforme mudanças na taxa SELIC
-  const bestFixedAnnualRate = 0.15; // 15% a.a. efetivo (SELIC)
-  const bestFixedValue = investimentoInicial * Math.pow(1 + bestFixedAnnualRate / 12, months);
-
   const runSimulation = (targetAdditionalStores: number): AdvancedSimulationResult => {
     const capexTotalPorLoja = capexPerStore + params.container_per_store + params.refrigerator_per_store;
     const openSchedule: number[] = []; // meses em que novas lojas abrem (além da primeira)
@@ -477,11 +472,11 @@ export function simulate(
   // Testar todas as possibilidades e escolher sempre o melhor resultado (maior finalCash)
   // Isso garante que cenários otimistas não parem prematuramente
   let chosen = runSimulation(0);
-  for (let n = 1; n <= maxAutoAdditional; n++) {
-    const candidate = runSimulation(n);
+    for (let n = 1; n <= maxAutoAdditional; n++) {
+      const candidate = runSimulation(n);
     // Sempre escolher o melhor resultado (maior finalCash)
-    if (candidate.finalCash > chosen.finalCash) {
-      chosen = candidate;
+      if (candidate.finalCash > chosen.finalCash) {
+        chosen = candidate;
     }
   }
 

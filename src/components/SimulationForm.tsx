@@ -351,8 +351,6 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         };
       });
       
-      const foundUtmCount = Object.values(utmValidation).filter(v => v.found).length;
-      
       // Verificar se há parâmetros UTM
       const marketingKeys = Object.keys(allUtmParams).filter((key) => key !== 'Page');
       const hasUtmParams = marketingKeys.length > 0;
