@@ -108,21 +108,14 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       'utm_page': 'Page'
     };
     
-    console.log('=== CAPTURA UTM NO CARREGAMENTO ===');
-    console.log('URL completa:', window.location.href);
-    console.log('URL search params:', window.location.search);
-    
     Object.keys(utmMapping).forEach(key => {
       const value = normalizeUtmKeyValue(key, urlParams.get(key));
-      console.log(`Verificando ${key}:`, value);
       if (value) {
         utm[utmMapping[key]] = value;
       }
     });
 
     utm.Page = 'simuladorfinanceiro';
-    
-    console.log('Parâmetros UTM capturados:', utm);
     
     // Validação dos parâmetros UTM capturados
     const expectedUtmFields = ['Source', 'Medium', 'Campaign', 'Content', 'Term', 'Page'];
@@ -135,7 +128,6 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
       };
     });
     
-    console.log('=== VALIDAÇÃO UTM NO CARREGAMENTO ===');
     console.table(utmValidation);
     
     const capturedUtmCount = Object.keys(utm).length;
@@ -151,17 +143,14 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         params: utm,
         data: { storedAt: new Date(storedAt).toISOString() },
       });
-      console.log('✅ Parâmetros UTM salvos no localStorage');
     } else {
       recordUtmEvent('utmMissing', {
         context: 'initialLoad',
         url: window.location.href,
       });
-      console.log('⚠️ Nenhum parâmetro UTM encontrado na URL');
     }
     
     setUtmParams(utm);
-    console.log('===================================');
   }, []);
 
   // Analisar viabilidade sempre que os dados mudarem
@@ -351,17 +340,6 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
 
       combinedUtmParams = allUtmParams;
       
-      // Logs detalhados para debug
-      console.log('=== DEBUG UTM ===');
-      console.log('URL completa:', window.location.href);
-      console.log('URL search params:', window.location.search);
-      console.log('Parâmetros UTM do estado:', utmParams);
-      console.log('Parâmetros UTM da URL atual:', currentUtmParams);
-      console.log('Parâmetros UTM do localStorage:', savedUtmParams);
-      console.log('Parâmetros UTM combinados:', allUtmParams);
-      console.log('Keys em allUtmParams:', Object.keys(allUtmParams));
-      console.log('Quantidade de parâmetros UTM:', Object.keys(allUtmParams).length);
-      
       // Validação detalhada dos parâmetros UTM
       const expectedUtmFields = ['Source', 'Medium', 'Campaign', 'Content', 'Term', 'Page'];
       const utmValidation: Record<string, { found: boolean; value: string | undefined }> = {};
@@ -373,11 +351,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
         };
       });
       
-      console.log('=== VALIDAÇÃO UTM ===');
-      console.table(utmValidation);
-      
       const foundUtmCount = Object.values(utmValidation).filter(v => v.found).length;
-      console.log(`Parâmetros UTM encontrados: ${foundUtmCount} de ${expectedUtmFields.length}`);
       
       // Verificar se há parâmetros UTM
       const marketingKeys = Object.keys(allUtmParams).filter((key) => key !== 'Page');
@@ -392,8 +366,6 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
           data: simulatedData,
         });
       } else {
-        console.log('✅ Parâmetros UTM encontrados e serão enviados ao webhook');
-        console.log('Parâmetros que serão enviados:', allUtmParams);
         recordUtmEvent('utmCaptured', {
           context: 'submit',
           url: window.location.href,
@@ -419,12 +391,6 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ initialData, onSimulate
           utmInWebhookData[field] = (webhookData as any)[field];
         }
       });
-      
-      console.log('=== VERIFICAÇÃO FINAL ===');
-      console.log('Parâmetros UTM no webhookData:', utmInWebhookData);
-      console.log('Dados completos enviados para webhook:', webhookData);
-      console.log('JSON stringificado:', JSON.stringify(webhookData));
-      console.log('================');
       
       recordUtmEvent('webhookPayload', {
         context: 'submit',

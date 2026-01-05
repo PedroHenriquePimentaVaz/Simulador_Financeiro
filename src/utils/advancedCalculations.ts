@@ -1,5 +1,54 @@
 import behonestParams from '../../behonest_params.json';
 
+// Constantes de ajuste de porcentagem - NÃO ALTERAR SEM REVISÃO
+// Valores definidos: 0 até 2h = -7,5%, 2 a 4h = 0%, Mais de 4h = +7,5%
+// Cenários: Pessimista = -7,5%, Médio = 0%, Otimista = +7,5%
+const ADJUSTMENT_PERCENTAGE = 0.075; // 7,5% (não alterar)
+
+// Função helper para calcular ajuste de receita baseado em perfil e cenário
+// Garante consistência em todos os lugares onde o ajuste é aplicado
+// IMPORTANTE: Esta função centraliza a lógica de ajuste para evitar erros de inversão
+function calculateRevenueAdjustment(
+  perfilOperacao: string,
+  cenario: 'pessimista' | 'medio' | 'otimista'
+): number {
+  let adjustment = 0;
+  
+  // Ajuste do perfil de operação (horas diárias)
+  // REGRA: Menos horas = menos receita, Mais horas = mais receita
+  // 0 até 2 horas diárias (integral) = -7,5% (menos dedicação = menos receita)
+  // 2 a 4 horas diárias (gestao) = 0% (sem alteração)
+  // Mais de 4 horas diárias (terceirizar) = +7,5% (mais dedicação = mais receita)
+  if (perfilOperacao === 'integral') {
+    adjustment -= ADJUSTMENT_PERCENTAGE; // NEGATIVO: reduz receita
+  } else if (perfilOperacao === 'terceirizar') {
+    adjustment += ADJUSTMENT_PERCENTAGE; // POSITIVO: aumenta receita
+  }
+  // gestao (2-4h) não altera nada (0%)
+  
+  // Ajuste do cenário
+  // REGRA: Pessimista = menos receita, Otimista = mais receita
+  // Pessimista = -7,5% (resultados abaixo da média)
+  // Médio = 0% (sem alteração)
+  // Otimista = +7,5% (resultados acima da média)
+  if (cenario === 'pessimista') {
+    adjustment -= ADJUSTMENT_PERCENTAGE; // NEGATIVO: reduz receita
+  } else if (cenario === 'otimista') {
+    adjustment += ADJUSTMENT_PERCENTAGE; // POSITIVO: aumenta receita
+  }
+  // medio não altera nada (0%)
+  
+  // Validação: ajuste deve estar entre -15% e +15% (pior caso: pessimista + integral)
+  // Melhor caso: otimista + terceirizar = +15%
+  const minAdjustment = -2 * ADJUSTMENT_PERCENTAGE; // -15%
+  const maxAdjustment = 2 * ADJUSTMENT_PERCENTAGE; // +15%
+  if (adjustment < minAdjustment || adjustment > maxAdjustment) {
+    console.error('Erro: Ajuste de receita fora do intervalo esperado:', adjustment);
+  }
+  
+  return adjustment;
+}
+
 export interface BeHonestParams {
   simples_rate_m2: number;
   cmv_rate: number;
@@ -157,33 +206,8 @@ export function simulate(
   const params = behonestParams as BeHonestParams;
   
   // Lógica: valor base sempre médio, depois aplica ajustes INDEPENDENTES e ADITIVOS
-  // Perfil de operação:
-  //   - 0-2h: -7,5%
-  //   - 2-4h: 0%
-  //   - Mais de 4h: +7,5%
-  // Cenário:
-  //   - Pessimista: -7,5%
-  //   - Médio: 0%
-  //   - Otimista: +7,5%
-  
-  // Determinar ajuste baseado em cenário e perfil (são independentes e aditivos)
-  let adjustment = 0;
-  
-  // Ajuste do perfil de operação
-  if (perfilOperacao === 'integral') {
-    adjustment -= 0.075; // 0-2h: -7,5% (menos dedicação = menos receita)
-  } else if (perfilOperacao === 'terceirizar') {
-    adjustment += 0.075; // Mais de 4h: +7,5% (mais dedicação = mais receita)
-  }
-  // gestao (2-4h) não altera nada (0%)
-  
-  // Ajuste do cenário
-  if (cenario === 'pessimista') {
-    adjustment -= 0.075; // -7,5%
-  } else if (cenario === 'otimista') {
-    adjustment += 0.075; // +7,5%
-  }
-  // medio não altera nada (0%)
+  // Usar função helper para garantir consistência
+  const adjustment = calculateRevenueAdjustment(perfilOperacao, cenario);
   
   // Sempre usar cenário médio como base
   const baseCenario: 'pessimista' | 'medio' | 'otimista' = 'medio';
@@ -828,22 +852,8 @@ export function addStoreToSimulation(
   }
   
   // Lógica: valor base sempre médio, depois aplica ajustes INDEPENDENTES e ADITIVOS
-  // Determinar ajuste baseado em cenário e perfil (são independentes e aditivos)
-  let adjustment = 0;
-  
-  // Ajuste do perfil de operação
-  if (perfilOperacao === 'integral') {
-    adjustment -= 0.075; // 0-2h: -7,5%
-  } else if (perfilOperacao === 'terceirizar') {
-    adjustment += 0.075; // Mais de 4h: +7,5%
-  }
-  
-  // Ajuste do cenário
-  if (cenario === 'pessimista') {
-    adjustment -= 0.075; // -7,5%
-  } else if (cenario === 'otimista') {
-    adjustment += 0.075; // +7,5%
-  }
+  // Usar função helper para garantir consistência
+  const adjustment = calculateRevenueAdjustment(perfilOperacao, cenario);
   
   // Sempre usar cenário médio como base
   const baseCenario: 'pessimista' | 'medio' | 'otimista' = 'medio';
@@ -1021,22 +1031,8 @@ export function removeStoreFromSimulation(results: AdvancedSimulationResult, mon
   const { cenario, perfilOperacao } = results;
   
   // Lógica: valor base sempre médio, depois aplica ajustes INDEPENDENTES e ADITIVOS
-  // Determinar ajuste baseado em cenário e perfil (são independentes e aditivos)
-  let adjustment = 0;
-  
-  // Ajuste do perfil de operação
-  if (perfilOperacao === 'integral') {
-    adjustment -= 0.075; // 0-2h: -7,5%
-  } else if (perfilOperacao === 'terceirizar') {
-    adjustment += 0.075; // Mais de 4h: +7,5%
-  }
-  
-  // Ajuste do cenário
-  if (cenario === 'pessimista') {
-    adjustment -= 0.075; // -7,5%
-  } else if (cenario === 'otimista') {
-    adjustment += 0.075; // +7,5%
-  }
+  // Usar função helper para garantir consistência
+  const adjustment = calculateRevenueAdjustment(perfilOperacao, cenario);
   
   // Sempre usar cenário médio como base
   const baseCenario: 'pessimista' | 'medio' | 'otimista' = 'medio';

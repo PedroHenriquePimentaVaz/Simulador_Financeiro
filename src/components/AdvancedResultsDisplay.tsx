@@ -13,7 +13,6 @@ interface AdvancedResultsDisplayProps {
 }
 
 const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results, currentResults, lucroDesejado, onResultsUpdate }) => {
-  const [_originalResults, _setOriginalResults] = useState<AdvancedSimulationResult>(results);
   const [selectedMonth, setSelectedMonth] = useState<number>(1);
   const [showAddStoreForm, setShowAddStoreForm] = useState(false);
   const [addedStores, setAddedStores] = useState<Array<{month: number, implementationMonth: number}>>([]);
@@ -102,7 +101,6 @@ const AdvancedResultsDisplay: React.FC<AdvancedResultsDisplayProps> = ({ results
       // Tamanho da logo: 30mm de largura x 25mm de altura
       doc.addImage(logoPath, 'PNG', margin + 5, margin + 5, 30, 25);
     } catch (error) {
-      console.log('Logo não carregada, continuando sem logo');
     }
     
     // Título - branco
